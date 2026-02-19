@@ -27,12 +27,11 @@ class AuthController extends Controller
             'password' => bcrypt($validatedData['password']),
             'phone' => $validatedData['phone'] ?? null,
             'address' => $validatedData['address'] ?? null,
+            'role' => 'user',
             'accepted_tos' => true,
         ]);
 
-
         $token = $user->createToken('auth_token')->plainTextToken;
-
 
         return response()->json([
             'user' => $user,
