@@ -7,12 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class SpaceImage extends Model
 {
-    /** @use HasFactory<\Database\Factories\SpaceImageFactory> */
     use HasFactory;
+
     protected $fillable = [
+        'space_id',
         'filename',
         'alt_text',
         'position',
-
     ];
+
+    public function space()
+    {
+        return $this->belongsTo(Space::class);
+    }
 }

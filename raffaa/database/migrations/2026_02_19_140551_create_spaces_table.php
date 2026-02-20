@@ -13,6 +13,17 @@ return new class extends Migration
     {
         Schema::create('spaces', function (Blueprint $table) {
             $table->id();
+
+            $table->string('name');
+            $table->decimal('surface', 6, 2); // m²
+            $table->integer('capacity');
+
+            $table->enum('type', ['bureau', 'salle_reunion', 'conference']);
+
+            $table->decimal('price_per_day', 10, 2);
+
+            $table->boolean('is_active')->default(true);
+
             $table->timestamps();
         });
     }

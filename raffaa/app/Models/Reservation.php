@@ -7,13 +7,25 @@ use Illuminate\Database\Eloquent\Model;
 
 class Reservation extends Model
 {
-    /** @use HasFactory<\Database\Factories\ReservationFactory> */
     use HasFactory;
-     protected $fillable = [
-            'status',
-            'start_date',
-            'end_date',
-            'total_price',
-            'is_paid',
-     ];
+
+    protected $fillable = [
+        'user_id',
+        'space_id',
+        'status',
+        'start_date',
+        'end_date',
+        'total_price',
+        'is_paid',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function space()
+    {
+        return $this->belongsTo(Space::class);
+    }
 }
