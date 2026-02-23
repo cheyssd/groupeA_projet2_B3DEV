@@ -13,6 +13,15 @@ return new class extends Migration
     {
         Schema::create('space_images', function (Blueprint $table) {
             $table->id();
+
+            $table->foreignId('space_id')
+                ->constrained()
+                ->onDelete('cascade');
+
+            $table->string('filename');
+            $table->string('alt_text');
+            $table->integer('position')->default(0);
+
             $table->timestamps();
         });
     }

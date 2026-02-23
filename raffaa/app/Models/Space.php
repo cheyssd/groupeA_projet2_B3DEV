@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Space extends Model
 {
-    /** @use HasFactory<\Database\Factories\SpaceFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -17,8 +16,25 @@ class Space extends Model
         'type',
         'price_per_day',
         'is_active',
-
     ];
 
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class);
+    }
 
+    public function images()
+    {
+        return $this->hasMany(SpaceImage::class);
+    }
+
+    public function equipements()
+    {
+        return $this->belongsToMany(
+            Equipement::class,
+            'space_equipement', // nom table pivot
+            'space_id',
+            'equipement_id'
+        );
+    }
 }
