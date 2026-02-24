@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Services\ReservationService;
 use App\Models\Reservation;
-use App\Models\Space;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -45,6 +44,7 @@ class ReservationController extends Controller
             'end_date' => 'required|date|after_or_equal:start_date'
         ]);
 
+
         try {
             $reservation = $this->reservationService->createReservation(
                 auth()->id(),
@@ -72,6 +72,12 @@ class ReservationController extends Controller
      */
     public function show(Reservation $reservation)
     {
+        if ($reservation->user_id !== auth()->id()) {
+            return response()->json([
+                'message' => 'Accès refusé'
+            ], 403);
+        }
+
         return response()->json($reservation->load(['user', 'space']));
     }
 

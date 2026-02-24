@@ -4,6 +4,7 @@ namespace App\Services;
 use App\Models\Reservation;
 use App\Models\Space;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class ReservationService
 {
@@ -38,20 +39,22 @@ class ReservationService
 
     public function createReservation($userId, $spaceId, $startDate, $endDate)
     {
-        if (!$this->isSpaceAvailable($spaceId, $startDate, $endDate)) {
-            throw new \Exception('Espace déjà réservé pour ces dates');
-        }
+        return DB::transaction(function () use ($userId, $spaceId, $startDate, $endDate) {
+            if (!$this->isSpaceAvailable($spaceId, $startDate, $endDate)) {
+                throw new \Exception('Espace non disponible pour les dates sélectionnées');
+            }
 
-        $totalPrice = $this->calculateTotalPrice($spaceId, $startDate, $endDate);
+            $totalPrice = $this->calculateTotalPrice($spaceId, $startDate, $endDate);
 
-        return Reservation::create([
-            'user_id' => $userId,
-            'space_id' => $spaceId,
-            'start_date' => $startDate,
-            'end_date' => $endDate,
-            'total_price' => $totalPrice,
-            'status' => 'en_attente',
-            'is_paid' => false
-        ]);
+            return Reservation::create([
+                'user_id' => $userId,
+                'space_id' => $spaceId,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'total_price' => $totalPrice,
+                'status' => 'en_attente',
+                'is_paid' => false
+            ]);
+        });
     }
 }

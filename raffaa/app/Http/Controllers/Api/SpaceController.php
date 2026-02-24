@@ -18,9 +18,9 @@ class SpaceController extends Controller
     {
         $perPage = $request->query('per_page', 15);
 
-        $spaces = Space::when($request->search, function ($query) use ($request) {
-                $query->where('name', 'like', '%' . $request->search . '%');
-            })
+        $spaces = Space::with('equipments')->when($request->search, function ($query) use ($request) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        })
             ->when($request->type, function ($query) use ($request) {
                 $query->where('type', $request->type);
             })
@@ -43,10 +43,16 @@ class SpaceController extends Controller
             'capacity' => 'required|integer',
             'type' => 'required|in:bureau,salle_reunion,conference',
             'price_per_day' => 'required|numeric',
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
+            'equipment_ids' => 'nullable|array',
+            'equipment_ids.*' => 'exists:equipment,id'
         ]);
 
         $space = Space::create($validated);
+
+        if (isset($validated['equipment_ids'])) {
+            $space->equipment()->sync($validated['equipment_ids']);
+        }
 
         return response()->json([
             'success' => true,
