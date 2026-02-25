@@ -100,6 +100,36 @@ class ReservationController extends Controller
         ]);
     }
 
+    public function updateStatus(Request $request, $id,$reservation)
+    {
+        $validated = $request->validate(
+            [
+                'status' => 'required|in:en_attente,confirmee,annulee',
+            ]
+        );
+
+        $reservation = Reservation::findOrFail($id);
+
+        $reservation->update([
+            'status' => $validated['status']
+        ]);
+
+
+        return response()->json(['message' => 'Status mis a jour avec succès'], 200);
+    }
+
+    public function markAsPaid(request $request, $id)
+    {
+        $reservation = reservation::findOrFail($id);
+        if ($reservation->status !== 'confirmee') {
+            return response()->json(['message' => 'Impossible de payer une réservation non confirmée'], 200);
+        }
+        ;
+        $reservation->update(['is_paid' => true]);
+
+        return response()->json(['message' => 'Paiement confirmé avec succès'], 200);
+    }
+
     /**
      * Supprimer une réservation
      */
