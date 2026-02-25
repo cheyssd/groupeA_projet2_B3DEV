@@ -7,6 +7,7 @@ use App\Services\ReservationService;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class ReservationController extends Controller
 {
@@ -25,14 +26,11 @@ class ReservationController extends Controller
         $perPage = $request->query('per_page', 15);
 
         $reservations = Reservation::with(['user', 'space'])
-            ->when($request->user_id, function ($query) use ($request) {
-                $query->where('user_id', $request->user_id);
-            })
+            ->where('user_id', Auth::id())
             ->paginate($perPage);
 
         return response()->json($reservations);
     }
-
     /**
      * Créer une réservation
      */
@@ -47,7 +45,7 @@ class ReservationController extends Controller
 
         try {
             $reservation = $this->reservationService->createReservation(
-                auth()->id(),
+                Auth::id(),
                 $validated['space_id'],
                 $validated['start_date'],
                 $validated['end_date']
@@ -72,7 +70,7 @@ class ReservationController extends Controller
      */
     public function show(Reservation $reservation)
     {
-        if ($reservation->user_id !== auth()->id()) {
+        if ($reservation->user_id !== Auth::id()) {
             return response()->json([
                 'message' => 'Accès refusé'
             ], 403);
@@ -84,32 +82,80 @@ class ReservationController extends Controller
     /**
      * Mettre à jour une réservation
      */
-    public function update(Request $request, Reservation $reservation)
-    {
-        $validated = $request->validate([
-            'status' => 'sometimes|in:en_attente,confirmee,annulee',
-            'is_paid' => 'boolean'
-        ]);
+    // public function update(Request $request, Reservation $reservation)
+    // {
+    //     $validated = $request->validate([
+    //         'status' => 'sometimes|in:en_attente,confirmee,annulee',
+    //         'is_paid' => 'boolean'
+    //     ]);
 
-        $reservation->update($validated);
+    //     $reservation->update($validated);
 
-        return response()->json([
-            'success' => true,
-            'reservation' => $reservation,
-            'message' => 'Réservation mise à jour'
-        ]);
-    }
+    //     return response()->json([
+    //         'success' => true,
+    //         'reservation' => $reservation,
+    //         'message' => 'Réservation mise à jour'
+    //     ]);
+    // }
 
     /**
      * Supprimer une réservation
      */
-    public function destroy(Reservation $reservation)
+   public function destroy(Reservation $reservation)
+{
+    if ($reservation->user_id !== Auth::id() ) {
+        return response()->json([
+            'message' => 'Accès refusé'
+        ], 403);
+    }
+
+    $reservation->delete();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Réservation supprimée'
+    ]);
+}
+
+
+    public function updateStatus(Request $request, $id)
     {
-        $reservation->delete();
+        $request->validate([
+            'status' => 'required|in:en_attente,confirmee,annulee'
+        ]);
+
+        $reservation = Reservation::findOrFail($id);
+
+        $reservation->update([
+            'status' => $request->status
+        ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Réservation supprimée'
+            'reservation' => $reservation,
+            'message' => 'Statut mis à jour'
+        ]);
+    }
+
+    public function markAsPaid($id)
+    {
+        $reservation = Reservation::findOrFail($id);
+
+        if ($reservation->status !== 'confirmee') {
+            return response()->json([
+                'success' => false,
+                'message' => 'La réservation doit être confirmée avant paiement'
+            ], 422);
+        }
+
+        $reservation->update([
+            'is_paid' => true
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'reservation' => $reservation,
+            'message' => 'Réservation marquée comme payée'
         ]);
     }
 }
