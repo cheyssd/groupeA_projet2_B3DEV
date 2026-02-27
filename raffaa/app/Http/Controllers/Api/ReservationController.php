@@ -21,6 +21,8 @@ class ReservationController extends Controller
     /**
      * Liste des réservations
      */
+
+
     public function index(Request $request)
     {
         $perPage = $request->query('per_page', 15);
@@ -36,12 +38,14 @@ class ReservationController extends Controller
      */
     public function store(Request $request)
     {
+
+
+
         $validated = $request->validate([
             'space_id' => 'required|exists:spaces,id',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date'
         ]);
-
 
         try {
             $reservation = $this->reservationService->createReservation(

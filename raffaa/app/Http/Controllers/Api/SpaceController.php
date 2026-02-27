@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Reservation;
 use App\Models\Space;
 use Illuminate\Http\Request;
 
@@ -103,5 +104,39 @@ class SpaceController extends Controller
             'success' => true,
             'message' => 'Espace supprimé'
         ]);
+    }
+
+    public function availableSpaces(Request $request)
+    {
+        $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'type' => 'nullable|string',
+            'capacity_min' => 'nullable|integer'
+        ]);
+
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+
+        $unavailableSpaceIds = Reservation::where(function ($query) use ($startDate, $endDate) {
+                $query->where('start_date', '<=', $endDate)
+                    ->where('end_date', '>=', $startDate);
+            })
+            ->whereIn('status', ['en_attente', 'confirmee'])
+            ->pluck('space_id')
+            ->toArray();
+
+        $spaces = Space::where('is_active', true)
+            ->whereNotIn('id', $unavailableSpaceIds);
+
+        if ($request->type) {
+            $spaces->where('type', $request->type);
+        }
+
+        if ($request->capacity_min) {
+            $spaces->where('capacity', '>=', $request->capacity_min);
+        }
+
+        return response()->json($spaces->get());
     }
 }

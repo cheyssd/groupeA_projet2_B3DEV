@@ -39,6 +39,7 @@ class ReservationService
 
     public function createReservation($userId, $spaceId, $startDate, $endDate)
     {
+        
         return DB::transaction(function () use ($userId, $spaceId, $startDate, $endDate) {
             if (!$this->isSpaceAvailable($spaceId, $startDate, $endDate)) {
                 throw new \Exception('Espace non disponible pour les dates sélectionnées');
