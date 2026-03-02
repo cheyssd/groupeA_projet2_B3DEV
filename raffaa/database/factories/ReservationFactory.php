@@ -17,8 +17,13 @@ class ReservationFactory extends Factory
     public function definition(): array
     {
         return [
-
+            'user_id' => 1, // pour test jai preciser ici
+            'space_id' => 1,
+            'start_date' => now(),
+            'end_date' => now()->addDays(2),
+            'total_price' => 300,
+            'status' => 'en_attente',
+            'is_paid' => false,
         ];
-        
     }
 }

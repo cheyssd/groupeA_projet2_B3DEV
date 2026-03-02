@@ -11,9 +11,11 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 
 //Public
+Route::get('/spaces/available', [SpaceController::class, 'availableSpaces']);
 Route::get('/spaces', [SpaceController::class, 'index']);
 Route::get('/spaces/{space}', action: [SpaceController::class, 'show']);
-Route::get('/spaces/available', [SpaceController::class, 'availableSpaces']);
+
+
 
 
 //Authentification
