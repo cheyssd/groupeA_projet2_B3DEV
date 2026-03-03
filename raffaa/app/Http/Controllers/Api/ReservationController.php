@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ReservationConfirmed;
 use App\Services\ReservationService;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class ReservationController extends Controller
 {
@@ -133,6 +135,14 @@ class ReservationController extends Controller
         $reservation->update([
             'status' => $request->status
         ]);
+
+        if ($request->status === 'confirmee') {
+
+    $reservation->load('user', 'space');
+
+    Mail::to($reservation->user->email)
+        ->send(new ReservationConfirmed($reservation));
+}
 
         return response()->json([
             'success' => true,
