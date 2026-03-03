@@ -26,6 +26,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('reservations', ReservationController::class)
         ->only(['index', 'store', 'show', 'destroy']);
+
+         Route::get('/reservations/{id}/invoice', [\App\Http\Controllers\Api\InvoiceController::class, 'download']);
 });
 
 
