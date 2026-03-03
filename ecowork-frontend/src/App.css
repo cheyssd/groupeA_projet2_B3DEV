@@ -1,0 +1,22 @@
+
+.input-user {
+    background: #fcfcfc;
+    border: 1px solid #eee;
+    transition: all 0.3s ease;
+}
+
+.input-user:focus {
+    border-color: #7bdff2;
+    background: white;
+    outline: none;
+    box-shadow: 0 10px 20px rgba(123, 223, 242, 0.1);
+}
+
+.fade-up {
+    animation: fadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}

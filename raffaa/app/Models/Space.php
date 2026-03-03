@@ -32,7 +32,7 @@ class Space extends Model
     {
         return $this->belongsToMany(
             Equipement::class,
-            'space_equipement', // nom table pivot
+            'equipement_space',
             'space_id',
             'equipement_id'
         );
