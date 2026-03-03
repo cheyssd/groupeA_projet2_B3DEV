@@ -18,7 +18,7 @@ class SpaceController extends Controller
     {
         $perPage = $request->query('per_page', 15);
 
-        $spaces = Space::with('equipments')->when($request->search, function ($query) use ($request) {
+        $spaces = Space::with('equipements')->when($request->search, function ($query) use ($request) {
             $query->where('name', 'like', '%' . $request->search . '%');
         })
             ->when($request->type, function ($query) use ($request) {
@@ -84,6 +84,11 @@ class SpaceController extends Controller
         ]);
 
         $space->update($validated);
+
+        if ($request->has('equipments')) {
+            $space->equipments()->sync($request->equipments);
+        }
+
 
         return response()->json([
             'success' => true,

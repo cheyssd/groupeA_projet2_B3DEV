@@ -1,0 +1,8 @@
+@import "tailwindcss"; /* Remplace les 3 directives @tailwind */
+
+@theme {
+  --color-eco-turquoise: #7bdff2;
+  --color-eco-mint: #b2f7ef;
+  --color-eco-white: #eff7f6;
+  --color-eco-pink: #f7d6e0;
+}
