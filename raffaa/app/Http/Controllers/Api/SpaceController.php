@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreSpaceRequest;
+use App\Http\Requests\UpdateSpaceRequest;
 use App\Models\Reservation;
 use App\Models\Space;
 use Illuminate\Http\Request;
@@ -36,18 +38,9 @@ class SpaceController extends Controller
     /**
      * Créer un espace
      */
-    public function store(Request $request)
+    public function store(StoreSpaceRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'surface' => 'required|numeric',
-            'capacity' => 'required|integer',
-            'type' => 'required|in:bureau,salle_reunion,conference',
-            'price_per_day' => 'required|numeric',
-            'is_active' => 'boolean',
-            'equipment_ids' => 'nullable|array',
-            'equipment_ids.*' => 'exists:equipment,id'
-        ]);
+        $validated = $request->validated();
 
         $space = Space::create($validated);
 
@@ -73,16 +66,9 @@ class SpaceController extends Controller
     /**
      * Mettre à jour un espace
      */
-    public function update(Request $request, Space $space)
+    public function update(UpdateSpaceRequest $request, Space $space)
     {
-        $validated = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'surface' => 'sometimes|numeric',
-            'capacity' => 'sometimes|integer',
-            'type' => 'sometimes|in:bureau,salle_reunion,conference',
-            'price_per_day' => 'sometimes|numeric',
-            'is_active' => 'boolean'
-        ]);
+        $validated = $request->validated();
 
         $space->update($validated);
 

@@ -11,7 +11,7 @@ class StoreReservationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,9 @@ class StoreReservationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'space_id' => 'required|exists:spaces,id',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date'
         ];
     }
 }

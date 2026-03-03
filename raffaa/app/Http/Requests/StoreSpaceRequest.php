@@ -22,7 +22,14 @@ class StoreSpaceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => 'required|string|max:255',
+            'surface' => 'required|numeric',
+            'capacity' => 'required|integer',
+            'type' => 'required|in:bureau,salle_reunion,conference',
+            'price_per_day' => 'required|numeric',
+            'is_active' => 'boolean',
+            'equipment_ids' => 'nullable|array',
+            'equipment_ids.*' => 'exists:equipment,id'
         ];
     }
 }

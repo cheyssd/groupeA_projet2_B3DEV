@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreReservationRequest;
+use App\Http\Requests\UpdateReservationRequest;
 use App\Mail\ReservationConfirmed;
 use App\Services\ReservationService;
 use App\Models\Reservation;
@@ -38,16 +40,16 @@ class ReservationController extends Controller
     /**
      * Créer une réservation
      */
-    public function store(Request $request)
+    public function store(StoreReservationRequest $request)
     {
 
+        // $validated = $request->validate([
+        //     'space_id' => 'required|exists:spaces,id',
+        //     'start_date' => 'required|date',
+        //     'end_date' => 'required|date|after_or_equal:start_date'
+        // ]);
 
-
-        $validated = $request->validate([
-            'space_id' => 'required|exists:spaces,id',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date'
-        ]);
+        $validated = $request->validated();
 
         try {
             $reservation = $this->reservationService->createReservation(
@@ -86,63 +88,42 @@ class ReservationController extends Controller
     }
 
     /**
-     * Mettre à jour une réservation
-     */
-    // public function update(Request $request, Reservation $reservation)
-    // {
-    //     $validated = $request->validate([
-    //         'status' => 'sometimes|in:en_attente,confirmee,annulee',
-    //         'is_paid' => 'boolean'
-    //     ]);
-
-    //     $reservation->update($validated);
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'reservation' => $reservation,
-    //         'message' => 'Réservation mise à jour'
-    //     ]);
-    // }
-
-    /**
      * Supprimer une réservation
      */
-   public function destroy(Reservation $reservation)
-{
-    if ($reservation->user_id !== Auth::id() ) {
+   public function destroy(Request $request, Reservation $reservation)
+    {
+        if ($reservation->user_id !== $request->user()->id) {
+            return response()->json([
+                'message' => 'Accès refusé'
+            ], 403);
+        }
+
+        $reservation->delete();
+
         return response()->json([
-            'message' => 'Accès refusé'
-        ], 403);
+            'success' => true,
+            'message' => 'Réservation supprimée'
+        ]);
     }
 
-    $reservation->delete();
 
-    return response()->json([
-        'success' => true,
-        'message' => 'Réservation supprimée'
-    ]);
-}
-
-
-    public function updateStatus(Request $request, $id)
+    public function updateStatus(UpdateReservationRequest $request, $id)
     {
-        $request->validate([
-            'status' => 'required|in:en_attente,confirmee,annulee'
-        ]);
 
         $reservation = Reservation::findOrFail($id);
 
         $reservation->update([
-            'status' => $request->status
+        'status' => $request->status
         ]);
+
 
         if ($request->status === 'confirmee') {
 
     $reservation->load('user', 'space');
 
-    Mail::to($reservation->user->email)
-        ->send(new ReservationConfirmed($reservation));
-}
+            Mail::to($reservation->user->email)
+                ->send(new ReservationConfirmed($reservation));
+        }
 
         return response()->json([
             'success' => true,

@@ -73,7 +73,9 @@ class ReservationControllerTest extends TestCase
 
     public function test_user_can_delete_own_reservation()
     {
+        /** @var \App\Models\User $user */
         $user = User::factory()->create();
+
         $space = Space::factory()->create();
 
         $reservation = Reservation::create([
@@ -85,9 +87,6 @@ class ReservationControllerTest extends TestCase
             'status' => 'en_attente',
             'is_paid' => false
         ]);
-
-        /** @var \App\Models\User $user */
-        $user = User::factory()->create();
 
         $response = $this->actingAs($user, 'sanctum')
             ->deleteJson('/api/reservations/' . $reservation->id);
