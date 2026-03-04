@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'; // <-- Ajoute Navigate ici
 // import Home from './pages/Home';
 import Login from './pages/Login';
+import Accueil from './pages/Accueil.jsx';
 import { AuthProvider } from './contexts/AuthProvider.jsx'
 // import Register from './pages/Register';
 // import Spaces from './pages/Spaces';
@@ -24,6 +25,7 @@ function App() {
 
         {/* <Route path="/" element={<Home />} /> */}
         <Route path="/login" element={<Login />} />
+        <Route path="/accueil" element={<Accueil />} />
         {/* <Route path="/register" element={<Register />} /> */}
         {/* <Route path="/spaces" element={<Spaces />} /> */}
 
