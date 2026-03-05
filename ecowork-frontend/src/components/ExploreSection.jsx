@@ -1,6 +1,9 @@
 import { useState } from "react";
+import { useTheme } from "../contexts/ThemeContext";
 
 export default function ExploreSection() {
+  const { isDark } = useTheme();
+
   const spaces = [
     {
       name: "Ambarukmo Space",
@@ -33,7 +36,6 @@ export default function ExploreSection() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;0,900;1,800;1,900&family=Barlow:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap');
-
         .card-img {
           display: block;
           width: 100%;
@@ -43,39 +45,41 @@ export default function ExploreSection() {
       `}</style>
 
       <section
-        className="w-full bg-black px-12 py-24"
-        style={{ fontFamily: "'Barlow', sans-serif" }}
+        className="w-full px-12 py-24"
+        style={{ background: "var(--bg-primary)", fontFamily: "'Barlow', sans-serif" }}
       >
-       
+        {/* DISCOVER */}
         <div className="flex items-center gap-4 mb-10">
-          <div className="w-10 h-px bg-white/30" />
+          <div className="w-10 h-px" style={{ background: "var(--text-muted)" }} />
           <span
-            className="text-white/40 text-[10px] tracking-[5px] uppercase"
-            style={{ fontFamily: "'Rajdhani', sans-serif" }}
+            className="text-[10px] tracking-[5px] uppercase"
+            style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}
           >
             Discover
           </span>
         </div>
 
-        
+        {/* TITRE + FILTERS */}
         <div className="flex items-end justify-between mb-16">
           <div>
             <h2
-              className="text-white font-black uppercase leading-none"
+              className="font-black uppercase leading-none"
               style={{
                 fontFamily: "'Barlow Condensed', sans-serif",
                 fontSize: "clamp(52px, 7vw, 96px)",
                 letterSpacing: "-1px",
+                color: "var(--text-primary)",
               }}
             >
               EXPLORE
             </h2>
             <h2
-              className="text-white font-black uppercase italic leading-none"
+              className="font-black uppercase italic leading-none"
               style={{
                 fontFamily: "'Barlow Condensed', sans-serif",
                 fontSize: "clamp(52px, 7vw, 96px)",
                 letterSpacing: "-1px",
+                color: "var(--text-primary)",
               }}
             >
               SPACE.
@@ -83,11 +87,9 @@ export default function ExploreSection() {
           </div>
 
           <div className="text-right flex flex-col items-end gap-6 max-w-xs">
-            <p className="text-white/45 text-sm italic leading-relaxed">
-              Une sélection rigoureuse
-              <br />
-              d'environnements conçus pour la
-              <br />
+            <p className="text-sm italic leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+              Une sélection rigoureuse<br />
+              d'environnements conçus pour la<br />
               performance cognitive.
             </p>
 
@@ -100,17 +102,13 @@ export default function ExploreSection() {
                   style={{ fontFamily: "'Rajdhani', sans-serif" }}
                 >
                   <span
-                    className={`text-xs tracking-[2px] uppercase font-semibold ${
-                      activeFilter === f
-                        ? "text-white"
-                        : "text-white/35 hover:text-white/60"
-                    }`}
+                    className="text-xs tracking-[2px] uppercase font-semibold"
+                    style={{ color: activeFilter === f ? "var(--text-primary)" : "var(--text-muted)" }}
                   >
                     {f}
                   </span>
-
                   {activeFilter === f && (
-                    <div className="absolute -bottom-1 left-0 right-0 h-px bg-white" />
+                    <div className="absolute -bottom-1 left-0 right-0 h-px" style={{ background: "var(--text-primary)" }} />
                   )}
                 </button>
               ))}
@@ -118,31 +116,25 @@ export default function ExploreSection() {
           </div>
         </div>
 
-        {/* Cards */}
+        {/* CARDS */}
         <div className="grid grid-cols-3 gap-6">
           {spaces.map((space) => (
-            <div
-              key={space.name}
-              className="space-card flex flex-col cursor-pointer"
-            >
+            <div key={space.name} className="flex flex-col cursor-pointer">
               <div className="relative rounded-2xl overflow-hidden h-72">
-                <img
-                  src={space.img}
-                  alt={space.name}
-                  className="card-img"
-                />
+                <img src={space.img} alt={space.name} className="card-img" />
 
-                {/* TAGS */}
+                {/* Tags */}
                 <div className="absolute top-4 left-4 flex flex-col gap-2">
                   {space.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="px-3 py-1 rounded-full text-white text-[10px] tracking-[2px] uppercase font-semibold"
+                      className="px-3 py-1 rounded-full text-[10px] tracking-[2px] uppercase font-semibold"
                       style={{
                         fontFamily: "'Rajdhani', sans-serif",
-                        background: "rgba(20,22,28,0.80)",
+                        background: isDark ? "rgba(20,22,28,0.80)" : "rgba(255,255,255,0.85)",
+                        color: isDark ? "#fff" : "#0a0a0a",
                         backdropFilter: "blur(10px)",
-                        border: "1px solid rgba(255,255,255,0.1)",
+                        border: "1px solid var(--border-color)",
                       }}
                     >
                       {tag}
@@ -151,22 +143,18 @@ export default function ExploreSection() {
                 </div>
               </div>
 
-             
+              {/* Footer carte */}
               <div className="flex items-start justify-between mt-4 px-1">
                 <div>
                   <p
-                    className="text-white font-bold text-base"
-                    style={{
-                      fontFamily: "'Barlow Condensed', sans-serif",
-                      letterSpacing: "0.3px",
-                    }}
+                    className="font-bold text-base"
+                    style={{ fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: "0.3px", color: "var(--text-primary)" }}
                   >
                     {space.name}
                   </p>
-
                   <p
-                    className="text-white/35 text-[10px] tracking-[2px] uppercase mt-0.5"
-                    style={{ fontFamily: "'Rajdhani', sans-serif" }}
+                    className="text-[10px] tracking-[2px] uppercase mt-0.5"
+                    style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}
                   >
                     {space.type}
                   </p>
@@ -174,30 +162,20 @@ export default function ExploreSection() {
 
                 <div className="text-right">
                   <p
-                    className="text-cyan-400 font-bold text-base"
-                    style={{ fontFamily: "'Barlow Condensed', sans-serif" }}
+                    className="font-bold text-base"
+                    style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "var(--accent)" }}
                   >
                     {space.price}
                   </p>
-
                   <p
-                    className="text-white/30 text-[10px] tracking-[1px] uppercase mt-0.5"
-                    style={{ fontFamily: "'Rajdhani', sans-serif" }}
+                    className="text-[10px] tracking-[1px] uppercase mt-0.5"
+                    style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}
                   >
                     / day
                   </p>
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-
-       
-        <div className="flex items-center gap-3 mt-20 text-white/25">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <span key={i} className="text-sm tracking-widest">
-              →
-            </span>
           ))}
         </div>
       </section>

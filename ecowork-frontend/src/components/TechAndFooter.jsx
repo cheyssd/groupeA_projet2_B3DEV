@@ -1,4 +1,8 @@
+import { useTheme } from "../contexts/ThemeContext";
+
 export default function TechAndFooter() {
+  const { isDark } = useTheme();
+
   const features = [
     {
       num: "01",
@@ -42,35 +46,35 @@ export default function TechAndFooter() {
         @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;0,900;1,800;1,900&family=Barlow:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap');
 
         .feature-row {
-          border-top: 1px solid rgba(255,255,255,0.07);
+          border-top: 1px solid var(--border-color);
           transition: border-color 0.3s;
         }
         .feature-row:last-child {
-          border-bottom: 1px solid rgba(255,255,255,0.07);
+          border-bottom: 1px solid var(--border-color);
         }
         .feature-row:hover {
-          border-color: rgba(41,212,224,0.2);
+          border-color: var(--accent);
         }
       `}</style>
 
-      
-      <section className="w-full bg-black px-12 py-24">
+      {/* ══════════ TECH STANDARD ══════════ */}
+      <section className="w-full px-12 py-24" style={{ background: "var(--bg-primary)" }}>
 
-      
+        {/* Header */}
         <div className="flex items-start justify-between mb-16">
           <h2
             className="font-black uppercase italic leading-none"
             style={{
               fontFamily: "'Barlow Condensed', sans-serif",
               fontSize: "clamp(28px, 4vw, 48px)",
-              color: "#fff",
+              color: "var(--text-primary)",
             }}
           >
-            THE TECH <span style={{ color: "#29d4e0" }}>STANDARD.</span>
+            THE TECH <span style={{ color: "var(--accent)" }}>STANDARD.</span>
           </h2>
           <p
-            className="text-white/40 text-xs uppercase tracking-[2px] leading-relaxed text-right max-w-xs"
-            style={{ fontFamily: "'Rajdhani', sans-serif" }}
+            className="text-xs uppercase tracking-[2px] leading-relaxed text-right max-w-xs"
+            style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}
           >
             Chaque station est configurée pour<br />
             éliminer les frictions et maximiser<br />
@@ -78,42 +82,44 @@ export default function TechAndFooter() {
           </p>
         </div>
 
-       
+        {/* Features list */}
         <div>
           {features.map((f) => (
             <div
               key={f.num}
               className="feature-row flex items-center justify-between py-7 group cursor-pointer"
             >
-             
               <div className="flex items-center gap-8">
                 <span
-                  className="text-white/20 text-xs tracking-[2px]"
-                  style={{ fontFamily: "'Rajdhani', sans-serif" }}
+                  className="text-xs tracking-[2px]"
+                  style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}
                 >
                   {f.num}
                 </span>
                 <h3
-                  className="text-white font-black uppercase tracking-wide group-hover:text-cyan-400 transition-colors duration-300"
+                  className="font-black uppercase tracking-wide transition-colors duration-300 group-hover:text-cyan-400"
                   style={{
                     fontFamily: "'Barlow Condensed', sans-serif",
                     fontSize: "clamp(20px, 2.5vw, 30px)",
                     letterSpacing: "1px",
+                    color: "var(--text-primary)",
                   }}
                 >
                   {f.title}
                 </h3>
               </div>
 
-             
               <div className="flex items-center gap-10">
                 <p
-                  className="text-white/30 text-xs leading-relaxed text-right max-w-[200px]"
-                  style={{ fontFamily: "'Barlow', sans-serif" }}
+                  className="text-xs leading-relaxed text-right max-w-[200px]"
+                  style={{ fontFamily: "'Barlow', sans-serif", color: "var(--text-secondary)" }}
                 >
                   {f.desc}
                 </p>
-                <span className="text-white/30 group-hover:text-cyan-400 transition-colors duration-300">
+                <span
+                  className="transition-colors duration-300 group-hover:text-cyan-400"
+                  style={{ color: "var(--text-muted)" }}
+                >
                   {f.icon}
                 </span>
               </div>
@@ -121,20 +127,20 @@ export default function TechAndFooter() {
           ))}
         </div>
 
-        
+        {/* Explore number hint */}
         <div className="flex flex-col items-center mt-16 gap-3">
           <span
-            className="text-white/20 text-[9px] tracking-[4px] uppercase"
-            style={{ fontFamily: "'Rajdhani', sans-serif" }}
+            className="text-[9px] tracking-[4px] uppercase"
+            style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}
           >
             Explore number
           </span>
-          <div className="w-px h-16 bg-white/10" />
+          <div className="w-px h-16" style={{ background: "var(--border-color)" }} />
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="w-full bg-black px-12 pt-0 pb-8 relative overflow-hidden">
+      {/* ══════════ FOOTER ══════════ */}
+      <footer className="w-full px-12 pt-0 pb-8 relative overflow-hidden" style={{ background: "var(--bg-primary)" }}>
 
         {/* Giant ECOWORK watermark */}
         <div
@@ -142,7 +148,7 @@ export default function TechAndFooter() {
           style={{
             fontFamily: "'Barlow Condensed', sans-serif",
             fontSize: "clamp(80px, 18vw, 220px)",
-            color: "rgba(255,255,255,0.04)",
+            color: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.05)",
             letterSpacing: "-4px",
             lineHeight: 1,
           }}
@@ -150,112 +156,82 @@ export default function TechAndFooter() {
           ECOWORK
         </div>
 
-       
+        {/* Footer content */}
         <div className="relative z-10 flex items-start justify-between gap-12 mb-20">
 
-          {/* Left: tagline */}
+          {/* Tagline */}
           <div className="max-w-xs">
             <p
-              className="text-white/35 text-sm italic leading-relaxed mt-2"
-              style={{ fontFamily: "'Barlow', sans-serif" }}
+              className="text-sm italic leading-relaxed mt-2"
+              style={{ fontFamily: "'Barlow', sans-serif", color: "var(--text-secondary)" }}
             >
               L'excellence de l'espace de travail, redéfinie<br />
               pour une ère de conscience environnementale.
             </p>
           </div>
 
-         
+          {/* Nav columns */}
           <div className="flex gap-16">
-            {/* Explore */}
-            <div>
-              <p
-                className="text-white/25 text-[9px] tracking-[4px] uppercase mb-4"
-                style={{ fontFamily: "'Rajdhani', sans-serif" }}
-              >
-                Explore
-              </p>
-              {["Locations", "Memberships", "Impact"].map((item) => (
+            {[
+              { title: "Explore", items: ["Locations", "Memberships", "Impact"] },
+              { title: "Contact", items: ["Paris XI", "Bordeaux", "Support"] },
+              { title: "Social", items: ["Instagram", "LinkedIn", "Twitter"] },
+            ].map((col) => (
+              <div key={col.title}>
                 <p
-                  key={item}
-                  className="text-white/60 text-xs tracking-[2px] uppercase mb-2 hover:text-cyan-400 cursor-pointer transition-colors"
-                  style={{ fontFamily: "'Rajdhani', sans-serif" }}
+                  className="text-[9px] tracking-[4px] uppercase mb-4"
+                  style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}
                 >
-                  {item}
+                  {col.title}
                 </p>
-              ))}
-            </div>
-
-           
-            <div>
-              <p
-                className="text-white/25 text-[9px] tracking-[4px] uppercase mb-4"
-                style={{ fontFamily: "'Rajdhani', sans-serif" }}
-              >
-                Contact
-              </p>
-              {["Paris XI", "Bordeaux", "Support"].map((item) => (
-                <p
-                  key={item}
-                  className="text-white/60 text-xs tracking-[2px] uppercase mb-2 hover:text-cyan-400 cursor-pointer transition-colors"
-                  style={{ fontFamily: "'Rajdhani', sans-serif" }}
-                >
-                  {item}
-                </p>
-              ))}
-            </div>
-
-           
-            <div>
-              <p
-                className="text-white/25 text-[9px] tracking-[4px] uppercase mb-4"
-                style={{ fontFamily: "'Rajdhani', sans-serif" }}
-              >
-                Social
-              </p>
-              {["Instagram", "LinkedIn", "Twitter"].map((item) => (
-                <p
-                  key={item}
-                  className="text-white/60 text-xs tracking-[2px] uppercase mb-2 hover:text-cyan-400 cursor-pointer transition-colors"
-                  style={{ fontFamily: "'Rajdhani', sans-serif" }}
-                >
-                  {item}
-                </p>
-              ))}
-            </div>
+                {col.items.map((item) => (
+                  <p
+                    key={item}
+                    className="text-xs tracking-[2px] uppercase mb-2 cursor-pointer transition-colors hover:text-cyan-400"
+                    style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-secondary)" }}
+                  >
+                    {item}
+                  </p>
+                ))}
+              </div>
+            ))}
           </div>
         </div>
 
-        
-        <div className="relative z-10 flex items-center justify-between border-t border-white/5 pt-6">
+        {/* Bottom bar */}
+        <div
+          className="relative z-10 flex items-center justify-between pt-6"
+          style={{ borderTop: "1px solid var(--border-color)" }}
+        >
           <div className="flex items-center gap-4">
             <span
-              className="text-white/20 text-[9px] tracking-[2px] uppercase"
-              style={{ fontFamily: "'Rajdhani', sans-serif" }}
+              className="text-[9px] tracking-[2px] uppercase"
+              style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}
             >
               © 2024 Ecowork Systems
             </span>
-            <span className="text-white/10">|</span>
+            <span style={{ color: "var(--border-color)" }}>|</span>
             <span
-              className="text-white/20 text-[9px] tracking-[2px] uppercase"
-              style={{ fontFamily: "'Rajdhani', sans-serif" }}
+              className="text-[9px] tracking-[2px] uppercase"
+              style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}
             >
               Privacy Policy
             </span>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+            <div className="w-1.5 h-1.5 rounded-full" style={{ background: "var(--accent)" }} />
             <span
-              className="text-white/20 text-[9px] tracking-[2px] uppercase"
-              style={{ fontFamily: "'Rajdhani', sans-serif" }}
+              className="text-[9px] tracking-[2px] uppercase"
+              style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}
             >
               Status · Optimal Performance in Paris
             </span>
           </div>
 
           <span
-            className="text-white/20 text-[9px] tracking-[2px] uppercase hover:text-white/50 cursor-pointer transition-colors"
-            style={{ fontFamily: "'Rajdhani', sans-serif" }}
+            className="text-[9px] tracking-[2px] uppercase cursor-pointer transition-colors hover:text-cyan-400"
+            style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}
           >
             Back to top ↑
           </span>
