@@ -203,6 +203,27 @@ export default function ExploreSection() {
             </div>
           ))}
         </div>
+
+        {/* Voir tous les espaces */}
+        <div className="flex justify-center mt-12">
+          <button
+            onClick={() => navigate('/spaces')}
+            className="flex items-center gap-3 px-8 py-4 rounded-full cursor-pointer transition-all duration-300 hover:gap-5"
+            style={{
+              border: "1px solid var(--border-color)",
+              background: "transparent",
+              color: "var(--text-secondary)",
+              fontFamily: "'Rajdhani', sans-serif",
+              fontSize: "11px",
+              letterSpacing: "3px",
+            }}
+          >
+            VOIR TOUS LES ESPACES
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
       </section>
     </>
   );

@@ -3,7 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'; // <-
 import Login from './pages/Login';
 import Accueil from './pages/Accueil.jsx';
 import { AuthProvider } from './contexts/AuthProvider.jsx'
-import SpaceShow from './pages/SpaceShow'
+import SpaceShow from './pages/SpaceShow';
+import Spaces from './pages/Spaces'
 // import Register from './pages/Register';
 // import Spaces from './pages/Spaces';
 // import Dashboard from './pages/Dashboard';
@@ -28,6 +29,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/accueil" element={<Accueil />} />
         <Route path="/spaces/:id" element={<SpaceShow />} />
+        <Route path="/spaces" element={<Spaces />} />
         {/* <Route path="/register" element={<Register />} /> */}
         {/* <Route path="/spaces" element={<Spaces />} /> */}
 
