@@ -9,10 +9,13 @@ export function ThemeProvider({ children }) {
 
   return (
     <ThemeContext.Provider value={{ isDark, toggle }}>
-      <div className={isDark ? "dark" : "light"}>
-        {children}
-      </div>
-    </ThemeContext.Provider>
+  <div 
+    className={isDark ? "dark" : "light"}
+    style={{ background: "var(--bg-primary)", minHeight: "100vh" }}
+  >
+    {children}
+  </div>
+</ThemeContext.Provider>
   );
 }
 
