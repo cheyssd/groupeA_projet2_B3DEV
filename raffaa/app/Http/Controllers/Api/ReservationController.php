@@ -153,4 +153,32 @@ class ReservationController extends Controller
             'message' => 'Réservation marquée comme payée'
         ]);
     }
+
+    /**
+ * Modifier une réservation
+ */
+public function update(UpdateReservationRequest $request, Reservation $reservation)
+{
+    try {
+        $reservation->update([
+            'space_id'    => $request->space_id ?? $reservation->space_id,
+            'start_date'  => $request->start_date ?? $reservation->start_date,
+            'end_date'    => $request->end_date ?? $reservation->end_date,
+            'is_paid'     => $request->is_paid ?? $reservation->is_paid,
+            'status'      => $request->status ?? $reservation->status,
+        ]);
+
+        return response()->json([
+            'success'     => true,
+            'reservation' => $reservation->load(['user', 'space']),
+            'message'     => 'Réservation mise à jour'
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 422);
+    }
+}
 }

@@ -29,7 +29,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Reservations (User)
     Route::apiResource('reservations', ReservationController::class)
-        ->only(['index', 'store', 'show', 'destroy']);
+        ->only(['index', 'store', 'update','show', 'destroy']);
 
     // Invoice
     Route::get('/reservations/{id}/invoice', [InvoiceController::class, 'download']);
@@ -53,4 +53,10 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     // Reservations Management
     Route::patch('/reservations/{id}/status', [ReservationController::class, 'updateStatus']);
     Route::patch('/reservations/{id}/paid', [ReservationController::class, 'markAsPaid']);
+
+        // Users Management
+    Route::get('/admin/users', [AdminController::class, 'users']);
+    Route::get('/admin/users/{id}', [AdminController::class, 'showUser']);
+    Route::put('/admin/users/{id}', [AdminController::class, 'updateUser']);
+    Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser']);
 });
