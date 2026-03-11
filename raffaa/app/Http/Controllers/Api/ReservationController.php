@@ -90,7 +90,7 @@ class ReservationController extends Controller
     /**
      * Supprimer une réservation
      */
-   public function destroy(Request $request, Reservation $reservation)
+    public function destroy(Request $request, Reservation $reservation)
     {
         if ($reservation->user_id !== $request->user()->id) {
             return response()->json([
@@ -98,11 +98,12 @@ class ReservationController extends Controller
             ], 403);
         }
 
-        $reservation->delete();
+        $reservation->status = 'annulee';
+        $reservation->save();
 
         return response()->json([
             'success' => true,
-            'message' => 'Réservation supprimée'
+            'message' => 'Réservation annulée'
         ]);
     }
 
@@ -113,13 +114,13 @@ class ReservationController extends Controller
         $reservation = Reservation::findOrFail($id);
 
         $reservation->update([
-        'status' => $request->status
+            'status' => $request->status
         ]);
 
 
         if ($request->status === 'confirmee') {
 
-    $reservation->load('user', 'space');
+            $reservation->load('user', 'space');
 
             Mail::to($reservation->user->email)
                 ->send(new ReservationConfirmed($reservation));

@@ -1,13 +1,16 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'; // <-- Ajoute Navigate ici
-// import Home from './pages/Home';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'; 
+
 import Login from './pages/Login';
 import { AuthProvider } from './contexts/AuthProvider.jsx'
-// import Register from './pages/Register';
-// import Spaces from './pages/Spaces';
-// import Dashboard from './pages/Dashboard';
+import Register from './pages/register';
+
+import Dashboard from './pages/user/Dashboard.jsx';
+import Reservation from './pages/user/Reservation.jsx';
+import Profile from './pages/user/Profile.jsx';
+import UserNavbar from './pages/user/components/UserNavbar.jsx';
 import './App.css';
 
-// 1. Définis ProtectedRoute EN DEHORS de la fonction App (plus propre)
+
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token');
   if (!token) {
@@ -18,25 +21,42 @@ const ProtectedRoute = ({ children }) => {
 
 function App() {
   return (
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
-    <BrowserRouter>
-      <Routes>
+          {/* Exemple pour vos futures routes protégées */}
 
-        {/* <Route path="/" element={<Home />} /> */}
-        <Route path="/login" element={<Login />} />
-        {/* <Route path="/register" element={<Register />} /> */}
-        {/* <Route path="/spaces" element={<Spaces />} /> */}
+          <Route
+            path="/user/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/user/reservation"
+            element={
+              <ProtectedRoute>
+                <Reservation />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="user/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
 
-        {/* <Route 
-          path="/dashboard" 
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          } 
-        /> */}
-      </Routes>
-    </BrowserRouter>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

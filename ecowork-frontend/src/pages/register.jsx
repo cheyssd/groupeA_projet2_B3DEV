@@ -1,78 +1,176 @@
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
-        return (
-        <div>
-            <div class="w-full lg:w-1/2 flex items-center justify-center p-8 md:p-24 bg-white z-20">
-                <div class="w-full max-w-md fade-in">
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
-                    <div class="mb-12">
-                        <span class="text-2xl font-black tracking-tighter uppercase italic">EcoWork.</span>
-                        <div class="h-1 w-12 bg-[#b2f7ef] mt-2"></div>
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        setError(null);
+
+
+        const firstname = e.target.firstname.value;
+        const lastname = e.target.lastname.value;
+        const email = e.target.email.value;
+        const password = e.target.password.value;
+        const password_confirmation = e.target.password_confirmation.value;
+
+        if (!firstname || !lastname || !email || !password) {
+            setError("Tous les champs sont obligatoires");
+            return;
+        }
+
+        setLoading(true);
+
+        fetch('http://127.0.0.1:8000/api/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({
+                firstname,
+                lastname,
+                email,
+                password,
+                password_confirmation
+            })
+        })
+
+            .then(response => {
+                if (!response.ok) throw new Error("Erreur lors de l'inscription");
+                return response.json();
+            })
+
+            .then(data => {
+                console.log(" Inscription réussie :", data);
+
+
+                localStorage.setItem('token', data.access_token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+
+
+                navigate('/dashboard');
+            })
+
+            .catch(err => {
+                setError(err.message);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    };
+
+    return (
+        <div className="flex min-h-screen w-full">
+            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 md:p-24 bg-white z-20">
+                <div className="w-full max-w-md fade-in">
+
+                    <div className="mb-12">
+                        <span className="text-2xl font-black tracking-tighter uppercase italic">EcoWork.</span>
+                        <div className="h-1 w-12 bg-[#b2f7ef] mt-2"></div>
                     </div>
 
-                    <h1 class="text-4xl font-black tracking-tighter uppercase mb-2">Rejoindre</h1>
-                    <p class="text-gray-400 text-sm mb-10 font-medium italic">Commencez votre expérience EcoWork aujourd'hui.</p>
+                    <h1 className="text-4xl font-black tracking-tighter uppercase mb-2">Rejoindre</h1>
+                    <p className="text-gray-400 text-sm mb-10 font-medium italic">Commencez votre expérience EcoWork aujourd'hui.</p>
 
-                    <form class="space-y-5">
-                        <div class="space-y-2">
-                            <label class="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500 ml-2">Full Name</label>
-                            <input type="text" placeholder="Alexandre Dumas"
-                                class="input-user w-full px-6 py-4 rounded-2xl text-sm font-medium"/>
+                    <form className="space-y-5" onSubmit={handleSubmit}>
+                        {/* Afficher erreur */}
+                        {error && (
+                            <div className="bg-red-100 text-red-700 px-4 py-3 rounded-lg text-sm">
+                                {error}
+                            </div>
+                        )}
+
+                        {/* Prénom */}
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500 ml-2">Prénom</label>
+                            <input
+                                name="firstname"
+                                type="text"
+                                placeholder="Alexandre"
+                                className="input-user w-full px-6 py-4 rounded-2xl text-sm font-medium"
+                                required
+                            />
                         </div>
 
-                        <div class="space-y-2">
-                            <label class="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500 ml-2">Email</label>
-                            <input type="email" placeholder="alex@work.com"
-                                class="input-user w-full px-6 py-4 rounded-2xl text-sm font-medium"/>
+                        {/* Nom */}
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500 ml-2">Nom</label>
+                            <input
+                                name="lastname"
+                                type="text"
+                                placeholder="Dumas"
+                                className="input-user w-full px-6 py-4 rounded-2xl text-sm font-medium"
+                                required
+                            />
                         </div>
 
-                        <div class="space-y-2">
-                            <label class="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500 ml-2">Create Security Key</label>
-                            <input type="password" placeholder="••••••••••••"
-                                class="input-user w-full px-6 py-4 rounded-2xl text-sm font-medium"/>
+                        {/* Email */}
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500 ml-2">Email</label>
+                            <input
+                                name="email"
+                                type="email"
+                                placeholder="alex@work.com"
+                                className="input-user w-full px-6 py-4 rounded-2xl text-sm font-medium"
+                                required
+                            />
                         </div>
 
-                        <div class="space-y-2">
-                            <label class="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500 ml-2">Membership Type</label>
-                            <select class="input-user w-full px-6 py-4 rounded-2xl text-sm font-medium appearance-none cursor-pointer">
-                                <option>Flexible Nomad</option>
-                                <option>Dedicated Desk</option>
-                                <option>Private Office</option>
-                            </select>
+                        {/* Password */}
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500 ml-2">Mot de passe</label>
+                            <input
+                                name="password"
+                                type="password"
+                                placeholder="••••••••••••"
+                                className="input-user w-full px-6 py-4 rounded-2xl text-sm font-medium"
+                                required
+                            />
                         </div>
 
-                        <label class="flex items-center gap-3 cursor-pointer group py-2">
-                            <input type="checkbox" class="accent-[#b2f7ef] w-4 h-4"/>
-                                <span class="text-[10px] font-bold text-gray-400 group-hover:text-black transition uppercase tracking-widest leading-tight">J'accepte le protocole de confidentialité</span>
-                        </label>
+                        {/* Confirmation */}
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500 ml-2">Confirmer</label>
+                            <input
+                                name="password_confirmation"
+                                type="password"
+                                placeholder="••••••••••••"
+                                className="input-user w-full px-6 py-4 rounded-2xl text-sm font-medium"
+                                required
+                            />
+                        </div>
 
-                        <button type="submit" class="w-full bg-black text-white py-5 rounded-2xl font-black uppercase text-xs tracking-[0.3em] hover:bg-[#b2f7ef] hover:text-black transition-all active:scale-[0.98] shadow-2xl shadow-black/5 mt-4">
-                            Créer mon profil
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full bg-black text-white py-5 rounded-2xl font-black uppercase text-xs tracking-[0.3em] hover:bg-[#b2f7ef] hover:text-black transition-all active:scale-[0.98] shadow-2xl shadow-black/5 mt-4"
+                        >
+                            {loading ? 'Création...' : 'Créer mon profil'}
                         </button>
                     </form>
 
-                    <p class="mt-12 text-center text-sm font-medium text-gray-400">
+                    <p className="mt-12 text-center text-sm font-medium text-gray-400">
                         Déjà membre ?
-                        <a href="#" class="text-black font-black border-b-2 border-black ml-2">Se connecter</a>
+                        <a href="/login" className="text-black font-black border-b-2 border-black ml-2">Se connecter</a>
                     </p>
 
                 </div>
             </div>
-
-            <div class="hidden lg:block w-1/2 relative overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-r from-white to-transparent z-10"></div>
-                <img src="https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&q=80"
-                    class="absolute inset-0 w-full h-full object-cover grayscale-[20%] hover:grayscale-0 transition-all duration-1000"
-                    alt="Design Studio"/>
-
-                    <div class="absolute top-12 right-12 z-20">
-                        <div class="bg-black text-white px-6 py-3 rounded-full shadow-2xl">
-                            <span class="text-[9px] font-black uppercase tracking-[0.4em]">Curated Spaces 2026</span>
-                        </div>
-                    </div>
+            <div className="hidden lg:block lg:fixed lg:right-0 lg:top-0 lg:w-1/2 lg:h-screen overflow-hidden">
+                {/*                    ^^^^^ fixed + right-0 + top-0 + h-screen */}
+                <div className="absolute inset-0 bg-gradient-to-r from-white to-transparent z-10"></div>
+                <img
+                    src="https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&q=80"
+                    className="w-full h-full object-cover grayscale-[20%] hover:grayscale-0 transition-all duration-1000"
+                    alt="Design Studio"
+                />
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default Register;

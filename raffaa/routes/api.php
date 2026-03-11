@@ -23,6 +23,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
+    Route::put('/user/update', [AuthController::class, 'updateProfile']);
 
     Route::apiResource('reservations', ReservationController::class)
         ->only(['index', 'store', 'show', 'destroy']);

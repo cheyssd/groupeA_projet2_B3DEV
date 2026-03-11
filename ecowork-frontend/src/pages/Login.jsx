@@ -1,32 +1,55 @@
-import React, { useState } from 'react';
-import { useContext } from 'react';
+import React, { useState, } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
+import { Link } from 'react-router-dom';
+
 
 const Login = () => {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    const { login } = useContext(AuthContext);
     const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         setError(null);
-        setLoading(true);
 
         const email = e.target.email.value;
         const password = e.target.password.value;
 
-        try {
-            await login(email, password);
-            navigate('/dashboard');
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
+
+        if (email.trim() !== "" && password.trim() !== "") {
+            setLoading(true);
+
+
+            fetch('http://127.0.0.1:8000/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+
+                body: JSON.stringify({ email, password })
+            })
+                .then(response => {
+                    if (!response.ok) throw new Error("Identifiants incorrects");
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Succès :", data);
+                    localStorage.setItem('token', data.access_token);
+                    navigate('/user/dashboard');
+                })
+                .catch(err => {
+                    setError(err.message);
+                })
+                .finally(() => setLoading(false));
+
+        } else {
+            setError("Veuillez remplir tous les champs.");
         }
     };
+
 
 
 
@@ -74,7 +97,7 @@ const Login = () => {
                                 <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500">Password</label>
                                 <a href="#" className="text-[10px] font-bold text-[#7bdff2] uppercase">Perdu ?</a>
                             </div>
-                            <input type="password" placeholder="••••••••••••"
+                            <input name='password' type="password" placeholder="••••••••••••"
                                 className="input-user w-full px-6 py-4 rounded-2xl text-sm font-medium" />
                         </div>
 
@@ -83,14 +106,20 @@ const Login = () => {
                             <span className="text-xs font-bold text-gray-500 group-hover:text-black transition">Rester connecté</span>
                         </label>
 
-                        <button type="submit" disabled={loading}>
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full bg-black text-white py-5 rounded-2xl font-black uppercase text-xs tracking-[0.3em] hover:bg-[#7bdff2] hover:text-black transition-all active:scale-[0.98] shadow-2xl shadow-black/5 disabled:opacity-50"
+                        >
                             {loading ? 'Connexion...' : 'Entrer dans l\'espace'}
                         </button>
                     </form>
 
                     <p className="mt-12 text-center text-sm font-medium text-gray-400">
                         Pas encore membre ?
-                        <a href="#" className="text-black font-black border-b-2 border-[#7bdff2] ml-2">Créer un compte</a>
+                        <Link to='/register' className="text-black font-black border-b-2 border-[#7bdff2] ml-2" >
+                            Creer un compte
+                        </Link>
                     </p>
 
                 </div>
