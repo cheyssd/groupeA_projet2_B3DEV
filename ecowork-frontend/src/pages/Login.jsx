@@ -36,10 +36,24 @@ const Login = () => {
                     return response.json();
                 })
                 .then(data => {
-                    console.log("Succès :", data);
-                    localStorage.setItem('token', data.access_token);
-                    navigate('/user/dashboard');
+                    console.log("Données reçues de l'API :", data);
+
+                    const token = data.access_token || data.token;
+
+                    const userToStore = data.user ? data.user : data;
+
+                    localStorage.setItem('token', token);
+                    localStorage.setItem('user', JSON.stringify(userToStore));
+
+                    console.log("Storage mis à jour ! User role :", userToStore.role);
+                    if (userToStore.role === 'admin') {
+                        navigate('/admin/adminOverview');
+                    } else {
+                        navigate('/user/dashboard');
+                    }
                 })
+
+
                 .catch(err => {
                     setError(err.message);
                 })
@@ -49,8 +63,6 @@ const Login = () => {
             setError("Veuillez remplir tous les champs.");
         }
     };
-
-
 
 
     return (
