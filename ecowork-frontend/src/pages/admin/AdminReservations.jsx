@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../contexts/ThemeContext";
 import { Sidebar } from "./AdminOverview";
 
@@ -46,7 +45,6 @@ function Modal({ title, onClose, children }) {
 
 export default function AdminReservations() {
   const { isDark, toggle } = useTheme();
-  const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
   const [reservations, setReservations] = useState([]);
@@ -72,7 +70,7 @@ export default function AdminReservations() {
     if (filterStatus) params.append("status", filterStatus);
     if (filterPaid !== "") params.append("is_paid", filterPaid);
 
-    fetch(`${API}/reservations?${params}`, { headers })
+   fetch(`${API}/admin/reservations?${params}`, { headers })
       .then((r) => r.json())
       .then((data) => {
         setReservations(data.data || []);
@@ -137,7 +135,6 @@ export default function AdminReservations() {
               </h1>
             </div>
 
-            <div className="flex items-center gap-3">
             <button onClick={toggle}
               className="flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all cursor-pointer"
               style={{ borderColor: "var(--border-color)", background: "var(--bg-card)", color: "var(--text-secondary)" }}>
@@ -157,16 +154,6 @@ export default function AdminReservations() {
                 {isDark ? "Light" : "Dark"}
               </span>
             </button>
-
-              <button onClick={() => navigate("/admin/reservations/create")}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl cursor-pointer transition-all text-xs tracking-[2px] uppercase font-bold"
-                style={{ background: "var(--accent)", color: "#000", fontFamily: "'Rajdhani', sans-serif" }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                </svg>
-                Ajouter
-              </button>
-            </div>
 
           </div>
 
@@ -291,16 +278,6 @@ export default function AdminReservations() {
 
                   {/* Actions */}
                   <div className="flex items-center gap-2">
-                    {/* Modifier */}
-                    <button onClick={() => navigate(`/admin/reservations/${r.id}/edit`)}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-all hover:opacity-80"
-                      style={{ background: "rgba(41,212,224,0.1)", color: "var(--accent)" }}
-                      title="Modifier">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                      </svg>
-                    </button>
                     {/* Changer statut */}
                     <button onClick={() => setShowStatus(r)}
                       className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-all hover:opacity-80"

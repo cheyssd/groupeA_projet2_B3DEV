@@ -158,28 +158,40 @@ class ReservationController extends Controller
     /**
  * Modifier une réservation
  */
-public function update(UpdateReservationRequest $request, Reservation $reservation)
-{
-    try {
-        $reservation->update([
-            'space_id'    => $request->space_id ?? $reservation->space_id,
-            'start_date'  => $request->start_date ?? $reservation->start_date,
-            'end_date'    => $request->end_date ?? $reservation->end_date,
-            'is_paid'     => $request->is_paid ?? $reservation->is_paid,
-            'status'      => $request->status ?? $reservation->status,
-        ]);
+    public function update(UpdateReservationRequest $request, Reservation $reservation)
+    {
+        try {
+            $reservation->update([
+                'space_id'    => $request->space_id ?? $reservation->space_id,
+                'start_date'  => $request->start_date ?? $reservation->start_date,
+                'end_date'    => $request->end_date ?? $reservation->end_date,
+                'is_paid'     => $request->is_paid ?? $reservation->is_paid,
+                'status'      => $request->status ?? $reservation->status,
+            ]);
 
-        return response()->json([
-            'success'     => true,
-            'reservation' => $reservation->load(['user', 'space']),
-            'message'     => 'Réservation mise à jour'
-        ]);
+            return response()->json([
+                'success'     => true,
+                'reservation' => $reservation->load(['user', 'space']),
+                'message'     => 'Réservation mise à jour'
+            ]);
 
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => $e->getMessage()
-        ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 422);
+        }
     }
-}
+
+    public function adminIndex(Request $request)
+    {
+        $perPage = $request->query('per_page', 15);
+        $reservations = Reservation::with(['user', 'space'])
+            ->when($request->status, fn($q) => $q->where('status', $request->status))
+            ->when($request->is_paid !== null, fn($q) => $q->where('is_paid', $request->is_paid))
+            ->latest()
+            ->paginate($perPage);
+
+        return response()->json($reservations);
+    }
 }

@@ -56,7 +56,7 @@ export function Sidebar({ active }) {
         {links.map((link) => {
           const isActive = active === link.key;
           return (
-            // Dans ton .map() des links
+           
             <button
               key={link.key}
               onClick={() => navigate(link.path)}
@@ -100,7 +100,7 @@ function StatCard({ label, value, sub, icon, accent }) {
       style={{
         background: "var(--bg-card)",
         border: "1px solid var(--border-color)",
-        boxShadow: "var(--shadow)", // On applique l'ombre ici
+        boxShadow: "var(--shadow)", 
         minHeight: "160px"
       }}
     >
@@ -109,7 +109,7 @@ function StatCard({ label, value, sub, icon, accent }) {
           style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
           {label}
         </p>
-        {/* Le petit icône a besoin d'un fond plus doux en light mode */}
+       
         <div className="w-9 h-9 rounded-xl flex items-center justify-center"
           style={{
             background: isDark ? `${accent}18` : `${accent}10`,
@@ -124,7 +124,7 @@ function StatCard({ label, value, sub, icon, accent }) {
           style={{
             fontFamily: "'Barlow Condensed', sans-serif",
             fontSize: "44px",
-            color: isDark ? accent : "var(--text-primary)", // Chiffre sombre en light mode = plus pro
+            color: isDark ? accent : "var(--text-primary)", 
             letterSpacing: "-1px"
           }}>
           {value}
@@ -270,7 +270,7 @@ export default function AdminOverview() {
               {/* ── Réservations récentes ── */}
               <div className="rounded-2xl overflow-hidden"
                 style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
-
+ 
                 {/* Table header */}
                 <div className="flex items-center justify-between px-6 py-5"
                   style={{ borderBottom: "1px solid var(--border-color)" }}>
@@ -283,7 +283,7 @@ export default function AdminOverview() {
                     {stats.recent_reservations.length} entrée{stats.recent_reservations.length > 1 ? "s" : ""}
                   </span>
                 </div>
-
+ 
                 {/* Col headers */}
                 <div className="grid px-6 py-3"
                   style={{ gridTemplateColumns: "2fr 1.5fr 2fr 1.5fr 1fr", borderBottom: "1px solid var(--border-color)" }}>
@@ -294,7 +294,7 @@ export default function AdminOverview() {
                     </p>
                   ))}
                 </div>
-
+ 
                 {/* Rows */}
                 {stats.recent_reservations.length === 0 ? (
                   <p className="px-6 py-8 text-sm italic" style={{ color: "var(--text-muted)" }}>
@@ -303,12 +303,14 @@ export default function AdminOverview() {
                 ) : (
                   stats.recent_reservations.map((r, i) => (
                     <div key={r.id}
-                      className="table-row grid px-6 py-4 transition-colors"
+                      className="table-row px-6 py-4 transition-colors"
                       style={{
+                        display: "grid",
                         gridTemplateColumns: "2fr 1.5fr 2fr 1.5fr 1fr",
+                        alignItems: "center",
                         borderBottom: i < stats.recent_reservations.length - 1 ? "1px solid var(--border-color)" : "none",
                       }}>
-
+ 
                       {/* Client */}
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-xs"
@@ -324,12 +326,12 @@ export default function AdminOverview() {
                           </p>
                         </div>
                       </div>
-
+ 
                       {/* Espace */}
                       <p className="text-sm self-center" style={{ color: "var(--text-secondary)", fontFamily: "'Barlow Condensed', sans-serif" }}>
                         {r.space.name}
                       </p>
-
+ 
                       {/* Dates */}
                       <div className="self-center">
                         <p className="text-[10px]" style={{ color: "var(--text-secondary)", fontFamily: "'Rajdhani', sans-serif" }}>
@@ -339,13 +341,13 @@ export default function AdminOverview() {
                           → {r.end_date}
                         </p>
                       </div>
-
+ 
                       {/* Montant */}
                       <p className="text-sm font-bold self-center"
                         style={{ color: "var(--accent)", fontFamily: "'Barlow Condensed', sans-serif" }}>
                         {Number(r.total_price).toLocaleString()} <span className="text-[10px]">FCFA</span>
                       </p>
-
+ 
                       {/* Statut */}
                       <div className="self-center">
                         <StatusBadge status={r.status} />

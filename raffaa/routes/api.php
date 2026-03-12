@@ -54,6 +54,7 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     // Reservations Management
     Route::patch('/reservations/{id}/status', [ReservationController::class, 'updateStatus']);
     Route::patch('/reservations/{id}/paid', [ReservationController::class, 'markAsPaid']);
+    Route::get('/admin/reservations', [ReservationController::class, 'adminIndex']);
 
         // Users Management
     Route::get('/admin/users', [AdminController::class, 'users']);

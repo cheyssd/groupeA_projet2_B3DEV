@@ -19,7 +19,6 @@ import AdminOverview from './pages/admin/AdminOverview';
 import AdminSpaces from './pages/admin/AdminSpaces';
 import AdminSpaceForm from './pages/admin/AdminSpaceForm';
 import AdminReservations from './pages/admin/AdminReservations';
-import AdminReservationForm from './pages/admin/AdminReservationForm';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminProfil from './pages/admin/AdminProfil';
 
@@ -133,22 +132,7 @@ function App() {
               </AdminRoute>
             }
           />
-          <Route
-            path="/admin/reservations/create"
-            element={
-              <AdminRoute>
-                <AdminReservationForm />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/admin/reservations/:id/edit"
-            element={
-              <AdminRoute>
-                <AdminReservationForm />
-              </AdminRoute>
-            }
-          />
+  
           <Route
             path="/admin/users"
             element={
