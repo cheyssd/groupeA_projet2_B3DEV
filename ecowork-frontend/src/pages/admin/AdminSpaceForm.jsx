@@ -6,21 +6,28 @@ import { Sidebar } from "./AdminOverview";
 const API = "http://127.0.0.1:8000/api";
 
 const TYPE_LABELS = {
-  conference: "Conférence",
-  private_office: "Private Office",
-  shared_desk: "Shared Desk",
+  bureau_prive: "Bureau Privé",
+  espace_partage: "Espace Partagé",
+  salle_reunion: "Salle de Réunion",
+  salle_conference: "Salle de Conférence",
 };
 
 export default function AdminSpaceForm() {
-  const { id } = useParams(); // si id existe = mode edit
+  const { id } = useParams();
   const navigate = useNavigate();
   const { isDark, toggle } = useTheme();
   const token = localStorage.getItem("token");
   const isEdit = !!id;
 
   const [form, setForm] = useState({
-    name: "", surface: "", capacity: "", type: "conference", price_per_day: "", is_active: 1,
+    name: "", 
+    surface: "", 
+    capacity: "", 
+    type: "bureau_prive", 
+    price_per_day: "", 
+    is_active: 1,
   });
+  const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(isEdit);
   const [errors, setErrors] = useState({});
@@ -31,7 +38,6 @@ export default function AdminSpaceForm() {
     "Content-Type": "application/json",
   };
 
-  // Si mode edit, on charge les données existantes
   useEffect(() => {
     if (isEdit) {
       fetch(`${API}/spaces/${id}`, { headers })
@@ -69,13 +75,48 @@ export default function AdminSpaceForm() {
 
     const res = await fetch(url, { method, headers, body: JSON.stringify(form) });
     const data = await res.json();
-    console.log(data);
+
+    // Si création réussie et images à uploader
+    if (!isEdit && data.id && images.length > 0) {
+      await uploadImages(data.id);
+    }
 
     setLoading(false);
 
-    if (data.success) {
+    if (data.id || data.success) {
       navigate("/admin/spaces");
     }
+  };
+
+  const uploadImages = async (spaceId) => {
+    for (const image of images) {
+      const formData = new FormData();
+      formData.append('image', image.file);
+      formData.append('alt_text', image.alt || 'Photo espace');
+
+      await fetch(`${API}/spaces/${spaceId}/images`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+        body: formData
+      });
+    }
+  };
+
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    const newImages = files.map(file => ({
+      file,
+      preview: URL.createObjectURL(file),
+      alt: ''
+    }));
+    setImages([...images, ...newImages]);
+  };
+
+  const removeImage = (index) => {
+    setImages(images.filter((_, i) => i !== index));
   };
 
   const fields = [
@@ -97,8 +138,6 @@ export default function AdminSpaceForm() {
         <Sidebar active="spaces" />
 
         <main className="flex-1 px-10 py-8" style={{ fontFamily: "'Barlow', sans-serif" }}>
-
-          {/* Header */}
           <div className="flex items-center justify-between mb-10">
             <div className="flex items-center gap-4">
               <button onClick={() => navigate("/admin/spaces")}
@@ -120,7 +159,6 @@ export default function AdminSpaceForm() {
               </div>
             </div>
 
-            {/* Toggle */}
             <button onClick={toggle}
               className="flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all cursor-pointer"
               style={{ borderColor: "var(--border-color)", background: "var(--bg-card)", color: "var(--text-secondary)" }}>
@@ -152,7 +190,7 @@ export default function AdminSpaceForm() {
                 style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
 
                 {/* Fields */}
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-2 gap-6 mb-6">
                   {fields.map((f) => (
                     <div key={f.key}>
                       <label className="block text-[9px] tracking-[3px] uppercase mb-2"
@@ -222,6 +260,55 @@ export default function AdminSpaceForm() {
                   </div>
                 </div>
 
+                {/* Upload Images */}
+                <div className="mb-6">
+                  <label className="block text-[9px] tracking-[3px] uppercase mb-3"
+                    style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
+                    Photos de l'espace
+                  </label>
+                  
+                  <input 
+                    type="file" 
+                    multiple 
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
+                    id="image-upload"
+                  />
+                  
+                  <label 
+                    htmlFor="image-upload"
+                    className="block w-full px-4 py-6 rounded-xl border-2 border-dashed cursor-pointer text-center transition-all hover:border-var(--accent)"
+                    style={{ borderColor: "var(--border-color)", background: "var(--bg-primary)" }}
+                  >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" className="mx-auto mb-2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="17 8 12 3 7 8"/>
+                      <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    <p className="text-[10px] uppercase tracking-widest" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>
+                      Cliquez pour ajouter des photos
+                    </p>
+                  </label>
+
+                  {/* Preview Images */}
+                  {images.length > 0 && (
+                    <div className="grid grid-cols-3 gap-4 mt-4">
+                      {images.map((img, index) => (
+                        <div key={index} className="relative group">
+                          <img src={img.preview} alt="" className="w-full h-32 object-cover rounded-xl" />
+                          <button
+                            onClick={() => removeImage(index)}
+                            className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 {/* Divider */}
                 <div className="my-8" style={{ borderTop: "1px solid var(--border-color)" }} />
 
@@ -242,7 +329,7 @@ export default function AdminSpaceForm() {
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                           <polyline points="20 6 9 17 4 12"/>
                         </svg>
-                        {isEdit ? "Enregistrer les modifications" : "Créer l'espace"}
+                        {isEdit ? "Enregistrer" : "Créer l'espace"}
                       </>
                     )}
                   </button>

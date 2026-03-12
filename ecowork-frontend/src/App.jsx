@@ -12,6 +12,7 @@ import SpaceShow from './pages/SpaceShow';
 import Dashboard from './pages/user/Dashboard.jsx';
 import Reservation from './pages/user/Reservation.jsx';
 import Profile from './pages/user/Profile.jsx';
+import CheckoutPage from './pages/checkout/CheckoutPage.jsx';
 
 // Pages admin
 import AdminOverview from './pages/admin/AdminOverview';
@@ -35,13 +36,13 @@ const ProtectedRoute = ({ children }) => {
 const AdminRoute = ({ children }) => {
   const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-    if (!token) {
+  if (!token) {
     return <Navigate to="/login" replace />;
   }
-    if (user.role !== 'admin') {
+  if (user.role !== 'admin') {
     return <Navigate to="/user/dashboard" replace />;
   }
-    return children;
+  return children;
 };
 
 function App() {
@@ -78,6 +79,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Profile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/checkout/checkoutpage"
+            element={
+              <ProtectedRoute>
+                <CheckoutPage />
               </ProtectedRoute>
             }
           />

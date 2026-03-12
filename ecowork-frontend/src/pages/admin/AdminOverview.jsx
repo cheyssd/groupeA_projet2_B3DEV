@@ -9,24 +9,24 @@ export function Sidebar({ active }) {
 
   const links = [
     {
-      key: "overview", label: "Overview", path: "/admin",
-      icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      key: "overview", label: "Overview", path: "/admin/adminOverview",
+      icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
     },
     {
       key: "spaces", label: "Espaces", path: "/admin/spaces",
-      icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
     },
     {
       key: "reservations", label: "Réservations", path: "/admin/reservations",
-      icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
     },
     {
       key: "users", label: "Utilisateurs", path: "/admin/users",
-      icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
     },
     {
       key: "profil", label: "Profil", path: "/admin/profil",
-      icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
     },
   ];
 
@@ -38,7 +38,7 @@ export function Sidebar({ active }) {
       <div className="px-2 mb-10">
         <div className="font-black text-lg uppercase cursor-pointer"
           style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "var(--text-primary)" }}
-          onClick={() => navigate("/accueil")}>
+          onClick={() => navigate("/")}>
           ECOWORK<span style={{ color: "var(--accent)" }}>.</span>
         </div>
         <div className="text-[9px] tracking-[3px] uppercase mt-0.5"
@@ -56,17 +56,21 @@ export function Sidebar({ active }) {
         {links.map((link) => {
           const isActive = active === link.key;
           return (
-            <button key={link.key} onClick={() => navigate(link.path)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all cursor-pointer w-full"
+            // Dans ton .map() des links
+            <button
+              key={link.key}
+              onClick={() => navigate(link.path)}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all w-full"
               style={{
                 background: isActive ? "var(--accent)" : "transparent",
-                color: isActive ? "#000" : "var(--text-secondary)",
+                /* En light mode, si actif, on met le texte en blanc ou noir très profond pour le contraste */
+                color: isActive ? (isDark ? "#000" : "#fff") : "var(--text-secondary)",
+                boxShadow: isActive && !isDark ? "0 4px 12px -2px rgba(14, 165, 233, 0.3)" : "none",
                 fontFamily: "'Rajdhani', sans-serif",
-                fontSize: "12px",
-                letterSpacing: "0.5px",
                 fontWeight: isActive ? 700 : 500,
-              }}>
-              <span style={{ opacity: isActive ? 1 : 0.5 }}>{link.icon}</span>
+              }}
+            >
+              <span style={{ opacity: isActive ? 1 : 0.6 }}>{link.icon}</span>
               {link.label}
             </button>
           );
@@ -74,11 +78,11 @@ export function Sidebar({ active }) {
       </nav>
 
       {/* Back to site */}
-      <button onClick={() => navigate("/accueil")}
+      <button onClick={() => navigate("/")}
         className="flex items-center gap-2 px-3 py-2 rounded-xl cursor-pointer transition-all"
         style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif", fontSize: "11px" }}>
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M19 12H5M12 5l-7 7 7 7"/>
+          <path d="M19 12H5M12 5l-7 7 7 7" />
         </svg>
         Retour au site
       </button>
@@ -87,27 +91,45 @@ export function Sidebar({ active }) {
 }
 
 // ─── Stat Card ─────────────────────────────────────────────────────────────
-function StatCard({ label, value, sub, icon, accent, trend }) {
+function StatCard({ label, value, sub, icon, accent }) {
+  const { isDark } = useTheme();
+
   return (
-    <div className="rounded-2xl p-6 flex flex-col justify-between"
-      style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", minHeight: "160px" }}>
+    <div
+      className="rounded-2xl p-6 flex flex-col justify-between transition-all"
+      style={{
+        background: "var(--bg-card)",
+        border: "1px solid var(--border-color)",
+        boxShadow: "var(--shadow)", // On applique l'ombre ici
+        minHeight: "160px"
+      }}
+    >
       <div className="flex items-start justify-between">
-        <p className="text-[9px] tracking-[3px] uppercase"
+        <p className="text-[9px] tracking-[3px] uppercase font-bold"
           style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
           {label}
         </p>
+        {/* Le petit icône a besoin d'un fond plus doux en light mode */}
         <div className="w-9 h-9 rounded-xl flex items-center justify-center"
-          style={{ background: `${accent}18`, color: accent }}>
+          style={{
+            background: isDark ? `${accent}18` : `${accent}10`,
+            color: accent
+          }}>
           {icon}
         </div>
       </div>
 
       <div>
         <p className="font-black leading-none mb-1"
-          style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "44px", color: accent, letterSpacing: "-1px" }}>
+          style={{
+            fontFamily: "'Barlow Condensed', sans-serif",
+            fontSize: "44px",
+            color: isDark ? accent : "var(--text-primary)", // Chiffre sombre en light mode = plus pro
+            letterSpacing: "-1px"
+          }}>
           {value}
         </p>
-        <p className="text-[10px] tracking-[1px]"
+        <p className="text-[10px] tracking-[1px] font-medium"
           style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
           {sub}
         </p>
@@ -119,9 +141,9 @@ function StatCard({ label, value, sub, icon, accent, trend }) {
 // ─── Status Badge ──────────────────────────────────────────────────────────
 function StatusBadge({ status }) {
   const map = {
-    confirmee:  { label: "Confirmée",  bg: "rgba(74,222,128,0.12)",  color: "#4ade80" },
-    en_attente: { label: "En attente", bg: "rgba(251,146,60,0.12)",  color: "#fb923c" },
-    annulee:    { label: "Annulée",    bg: "rgba(248,113,113,0.12)", color: "#f87171" },
+    confirmee: { label: "Confirmée", bg: "rgba(74,222,128,0.12)", color: "#4ade80" },
+    en_attente: { label: "En attente", bg: "rgba(251,146,60,0.12)", color: "#fb923c" },
+    annulee: { label: "Annulée", bg: "rgba(248,113,113,0.12)", color: "#f87171" },
   };
   const s = map[status] || { label: status, bg: "rgba(255,255,255,0.05)", color: "var(--text-muted)" };
   return (
@@ -165,22 +187,22 @@ export default function AdminOverview() {
     {
       label: "Espaces actifs", value: stats.active_spaces, sub: `${stats.total_spaces} espaces au total`,
       accent: "#29d4e0",
-      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
     },
     {
       label: "Utilisateurs", value: stats.total_users, sub: "comptes inscrits",
       accent: "#a78bfa",
-      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
     },
     {
       label: "Réservations", value: stats.total_reservations, sub: `${stats.pending_reservations} en attente`,
       accent: "#fb923c",
-      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
     },
     {
       label: "Revenus totaux", value: `${Number(stats.total_revenue).toLocaleString()}`, sub: "FCFA générés",
       accent: "#4ade80",
-      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
     },
   ] : [];
 
@@ -214,14 +236,14 @@ export default function AdminOverview() {
               style={{ borderColor: "var(--border-color)", background: "var(--bg-card)", color: "var(--text-secondary)" }}>
               {isDark ? (
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
-                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                  <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
-                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                  <circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" />
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                  <line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" />
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
                 </svg>
               ) : (
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
                 </svg>
               )}
               <span className="text-[9px] tracking-[2px] uppercase" style={{ fontFamily: "'Rajdhani', sans-serif" }}>
