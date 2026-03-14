@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { get } from "../../services/api";
-import UserNavbar from "./components/UserNavbar";
+import React, { useState, useEffect } from 'react';
+import { get } from '../../services/api';
+import UserNavbar from './components/UserNavbar';
+import { useTheme } from '../../contexts/ThemeContext';
 
-function Profile() {
+const Profile = () => {
+    const { isDark } = useTheme();
     const [user, setUser] = useState(null);
     const [formData, setFormData] = useState({
         firstname: '',
@@ -86,21 +87,24 @@ function Profile() {
 
     if (loading) {
         return (
-            <div className="flex h-screen items-center justify-center">
-                <p className="text-lg">Chargement...</p>
+            <div className="flex h-screen items-center justify-center" style={{ background: 'var(--bg-primary)' }}>
+                <p className="text-lg" style={{ color: 'var(--text-primary)' }}>Chargement...</p>
             </div>
         );
     }
 
     return (
-        <div className="antialiased font-sans bg-white text-black">
+        <div className="antialiased min-h-screen" style={{ background: 'var(--bg-primary)' }}>
             <UserNavbar user={user} />
 
             <main className="max-w-5xl mx-auto px-6 py-20">
                 {/* HEADER PROFILE */}
                 <header className="flex flex-col md:flex-row items-center gap-12 mb-24">
-                    <div className="relative overflow-hidden rounded-[60px] w-48 h-48 shrink-0 shadow-2xl group bg-gray-200">
-                        <div className="w-full h-full flex items-center justify-center text-6xl font-black text-gray-400">
+                    <div 
+                        className="relative overflow-hidden rounded-[60px] w-48 h-48 shrink-0 shadow-2xl group"
+                        style={{ background: isDark ? 'rgba(255,255,255,0.05)' : '#f3f4f6' }}
+                    >
+                        <div className="w-full h-full flex items-center justify-center text-6xl font-black" style={{ color: 'var(--text-muted)' }}>
                             {user?.firstname?.charAt(0)}{user?.lastname?.charAt(0)}
                         </div>
                         <div className="absolute inset-0 flex items-center justify-center cursor-pointer bg-black/40 opacity-0 group-hover:opacity-100 transition">
@@ -114,9 +118,9 @@ function Profile() {
                         <span className="text-[10px] font-black uppercase tracking-[0.5em] text-[#7bdff2] mb-4 block">
                             Identity Status: Verified
                         </span>
-                        <h1 className="text-6xl md:text-8xl font-black tracking-tighter uppercase leading-none">
+                        <h1 className="text-6xl md:text-8xl font-black tracking-tighter uppercase leading-none" style={{ color: 'var(--text-primary)' }}>
                             {user?.firstname} <br />
-                            <span className="italic font-light text-gray-300">
+                            <span className="italic font-light" style={{ color: 'var(--text-muted)' }}>
                                 {user?.lastname}.
                             </span>
                         </h1>
@@ -127,12 +131,15 @@ function Profile() {
                 <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-16">
                     {/* PERSONAL */}
                     <div className="space-y-10">
-                        <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-gray-400 border-b border-gray-100 pb-4">
+                        <h3 
+                            className="text-[11px] font-black uppercase tracking-[0.4em] pb-4"
+                            style={{ color: 'var(--text-muted)', borderBottom: '1px solid var(--border-color)' }}
+                        >
                             Personal Details
                         </h3>
 
                         <div className="flex flex-col gap-2">
-                            <label className="text-[9px] font-black uppercase tracking-widest text-gray-400">
+                            <label className="text-[9px] font-black uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
                                 First Name
                             </label>
                             <input
@@ -140,12 +147,17 @@ function Profile() {
                                 name="firstname"
                                 value={formData.firstname}
                                 onChange={handleChange}
-                                className="border-b-2 border-gray-100 focus:border-[#7bdff2] outline-none py-4 text-xl font-black italic tracking-tight bg-transparent transition"
+                                className="border-b-2 outline-none py-4 text-xl font-black italic tracking-tight transition"
+                                style={{
+                                    background: 'transparent',
+                                    borderColor: 'var(--border-color)',
+                                    color: 'var(--text-primary)'
+                                }}
                             />
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <label className="text-[9px] font-black uppercase tracking-widest text-gray-400">
+                            <label className="text-[9px] font-black uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
                                 Last Name
                             </label>
                             <input
@@ -153,12 +165,17 @@ function Profile() {
                                 name="lastname"
                                 value={formData.lastname}
                                 onChange={handleChange}
-                                className="border-b-2 border-gray-100 focus:border-[#7bdff2] outline-none py-4 text-xl font-black italic tracking-tight bg-transparent transition"
+                                className="border-b-2 outline-none py-4 text-xl font-black italic tracking-tight transition"
+                                style={{
+                                    background: 'transparent',
+                                    borderColor: 'var(--border-color)',
+                                    color: 'var(--text-primary)'
+                                }}
                             />
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <label className="text-[9px] font-black uppercase tracking-widest text-gray-400">
+                            <label className="text-[9px] font-black uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
                                 Email Address
                             </label>
                             <input
@@ -166,19 +183,27 @@ function Profile() {
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
-                                className="border-b-2 border-gray-100 focus:border-[#7bdff2] outline-none py-4 text-xl font-black italic tracking-tight bg-transparent transition"
+                                className="border-b-2 outline-none py-4 text-xl font-black italic tracking-tight transition"
+                                style={{
+                                    background: 'transparent',
+                                    borderColor: 'var(--border-color)',
+                                    color: 'var(--text-primary)'
+                                }}
                             />
                         </div>
                     </div>
 
                     {/* CONTACT */}
                     <div className="space-y-10">
-                        <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-gray-400 border-b border-gray-100 pb-4">
+                        <h3 
+                            className="text-[11px] font-black uppercase tracking-[0.4em] pb-4"
+                            style={{ color: 'var(--text-muted)', borderBottom: '1px solid var(--border-color)' }}
+                        >
                             Contact & Location
                         </h3>
 
                         <div className="flex flex-col gap-2">
-                            <label className="text-[9px] font-black uppercase tracking-widest text-gray-400">
+                            <label className="text-[9px] font-black uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
                                 Phone
                             </label>
                             <input
@@ -186,12 +211,17 @@ function Profile() {
                                 name="phone"
                                 value={formData.phone}
                                 onChange={handleChange}
-                                className="border-b-2 border-gray-100 focus:border-[#7bdff2] outline-none py-4 text-xl font-black italic tracking-tight bg-transparent transition"
+                                className="border-b-2 outline-none py-4 text-xl font-black italic tracking-tight transition"
+                                style={{
+                                    background: 'transparent',
+                                    borderColor: 'var(--border-color)',
+                                    color: 'var(--text-primary)'
+                                }}
                             />
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <label className="text-[9px] font-black uppercase tracking-widest text-gray-400">
+                            <label className="text-[9px] font-black uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
                                 Full Address
                             </label>
                             <input
@@ -199,18 +229,29 @@ function Profile() {
                                 name="address"
                                 value={formData.address}
                                 onChange={handleChange}
-                                className="border-b-2 border-gray-100 focus:border-[#7bdff2] outline-none py-4 text-xl font-black italic tracking-tight bg-transparent transition"
+                                className="border-b-2 outline-none py-4 text-xl font-black italic tracking-tight transition"
+                                style={{
+                                    background: 'transparent',
+                                    borderColor: 'var(--border-color)',
+                                    color: 'var(--text-primary)'
+                                }}
                             />
                         </div>
 
                         <div className="pt-6">
                             <button type="button" className="group flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-full border border-black flex items-center justify-center group-hover:bg-black group-hover:text-white transition-all">
+                                <div 
+                                    className="w-12 h-12 rounded-full flex items-center justify-center transition-all"
+                                    style={{ 
+                                        border: '1px solid var(--border-color)',
+                                        color: 'var(--text-primary)'
+                                    }}
+                                >
                                     <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                         <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                     </svg>
                                 </div>
-                                <span className="text-[10px] font-black uppercase tracking-widest">
+                                <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: 'var(--text-primary)' }}>
                                     Update Security Key
                                 </span>
                             </button>
@@ -218,8 +259,8 @@ function Profile() {
                     </div>
 
                     {/* FOOT FORM */}
-                    <div className="md:col-span-2 pt-20 flex justify-between items-center">
-                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+                    <div className="md:col-span-2 pt-20 flex flex-col md:flex-row justify-between items-center gap-6">
+                        <p className="text-[9px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
                             Dernière mise à jour : {new Date(user?.updated_at).toLocaleDateString('fr-FR')}
                         </p>
 
@@ -227,7 +268,11 @@ function Profile() {
                             <button
                                 type="button"
                                 onClick={handleReset}
-                                className="px-10 py-5 rounded-2xl border border-black/10 text-[10px] font-black uppercase tracking-widest hover:border-black transition"
+                                className="px-10 py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition"
+                                style={{ 
+                                    border: '1px solid var(--border-color)',
+                                    color: 'var(--text-primary)'
+                                }}
                             >
                                 Reset
                             </button>
@@ -235,7 +280,11 @@ function Profile() {
                             <button
                                 type="submit"
                                 disabled={saving}
-                                className="px-10 py-5 rounded-2xl bg-black text-white text-[10px] font-black uppercase tracking-widest hover:bg-[#7bdff2] hover:text-black transition shadow-2xl"
+                                className="px-10 py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition shadow-2xl"
+                                style={{ 
+                                    background: isDark ? 'var(--accent)' : '#000',
+                                    color: isDark ? '#000' : '#fff'
+                                }}
                             >
                                 {saving ? 'Enregistrement...' : 'Enregistrer les changements'}
                             </button>
@@ -245,12 +294,12 @@ function Profile() {
             </main>
 
             <footer className="py-20 text-center opacity-20">
-                <span className="text-[10px] font-black uppercase tracking-[0.5em] italic">
+                <span className="text-[10px] font-black uppercase tracking-[0.5em] italic" style={{ color: 'var(--text-primary)' }}>
                     EcoWork Identity Protocol
                 </span>
             </footer>
         </div>
     );
-}
+};
 
 export default Profile;
