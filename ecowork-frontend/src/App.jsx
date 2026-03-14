@@ -13,6 +13,7 @@ import Dashboard from './pages/user/Dashboard.jsx';
 import Reservation from './pages/user/Reservation.jsx';
 import Profile from './pages/user/Profile.jsx';
 import CheckoutPage from './pages/checkout/CheckoutPage.jsx';
+import ConfirmationReservation from './pages/checkout/ConfirmationReservation.jsx';
 
 // Pages admin
 import AdminOverview from './pages/admin/AdminOverview';
@@ -58,6 +59,24 @@ function App() {
           <Route path="/spaces/:id" element={<SpaceShow />} />
 
           {/* Routes user protégées */}
+          <Route
+          path="/checkout"
+          element={
+            <ProtectedRoute>
+              <CheckoutPage />
+            </ProtectedRoute>
+          }
+          />
+
+          <Route
+          path="/confirmation"
+          element={
+            <ProtectedRoute>
+              <ConfirmationReservation />
+            </ProtectedRoute>
+          }
+          />
+          
           <Route
             path="/user/dashboard"
             element={
