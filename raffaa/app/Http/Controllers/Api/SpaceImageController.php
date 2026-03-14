@@ -26,37 +26,31 @@ class SpaceImageController extends Controller
     public function store(Request $request, $spaceId)
     {
         $validated = $request->validate([
-            'image' => 'required|image|max:2048|mimes:jpeg,jpg,png,webp',
-            'alt_text' => 'required|string|max:225',
+            'image' => 'required|image|max:5120|mimes:jpeg,jpg,png,webp',
+            'alt_text' => 'nullable|string|max:225',
             'position' => 'nullable|integer',
         ]);
 
-        if (auth()->check() && auth()->user()->role === 'admin') {
+        $space = Space::findOrFail($spaceId);
 
-            $space = Space::findOrFail($spaceId);
-            if (!$request->hasFile('image')) {
-                return response()->json(['message' => 'Aucune image envoyée'], 400);
-            }
-
-            $path = $request->file('image')->store('spaces', 'public');
-
-            $spaceImage = SpaceImage::create([
-                'space_id' => $space->id,
-                'filename' => $path,
-                'alt_text' => $request->input('alt_text', 'Image de ' . $space->name),
-                'position' => $request->input('position', 0),
-            ]);
-
-            return response()->json([
-                'message' => 'Image ajoutéé avec succès',
-                'url' => asset('storage/' . $path),
-                'date' => $spaceImage,
-            ], 201);
+        if (!$request->hasFile('image')) {
+            return response()->json(['message' => 'Aucune image envoyée'], 400);
         }
-        ;
 
-        return response()->json(['message' => 'Aucune image fournie'], 403);
+        $path = $request->file('image')->store('spaces', 'public');
 
+        $spaceImage = SpaceImage::create([
+            'space_id' => $space->id,
+            'filename' => $path,
+            'alt_text' => $request->input('alt_text', 'Image de ' . $space->name),
+            'position' => $request->input('position', SpaceImage::where('space_id', $spaceId)->max('position') + 1),
+        ]);
+
+        return response()->json([
+            'message' => 'Image ajoutée avec succès',
+            'url' => asset('storage/' . $path),
+            'data' => $spaceImage,
+        ], 201);
     }
 
     /**
@@ -80,7 +74,7 @@ class SpaceImageController extends Controller
      */
     public function destroy(SpaceImage $spaceImage)
     {
-        if (auth()->user()->role === 'admin') {
+        if (auth()->user()->role !== 'admin') {
             return response()->json(["message" => "Accès réservé aux administrateurs"], 403);
         }
         ;

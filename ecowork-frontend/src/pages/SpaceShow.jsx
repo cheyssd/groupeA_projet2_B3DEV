@@ -40,6 +40,8 @@ export default function SpaceShow() {
       });
   }, [id]);
 
+  
+
   // Calendrier helpers
   const monthNames = ["Janv", "Févr", "Mars", "Avr", "Mai", "Juin", "Juil", "Août", "Sept", "Oct", "Nov", "Déc"];
   const dayNames = ["L", "M", "M", "J", "V", "S", "D"];
@@ -360,15 +362,10 @@ export default function SpaceShow() {
               {/* CTA */}
               <button
                 disabled={!startDate || !endDate || totalHours <= 0}
-                onClick={() => navigate('/checkout/CheckoutPage')} // ✅ Redirection ici
+                onClick={() => navigate('/checkout', {
+                  state: { space, startDate, endDate, startTime, endTime, totalHours, total }
+                })}
                 className="w-full py-4 font-bold text-xs tracking-[3px] uppercase rounded-xl transition-colors duration-200"
-                style={{
-                  fontFamily: "'Rajdhani', sans-serif",
-                  background: startDate && endDate && totalHours > 0 ? "var(--accent)" : "var(--border-color)",
-                  color: startDate && endDate && totalHours > 0 ? "#000" : "var(--text-muted)",
-                  opacity: startDate && endDate && totalHours > 0 ? 1 : 0.5,
-                  cursor: startDate && endDate && totalHours > 0 ? "pointer" : "not-allowed"
-                }}
               >
                 Confirmer &amp; Payer
               </button>
