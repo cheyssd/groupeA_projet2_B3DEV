@@ -6,6 +6,27 @@ import { useTheme } from "../../contexts/ThemeContext";
 export function Sidebar({ active }) {
   const navigate = useNavigate();
   const { isDark } = useTheme();
+  const [adminUser, setAdminUser] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    fetch("http://127.0.0.1:8000/api/user", {
+      headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+    })
+      .then((r) => r.json())
+      .then((data) => setAdminUser(data))
+      .catch(() => {});
+  }, []);
+
+  const handleLogout = async () => {
+    const token = localStorage.getItem("token");
+    await fetch("http://127.0.0.1:8000/api/logout", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+    });
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
 
   const links = [
     {
@@ -56,14 +77,12 @@ export function Sidebar({ active }) {
         {links.map((link) => {
           const isActive = active === link.key;
           return (
-           
             <button
               key={link.key}
               onClick={() => navigate(link.path)}
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all w-full"
               style={{
                 background: isActive ? "var(--accent)" : "transparent",
-                /* En light mode, si actif, on met le texte en blanc ou noir très profond pour le contraste */
                 color: isActive ? (isDark ? "#000" : "#fff") : "var(--text-secondary)",
                 boxShadow: isActive && !isDark ? "0 4px 12px -2px rgba(14, 165, 233, 0.3)" : "none",
                 fontFamily: "'Rajdhani', sans-serif",
@@ -77,15 +96,49 @@ export function Sidebar({ active }) {
         })}
       </nav>
 
-      {/* Back to site */}
-      <button onClick={() => navigate("/")}
-        className="flex items-center gap-2 px-3 py-2 rounded-xl cursor-pointer transition-all"
-        style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif", fontSize: "11px" }}>
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M19 12H5M12 5l-7 7 7 7" />
-        </svg>
-        Retour au site
-      </button>
+      {/* ── Admin user info + logout ── */}
+      <div className="mt-4 pt-4" style={{ borderTop: "1px solid var(--border-color)" }}>
+
+        {/* Avatar + nom */}
+        {adminUser && (
+          <div className="flex items-center gap-3 px-2 mb-3">
+            <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-xs"
+              style={{ background: "var(--accent)", color: "#000", fontFamily: "'Barlow Condensed', sans-serif" }}>
+              {adminUser.firstname?.[0]}{adminUser.lastname?.[0]}
+            </div>
+            <div className="overflow-hidden">
+              <p className="text-xs font-bold truncate"
+                style={{ color: "var(--text-primary)", fontFamily: "'Barlow Condensed', sans-serif" }}>
+                {adminUser.firstname} {adminUser.lastname}
+              </p>
+              <p className="text-[9px] tracking-[1px] uppercase"
+                style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>
+                {adminUser.role || "Admin"}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Retour au site */}
+        <button onClick={() => navigate("/")}
+          className="flex items-center gap-2 px-3 py-2 rounded-xl w-full cursor-pointer transition-all mb-1"
+          style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif", fontSize: "11px" }}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M19 12H5M12 5l-7 7 7 7" />
+          </svg>
+          Retour au site
+        </button>
+
+        {/* Déconnexion */}
+        <button onClick={handleLogout}
+          className="flex items-center gap-2 px-3 py-2 rounded-xl w-full cursor-pointer transition-all"
+          style={{ color: "#f87171", fontFamily: "'Rajdhani', sans-serif", fontSize: "11px", background: "rgba(248,113,113,0.08)" }}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+          Déconnexion
+        </button>
+      </div>
     </aside>
   );
 }
@@ -93,40 +146,22 @@ export function Sidebar({ active }) {
 // ─── Stat Card ─────────────────────────────────────────────────────────────
 function StatCard({ label, value, sub, icon, accent }) {
   const { isDark } = useTheme();
-
   return (
-    <div
-      className="rounded-2xl p-6 flex flex-col justify-between transition-all"
-      style={{
-        background: "var(--bg-card)",
-        border: "1px solid var(--border-color)",
-        boxShadow: "var(--shadow)", 
-        minHeight: "160px"
-      }}
-    >
+    <div className="rounded-2xl p-6 flex flex-col justify-between transition-all"
+      style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", minHeight: "160px" }}>
       <div className="flex items-start justify-between">
         <p className="text-[9px] tracking-[3px] uppercase font-bold"
           style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
           {label}
         </p>
-       
         <div className="w-9 h-9 rounded-xl flex items-center justify-center"
-          style={{
-            background: isDark ? `${accent}18` : `${accent}10`,
-            color: accent
-          }}>
+          style={{ background: isDark ? `${accent}18` : `${accent}10`, color: accent }}>
           {icon}
         </div>
       </div>
-
       <div>
         <p className="font-black leading-none mb-1"
-          style={{
-            fontFamily: "'Barlow Condensed', sans-serif",
-            fontSize: "44px",
-            color: isDark ? accent : "var(--text-primary)", 
-            letterSpacing: "-1px"
-          }}>
+          style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "44px", color: isDark ? accent : "var(--text-primary)", letterSpacing: "-1px" }}>
           {value}
         </p>
         <p className="text-[10px] tracking-[1px] font-medium"
@@ -270,8 +305,7 @@ export default function AdminOverview() {
               {/* ── Réservations récentes ── */}
               <div className="rounded-2xl overflow-hidden"
                 style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
- 
-                {/* Table header */}
+
                 <div className="flex items-center justify-between px-6 py-5"
                   style={{ borderBottom: "1px solid var(--border-color)" }}>
                   <p className="text-[9px] tracking-[4px] uppercase font-bold"
@@ -283,8 +317,7 @@ export default function AdminOverview() {
                     {stats.recent_reservations.length} entrée{stats.recent_reservations.length > 1 ? "s" : ""}
                   </span>
                 </div>
- 
-                {/* Col headers */}
+
                 <div className="grid px-6 py-3"
                   style={{ gridTemplateColumns: "2fr 1.5fr 2fr 1.5fr 1fr", borderBottom: "1px solid var(--border-color)" }}>
                   {["Client", "Espace", "Dates", "Montant", "Statut"].map((h) => (
@@ -294,8 +327,7 @@ export default function AdminOverview() {
                     </p>
                   ))}
                 </div>
- 
-                {/* Rows */}
+
                 {stats.recent_reservations.length === 0 ? (
                   <p className="px-6 py-8 text-sm italic" style={{ color: "var(--text-muted)" }}>
                     Aucune réservation récente.
@@ -310,8 +342,7 @@ export default function AdminOverview() {
                         alignItems: "center",
                         borderBottom: i < stats.recent_reservations.length - 1 ? "1px solid var(--border-color)" : "none",
                       }}>
- 
-                      {/* Client */}
+
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-xs"
                           style={{ background: "var(--accent)", color: "#000", fontFamily: "'Barlow Condensed', sans-serif" }}>
@@ -326,29 +357,21 @@ export default function AdminOverview() {
                           </p>
                         </div>
                       </div>
- 
-                      {/* Espace */}
+
                       <p className="text-sm self-center" style={{ color: "var(--text-secondary)", fontFamily: "'Barlow Condensed', sans-serif" }}>
                         {r.space.name}
                       </p>
- 
-                      {/* Dates */}
+
                       <div className="self-center">
-                        <p className="text-[10px]" style={{ color: "var(--text-secondary)", fontFamily: "'Rajdhani', sans-serif" }}>
-                          {r.start_date}
-                        </p>
-                        <p className="text-[10px]" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>
-                          → {r.end_date}
-                        </p>
+                        <p className="text-[10px]" style={{ color: "var(--text-secondary)", fontFamily: "'Rajdhani', sans-serif" }}>{r.start_date}</p>
+                        <p className="text-[10px]" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>→ {r.end_date}</p>
                       </div>
- 
-                      {/* Montant */}
+
                       <p className="text-sm font-bold self-center"
                         style={{ color: "var(--accent)", fontFamily: "'Barlow Condensed', sans-serif" }}>
                         {Number(r.total_price).toLocaleString()} <span className="text-[10px]">FCFA</span>
                       </p>
- 
-                      {/* Statut */}
+
                       <div className="self-center">
                         <StatusBadge status={r.status} />
                       </div>

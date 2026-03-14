@@ -52,7 +52,7 @@ const Register = () => {
                 localStorage.setItem('user', JSON.stringify(data.user));
 
 
-                navigate('/dashboard');
+                navigate('/user/dashboard');
             })
 
             .catch(err => {
