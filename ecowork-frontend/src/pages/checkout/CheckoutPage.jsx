@@ -210,7 +210,7 @@ const Checkout = () => {
                                 <div className="flex justify-between text-sm">
                                     <span className="text-gray-400 font-medium">Prix/heure</span>
                                     <span className="font-bold">
-                                        {(space.price_per_day / 24).toFixed(0)} FCFA
+                                        {Number(space.price_per_day).toLocaleString()} FCFA
                                     </span>
                                 </div>
                             </div>
