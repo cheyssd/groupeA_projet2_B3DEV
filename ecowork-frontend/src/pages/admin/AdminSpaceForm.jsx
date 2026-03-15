@@ -20,14 +20,11 @@ export default function AdminSpaceForm() {
   const isEdit = !!id;
 
   const [form, setForm] = useState({
-    name: "", 
-    surface: "", 
-    capacity: "", 
-    type: "bureau_prive", 
-    price_per_day: "", 
-    is_active: 1,
+    name: "", surface: "", capacity: "", type: "bureau_prive", price_per_day: "", is_active: 1,
   });
   const [images, setImages] = useState([]);
+  const [equipements, setEquipements] = useState([]);
+  const [selectedEquipements, setSelectedEquipements] = useState([]);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(isEdit);
   const [errors, setErrors] = useState({});
@@ -38,6 +35,15 @@ export default function AdminSpaceForm() {
     "Content-Type": "application/json",
   };
 
+  // Fetch équipements disponibles
+  useEffect(() => {
+    fetch(`${API}/equipements`, { headers })
+      .then((r) => r.json())
+      .then((data) => setEquipements(Array.isArray(data) ? data : []))
+      .catch(() => setEquipements([]));
+  }, []);
+
+  // Fetch space si edit
   useEffect(() => {
     if (isEdit) {
       fetch(`${API}/spaces/${id}`, { headers })
@@ -51,10 +57,20 @@ export default function AdminSpaceForm() {
             price_per_day: data.price_per_day,
             is_active: data.is_active,
           });
+          // Pré-sélectionner les équipements existants
+          if (data.equipements) {
+            setSelectedEquipements(data.equipements.map((e) => e.id));
+          }
           setFetching(false);
         });
     }
   }, [id]);
+
+  const toggleEquipement = (eqId) => {
+    setSelectedEquipements((prev) =>
+      prev.includes(eqId) ? prev.filter((e) => e !== eqId) : [...prev, eqId]
+    );
+  };
 
   const validate = () => {
     const e = {};
@@ -76,14 +92,22 @@ export default function AdminSpaceForm() {
     const res = await fetch(url, { method, headers, body: JSON.stringify(form) });
     const data = await res.json();
 
-    // Si création réussie et images à uploader
-    if (!isEdit && data.id && images.length > 0) {
-      await uploadImages(data.id);
+    const spaceId = data.space?.id || data.id || id;
+
+   
+    if (spaceId && selectedEquipements.length >= 0) {
+      await fetch(`${API}/spaces/${spaceId}/equipements`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ equipement_ids: selectedEquipements }),
+      });
     }
 
-    setLoading(false);
+    if (!isEdit && spaceId && images.length > 0) {
+      await uploadImages(spaceId);
+    }
 
-    if (data.id || data.success) {
+    if (data.success || spaceId) {
       navigate("/admin/spaces");
     }
   };
@@ -91,26 +115,22 @@ export default function AdminSpaceForm() {
   const uploadImages = async (spaceId) => {
     for (const image of images) {
       const formData = new FormData();
-      formData.append('image', image.file);
-      formData.append('alt_text', image.alt || 'Photo espace');
-
+      formData.append("image", image.file);
+      formData.append("alt_text", image.alt || "Photo espace");
       await fetch(`${API}/spaces/${spaceId}/images`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/json',
-        },
-        body: formData
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+        body: formData,
       });
     }
   };
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    const newImages = files.map(file => ({
+    const newImages = files.map((file) => ({
       file,
       preview: URL.createObjectURL(file),
-      alt: ''
+      alt: "",
     }));
     setImages([...images, ...newImages]);
   };
@@ -129,8 +149,8 @@ export default function AdminSpaceForm() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;0,900;1,800;1,900&family=Barlow:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap');
-        input::placeholder, textarea::placeholder { color: var(--text-muted); opacity: 1; }
+        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;0,900&family=Barlow:ital,wght@0,400;0,500&family=Rajdhani:wght@500;600;700&display=swap');
+        input::placeholder { color: var(--text-muted); opacity: 1; }
         input:focus, select:focus { border-color: var(--accent) !important; }
       `}</style>
 
@@ -138,6 +158,8 @@ export default function AdminSpaceForm() {
         <Sidebar active="spaces" />
 
         <main className="flex-1 px-10 py-8" style={{ fontFamily: "'Barlow', sans-serif" }}>
+
+          {/* Header */}
           <div className="flex items-center justify-between mb-10">
             <div className="flex items-center gap-4">
               <button onClick={() => navigate("/admin/spaces")}
@@ -181,15 +203,18 @@ export default function AdminSpaceForm() {
           </div>
 
           {fetching ? (
-            <p style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif", letterSpacing: "2px" }}>
-              Chargement...
-            </p>
+            <p style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif", letterSpacing: "2px" }}>Chargement...</p>
           ) : (
-            <div className="max-w-2xl">
+            <div className="max-w-3xl">
               <div className="rounded-2xl p-8"
                 style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
 
-                {/* Fields */}
+                {/* ── Champs principaux ── */}
+                <p className="text-[9px] tracking-[4px] uppercase mb-4"
+                  style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
+                  Informations générales
+                </p>
+
                 <div className="grid grid-cols-2 gap-6 mb-6">
                   {fields.map((f) => (
                     <div key={f.key}>
@@ -226,13 +251,8 @@ export default function AdminSpaceForm() {
                     </label>
                     <select value={form.type}
                       onChange={(e) => setForm({ ...form, type: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl outline-none text-sm cursor-pointer transition-all"
-                      style={{
-                        background: "var(--bg-primary)",
-                        border: "1px solid var(--border-color)",
-                        color: "var(--text-primary)",
-                        fontFamily: "'Barlow', sans-serif",
-                      }}>
+                      className="w-full px-4 py-3 rounded-xl outline-none text-sm cursor-pointer"
+                      style={{ background: "var(--bg-primary)", border: "1px solid var(--border-color)", color: "var(--text-primary)", fontFamily: "'Barlow', sans-serif" }}>
                       {Object.entries(TYPE_LABELS).map(([val, label]) => (
                         <option key={val} value={val}>{label}</option>
                       ))}
@@ -260,57 +280,110 @@ export default function AdminSpaceForm() {
                   </div>
                 </div>
 
-                {/* Upload Images */}
-                <div className="mb-6">
-                  <label className="block text-[9px] tracking-[3px] uppercase mb-3"
-                    style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
-                    Photos de l'espace
-                  </label>
-                  
-                  <input 
-                    type="file" 
-                    multiple 
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="hidden"
-                    id="image-upload"
-                  />
-                  
-                  <label 
-                    htmlFor="image-upload"
-                    className="block w-full px-4 py-6 rounded-xl border-2 border-dashed cursor-pointer text-center transition-all hover:border-var(--accent)"
-                    style={{ borderColor: "var(--border-color)", background: "var(--bg-primary)" }}
-                  >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" className="mx-auto mb-2">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                      <polyline points="17 8 12 3 7 8"/>
-                      <line x1="12" y1="3" x2="12" y2="15"/>
-                    </svg>
-                    <p className="text-[10px] uppercase tracking-widest" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>
-                      Cliquez pour ajouter des photos
-                    </p>
-                  </label>
+                <div className="my-6" style={{ borderTop: "1px solid var(--border-color)" }} />
 
-                  {/* Preview Images */}
-                  {images.length > 0 && (
-                    <div className="grid grid-cols-3 gap-4 mt-4">
-                      {images.map((img, index) => (
-                        <div key={index} className="relative group">
-                          <img src={img.preview} alt="" className="w-full h-32 object-cover rounded-xl" />
-                          <button
-                            onClick={() => removeImage(index)}
-                            className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            ×
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                {/* ── Équipements ── */}
+                <p className="text-[9px] tracking-[4px] uppercase mb-4"
+                  style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
+                  Équipements ({selectedEquipements.length} sélectionné{selectedEquipements.length > 1 ? "s" : ""})
+                </p>
 
-                {/* Divider */}
-                <div className="my-8" style={{ borderTop: "1px solid var(--border-color)" }} />
+                {equipements.length === 0 ? (
+                  <p className="text-sm italic mb-6" style={{ color: "var(--text-muted)" }}>
+                    Aucun équipement disponible. <span
+                      className="cursor-pointer underline"
+                      style={{ color: "var(--accent)" }}
+                      onClick={() => navigate("/admin/equipements")}>
+                      En créer
+                    </span>
+                  </p>
+                ) : (
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {equipements.map((eq) => {
+                      const isSelected = selectedEquipements.includes(eq.id);
+                      return (
+                        <button
+                          key={eq.id}
+                          onClick={() => toggleEquipement(eq.id)}
+                          className="px-3 py-1.5 rounded-full text-[10px] tracking-[1px] uppercase font-bold cursor-pointer transition-all"
+                          style={{
+                            background: isSelected ? "var(--accent)" : "var(--bg-primary)",
+                            color: isSelected ? "#000" : "var(--text-secondary)",
+                            border: `1px solid ${isSelected ? "var(--accent)" : "var(--border-color)"}`,
+                            fontFamily: "'Rajdhani', sans-serif",
+                          }}>
+                          {isSelected && "✓ "}{eq.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                <div className="my-6" style={{ borderTop: "1px solid var(--border-color)" }} />
+
+                {/* ── Photos ── */}
+                <p className="text-[9px] tracking-[4px] uppercase mb-4"
+                  style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
+                  Photos de l'espace
+                </p>
+
+                <input
+                  type="file"
+                  multiple
+                  accept="image/webp,image/avif,image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                  id="image-upload"
+                />
+
+                <label htmlFor="image-upload"
+                  className="flex flex-col items-center justify-center w-full py-8 rounded-xl border-2 border-dashed cursor-pointer transition-all mb-4"
+                  style={{ borderColor: "var(--border-color)", background: "var(--bg-primary)" }}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    const files = Array.from(e.dataTransfer.files);
+                    const newImages = files.map((file) => ({ file, preview: URL.createObjectURL(file), alt: "" }));
+                    setImages([...images, ...newImages]);
+                  }}>
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"
+                    className="mb-2" style={{ color: "var(--text-muted)" }}>
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                  </svg>
+                  <p className="text-[10px] uppercase tracking-widest mb-1"
+                    style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>
+                    Glissez ou cliquez pour ajouter des photos
+                  </p>
+                  <p className="text-[9px]" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>
+                    WebP, AVIF recommandés
+                  </p>
+                </label>
+
+                {/* Previews */}
+                {images.length > 0 && (
+                  <div className="grid grid-cols-4 gap-3 mb-4">
+                    {images.map((img, index) => (
+                      <div key={index} className="relative group rounded-xl overflow-hidden" style={{ height: "80px" }}>
+                        <img
+                          src={img.preview}
+                          alt=""
+                          loading="lazy"
+                          className="w-full h-full object-cover"
+                        />
+                        <button
+                          onClick={() => removeImage(index)}
+                          className="absolute top-1 right-1 w-5 h-5 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                          style={{ background: "#f87171", color: "#fff", fontSize: "12px" }}>
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="my-6" style={{ borderTop: "1px solid var(--border-color)" }} />
 
                 {/* Buttons */}
                 <div className="flex gap-4">
@@ -322,9 +395,7 @@ export default function AdminSpaceForm() {
                   <button onClick={handleSubmit} disabled={loading}
                     className="flex items-center gap-2 px-8 py-3 rounded-xl text-xs tracking-[2px] uppercase font-bold cursor-pointer transition-all"
                     style={{ background: "var(--accent)", color: "#000", fontFamily: "'Rajdhani', sans-serif", opacity: loading ? 0.7 : 1 }}>
-                    {loading ? (
-                      <>Enregistrement...</>
-                    ) : (
+                    {loading ? "Enregistrement..." : (
                       <>
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                           <polyline points="20 6 9 17 4 12"/>

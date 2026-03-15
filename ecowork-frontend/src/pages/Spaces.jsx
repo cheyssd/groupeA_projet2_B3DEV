@@ -18,21 +18,34 @@ export default function Spaces() {
   const [sortOrder, setSortOrder] = useState("asc");
   const [budgetMax, setBudgetMax] = useState(500000);
   const [selectedTypes, setSelectedTypes] = useState([]);
-  const spaceTypes = ["private_office", "shared_desk", "conference"];
+  const spaceTypes = ["bureau_prive", "espace_partage", "salle_reunion", "salle_conference"];
   const typeLabels = {
-    private_office: "Private Office",
-    shared_desk: "Shared Desk",
-    conference: "Meeting Room",
+    bureau_prive: "Bureau Privé",
+    espace_partage: "Espace Partagé",
+    salle_reunion: "Salle de Réunion",
+    salle_conference: "Salle de Conférence",
   };
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/spaces")
-      .then((r) => r.json())
-      .then((data) => {
-        setSpaces(data.data);
+    const fetchAllSpaces = async () => {
+      try {
+        let allSpaces = [];
+        let page = 1;
+        let lastPage = 1;
+        do {
+          const res = await fetch(`http://127.0.0.1:8000/api/spaces?page=${page}&per_page=100`);
+          const data = await res.json();
+          allSpaces = [...allSpaces, ...(data.data || [])];
+          lastPage = data.last_page || 1;
+          page++;
+        } while (page <= lastPage);
+        setSpaces(allSpaces);
         setLoading(false);
-      })
-      .catch(() => setLoading(false));
+      } catch {
+        setLoading(false);
+      }
+    };
+    fetchAllSpaces();
   }, []);
 
   const toggleType = (type) => {
@@ -312,7 +325,9 @@ export default function Spaces() {
                     {/* Image */}
                     <div className="relative rounded-2xl overflow-hidden mb-4" style={{ height: "260px" }}>
                       <img
-                        src={PLACEHOLDER_IMGS[index % PLACEHOLDER_IMGS.length]}
+                        src={space.images?.[0]?.filename 
+                        ? `http://127.0.0.1:8000/storage/${space.images[0].filename}` 
+                        : PLACEHOLDER_IMGS[index % PLACEHOLDER_IMGS.length]}
                         alt={space.name}
                         className="space-card-img"
                       />

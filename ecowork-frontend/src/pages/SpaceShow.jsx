@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "../contexts/ThemeContext";
 
 const IMAGES = [
@@ -11,38 +11,39 @@ const IMAGES = [
 export default function SpaceShow() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { isDark } = useTheme();
 
   const [space, setSpace] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  // Dates et heures
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [startTime, setStartTime] = useState("09:00");
   const [endTime, setEndTime] = useState("17:00");
 
-  // Calendrier
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
 
+  // Fetch space
   useEffect(() => {
     fetch(`http://127.0.0.1:8000/api/spaces/${id}`)
       .then((res) => res.json())
-      .then((data) => {
-        setSpace(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Erreur API :", err);
-        setLoading(false);
-      });
+      .then((data) => { setSpace(data); setLoading(false); })
+      .catch((err) => { console.error("Erreur API :", err); setLoading(false); });
   }, [id]);
 
-  
+  // Pré-sélectionner la date depuis HeroBanner
+  useEffect(() => {
+    if (location.state?.preselectedDate) {
+      const date = new Date(location.state.preselectedDate);
+      setStartDate(date);
+      setEndDate(date);
+      setCurrentMonth(date.getMonth());
+      setCurrentYear(date.getFullYear());
+    }
+  }, []);
 
-  // Calendrier helpers
   const monthNames = ["Janv", "Févr", "Mars", "Avr", "Mai", "Juin", "Juil", "Août", "Sept", "Oct", "Nov", "Déc"];
   const dayNames = ["L", "M", "M", "J", "V", "S", "D"];
 
@@ -54,16 +55,12 @@ export default function SpaceShow() {
 
   const handleDateClick = (day) => {
     const clickedDate = new Date(currentYear, currentMonth, day);
-
     if (!startDate || (startDate && endDate)) {
-      // Première sélection ou reset
       setStartDate(clickedDate);
       setEndDate(null);
     } else if (clickedDate < startDate) {
-      // Date avant startDate → devient nouvelle startDate
       setStartDate(clickedDate);
     } else {
-      // Date après startDate → devient endDate
       setEndDate(clickedDate);
     }
   };
@@ -80,33 +77,19 @@ export default function SpaceShow() {
     return date < new Date(today.getFullYear(), today.getMonth(), today.getDate());
   };
 
-  // Calcul TOTAL heures passées dans l'espace
   const calculateTotalHours = () => {
     if (!startDate || !endDate || !startTime || !endTime) return 0;
-
-    // Parse les heures
     const [startH, startM] = startTime.split(':').map(Number);
     const [endH, endM] = endTime.split(':').map(Number);
-
-    // Créer les dates complètes avec heures
     const start = new Date(startDate);
     start.setHours(startH, startM, 0, 0);
-
     const end = new Date(endDate);
     end.setHours(endH, endM, 0, 0);
-
-    // Différence en millisecondes
-    const diffMs = end - start;
-
-    // Convertir en heures
-    const hours = diffMs / (1000 * 60 * 60);
-
+    const hours = (end - start) / (1000 * 60 * 60);
     return hours > 0 ? hours : 0;
   };
 
-  // Calcul total
-  const pricePerDay = space ? parseFloat(space.price_per_day) : 0;
-  const pricePerHour = pricePerDay / 24; // Prix par heure (1 jour = 24h)
+  const pricePerHour = space ? parseFloat(space.price_per_day) : 0;
   const totalHours = calculateTotalHours();
   const total = pricePerHour * totalHours;
 
@@ -161,18 +144,14 @@ export default function SpaceShow() {
             </div>
 
             <h1 className="font-black uppercase italic leading-none mb-8"
-              style={{
-                fontFamily: "'Barlow Condensed', sans-serif",
-                fontSize: "clamp(48px, 7vw, 96px)",
-                letterSpacing: "-2px",
-                color: "var(--text-primary)",
-              }}>
+              style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "clamp(48px, 7vw, 96px)", letterSpacing: "-2px", color: "var(--text-primary)" }}>
               {space.name}<br />
               <span style={{ color: "var(--text-primary)" }}>SPACE_0{id}</span>
             </h1>
 
             <div className="rounded-2xl overflow-hidden mb-4" style={{ height: "320px" }}>
-              <img src={IMAGES[0]} alt={space.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+              <img src={space.images?.[0]?.filename ? `http://127.0.0.1:8000/storage/${space.images[0].filename}` : IMAGES[0]}
+                alt={space.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
             </div>
 
             <div className="grid grid-cols-2 gap-4 mb-10">
@@ -197,28 +176,35 @@ export default function SpaceShow() {
             <div className="flex gap-3 flex-wrap">
               {[`${space.capacity} PLACES`, `${space.surface} M²`, space.type.toUpperCase()].map((tag) => (
                 <span key={tag} className="px-4 py-2 rounded-full text-[10px] tracking-[2px] uppercase font-semibold"
-                  style={{
-                    fontFamily: "'Rajdhani', sans-serif",
-                    background: "var(--bg-card)",
-                    color: "var(--text-secondary)",
-                    border: "1px solid var(--border-color)",
-                  }}>
+                  style={{ fontFamily: "'Rajdhani', sans-serif", background: "var(--bg-card)", color: "var(--text-secondary)", border: "1px solid var(--border-color)" }}>
                   {tag}
                 </span>
               ))}
             </div>
+
+            {/* Équipements */}
+            {space.equipements?.length > 0 && (
+              <div className="mt-8">
+                <p className="text-[10px] tracking-[4px] uppercase mb-4" style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--accent)" }}>
+                  Équipements
+                </p>
+                <div className="flex gap-2 flex-wrap">
+                  {space.equipements.map((eq) => (
+                    <span key={eq.id} className="px-3 py-1.5 rounded-full text-[10px] tracking-[1px] uppercase font-semibold"
+                      style={{ fontFamily: "'Rajdhani', sans-serif", background: "rgba(41,212,224,0.1)", color: "var(--accent)", border: "1px solid rgba(41,212,224,0.2)" }}>
+                      {eq.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* RIGHT COLUMN: Booking */}
           <div className="w-96 flex-shrink-0">
             <div className="rounded-2xl p-6 sticky top-8"
-              style={{
-                background: "var(--bg-card)",
-                border: "1px solid var(--border-color)",
-                backdropFilter: "blur(20px)",
-              }}>
+              style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", backdropFilter: "blur(20px)" }}>
 
-              {/* Prix */}
               <div className="mb-6">
                 <span className="font-black text-3xl" style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "var(--text-primary)" }}>
                   {Number(pricePerHour).toLocaleString()} Fcfa
@@ -228,41 +214,31 @@ export default function SpaceShow() {
                 </span>
               </div>
 
-              {/* Calendrier */}
               <p className="text-[9px] tracking-[3px] uppercase mb-3" style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
                 Période de réservation
               </p>
 
               <div className="rounded-xl p-4 mb-4" style={{ background: isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)", border: "1px solid var(--border-color)" }}>
-                {/* Month nav */}
                 <div className="flex items-center justify-between mb-4">
                   <button onClick={() => {
                     if (currentMonth === 0) { setCurrentMonth(11); setCurrentYear(y => y - 1); }
                     else setCurrentMonth(m => m - 1);
-                  }} style={{ color: "var(--text-muted)" }} className="cursor-pointer hover:opacity-70">
-                    ‹
-                  </button>
+                  }} style={{ color: "var(--text-muted)" }} className="cursor-pointer hover:opacity-70">‹</button>
                   <span className="text-sm font-semibold" style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-primary)" }}>
                     {monthNames[currentMonth]} {currentYear}
                   </span>
                   <button onClick={() => {
                     if (currentMonth === 11) { setCurrentMonth(0); setCurrentYear(y => y + 1); }
                     else setCurrentMonth(m => m + 1);
-                  }} style={{ color: "var(--text-muted)" }} className="cursor-pointer hover:opacity-70">
-                    ›
-                  </button>
+                  }} style={{ color: "var(--text-muted)" }} className="cursor-pointer hover:opacity-70">›</button>
                 </div>
 
-                {/* Day headers */}
                 <div className="grid grid-cols-7 mb-2">
                   {dayNames.map((d, i) => (
-                    <div key={i} className="text-center text-[10px]" style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
-                      {d}
-                    </div>
+                    <div key={i} className="text-center text-[10px]" style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>{d}</div>
                   ))}
                 </div>
 
-                {/* Days grid */}
                 <div className="grid grid-cols-7 gap-y-1">
                   {Array.from({ length: getFirstDayOfMonth(currentMonth, currentYear) }).map((_, i) => (
                     <div key={`empty-${i}`} />
@@ -289,12 +265,9 @@ export default function SpaceShow() {
                 </div>
               </div>
 
-              {/* Période sélectionnée */}
               {startDate && (
                 <div className="mb-4 p-3 rounded-lg" style={{ background: "rgba(41,212,224,0.1)", border: "1px solid var(--accent)" }}>
-                  <p className="text-[9px] tracking-[2px] uppercase mb-1" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>
-                    Période
-                  </p>
+                  <p className="text-[9px] tracking-[2px] uppercase mb-1" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>Période</p>
                   <p className="text-sm font-semibold" style={{ color: "var(--text-primary)", fontFamily: "'Rajdhani', sans-serif" }}>
                     Du {startDate.toLocaleDateString('fr-FR')}
                     {endDate && ` au ${endDate.toLocaleDateString('fr-FR')}`}
@@ -302,71 +275,43 @@ export default function SpaceShow() {
                 </div>
               )}
 
-              {/* Horaires */}
-              <p className="text-[9px] tracking-[3px] uppercase mb-3" style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
-                Horaires
-              </p>
+              <p className="text-[9px] tracking-[3px] uppercase mb-3" style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>Horaires</p>
 
               <div className="grid grid-cols-2 gap-3 mb-4">
-                <div>
-                  <label className="text-[8px] tracking-[2px] uppercase block mb-2" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>
-                    Début
-                  </label>
-                  <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-                    style={{
-                      background: "var(--bg-primary)",
-                      border: "1px solid var(--border-color)",
-                      color: "var(--text-primary)",
-                      fontFamily: "'Barlow', sans-serif"
-                    }} />
-                </div>
-
-                <div>
-                  <label className="text-[8px] tracking-[2px] uppercase block mb-2" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>
-                    Fin
-                  </label>
-                  <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-                    style={{
-                      background: "var(--bg-primary)",
-                      border: "1px solid var(--border-color)",
-                      color: "var(--text-primary)",
-                      fontFamily: "'Barlow', sans-serif"
-                    }} />
-                </div>
+                {[{ label: "Début", value: startTime, set: setStartTime }, { label: "Fin", value: endTime, set: setEndTime }].map(({ label, value, set }) => (
+                  <div key={label}>
+                    <label className="text-[8px] tracking-[2px] uppercase block mb-2" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>{label}</label>
+                    <input type="time" value={value} onChange={(e) => set(e.target.value)}
+                      className="w-full px-3 py-2 rounded-lg text-sm outline-none"
+                      style={{ background: "var(--bg-primary)", border: "1px solid var(--border-color)", color: "var(--text-primary)", fontFamily: "'Barlow', sans-serif" }} />
+                  </div>
+                ))}
               </div>
 
-              {/* Durée totale */}
               {totalHours > 0 && (
                 <div className="mb-6 p-3 rounded-lg" style={{ background: "rgba(41,212,224,0.05)", border: "1px solid var(--border-color)" }}>
-                  <p className="text-[9px] tracking-[2px] uppercase mb-1" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>
-                    Durée totale
-                  </p>
+                  <p className="text-[9px] tracking-[2px] uppercase mb-1" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>Durée totale</p>
                   <p className="text-lg font-bold" style={{ color: "var(--accent)", fontFamily: "'Barlow Condensed', sans-serif" }}>
                     {totalHours.toFixed(1)} heure{totalHours > 1 ? 's' : ''}
                   </p>
                 </div>
               )}
 
-              {/* Total */}
               <div className="flex items-center justify-between mb-6">
-                <span className="text-sm" style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-secondary)" }}>
-                  Total à payer
-                </span>
+                <span className="text-sm" style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-secondary)" }}>Total à payer</span>
                 <span className="font-black text-xl" style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "var(--text-primary)" }}>
                   {total.toLocaleString()} FCFA
                 </span>
               </div>
 
-              {/* CTA */}
               <button
                 disabled={!startDate || !endDate || totalHours <= 0}
-                onClick={() => navigate('/checkout', {
-                  state: { space, startDate, endDate, startTime, endTime, totalHours, total }
-                })}
-                className="w-full py-4 font-bold text-xs tracking-[3px] uppercase rounded-xl transition-colors duration-200"
-              >
+                onClick={() => navigate('/checkout', { state: { space, startDate, endDate, startTime, endTime, totalHours, total } })}
+                className="w-full py-4 font-bold text-xs tracking-[3px] uppercase rounded-xl transition-colors duration-200 cursor-pointer"
+                style={{
+                  background: (!startDate || !endDate || totalHours <= 0) ? "var(--border-color)" : "var(--accent)",
+                  color: (!startDate || !endDate || totalHours <= 0) ? "var(--text-muted)" : "#000",
+                }}>
                 Confirmer &amp; Payer
               </button>
 

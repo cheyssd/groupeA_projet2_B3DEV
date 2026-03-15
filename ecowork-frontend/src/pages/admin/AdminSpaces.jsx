@@ -284,8 +284,8 @@ export default function AdminSpaces() {
 
             {/* Col headers */}
             <div className="grid px-6 py-3"
-              style={{ gridTemplateColumns: "2fr 1fr 1fr 1.5fr 1fr 1fr", borderBottom: "1px solid var(--border-color)" }}>
-              {["Nom", "Type", "Capacité", "Prix / jour", "Statut", "Actions"].map((h) => (
+              style={{ gridTemplateColumns: "0.5fr 2fr 1fr 1fr 1.5fr 1fr 1fr", borderBottom: "1px solid var(--border-color)" }}>
+              {["", "Nom", "Type", "Capacité", "Prix / jour", "Statut", "Actions"].map((h) => (
                 <p key={h} className="text-[8px] tracking-[2px] uppercase"
                   style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
                   {h}
@@ -306,9 +306,31 @@ export default function AdminSpaces() {
                 <div key={space.id}
                   className="row-hover grid px-6 py-4 items-center transition-colors"
                   style={{
-                    gridTemplateColumns: "2fr 1fr 1fr 1.5fr 1fr 1fr",
+                    gridTemplateColumns: "0.5fr 2fr 1fr 1fr 1.5fr 1fr 1fr",
                     borderBottom: i < spaces.length - 1 ? "1px solid var(--border-color)" : "none",
                   }}>
+
+                  {/* Image */}
+                  <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0"
+                    style={{ background: "var(--border-color)" }}>
+                    {space.images?.[0] ? (
+                      <img
+                        src={`http://127.0.0.1:8000/storage/${space.images[0].filename}`}
+                        alt={space.name}
+                        loading="lazy"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center"
+                        style={{ color: "var(--text-muted)" }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <rect x="3" y="3" width="18" height="18" rx="2"/>
+                          <circle cx="8.5" cy="8.5" r="1.5"/>
+                          <polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                      </div>
+                    )}
+                  </div>
 
                   {/* Nom */}
                   <div>

@@ -13,7 +13,7 @@ class SpaceFactory extends Factory
             'surface' => $this->faker->numberBetween(20, 200),
             'capacity' => $this->faker->numberBetween(2, 50),
             'type' => 'bureau_prive',
-            'price_per_day' => 100,
+            'price_per_day' => $this->faker->numberBetween(5000, 50000),
             'is_active' => true,
         ];
     }

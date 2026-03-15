@@ -144,7 +144,7 @@ export default function ExploreSection() {
 
         {/* CARDS */}
         <div className="grid grid-cols-3 gap-6">
-          {spaces.map((space) => (
+         {spaces.slice(0, 3).map((space) => (
             <div key={space.id} className="flex flex-col cursor-pointer" onClick={() => navigate(`/spaces/${space.id}`)}>
               <div className="relative rounded-2xl overflow-hidden h-72">
                 <img
@@ -186,7 +186,7 @@ export default function ExploreSection() {
                       color: "var(--accent)",
                     }}
                   >
-                    {space.price_per_day} FCFA
+                    {Number(space.price_per_day).toLocaleString()} FCFA
                   </p>
 
                   <p
@@ -196,7 +196,7 @@ export default function ExploreSection() {
                       color: "var(--text-muted)",
                     }}
                   >
-                    / day
+                    / jour
                   </p>
                 </div>
               </div>

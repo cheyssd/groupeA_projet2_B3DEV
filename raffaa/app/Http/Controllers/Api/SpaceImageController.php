@@ -74,7 +74,7 @@ class SpaceImageController extends Controller
      */
     public function destroy(SpaceImage $spaceImage)
     {
-        if (auth()->user()->role !== 'admin') {
+        if (auth()->user()?->role !== 'admin') {
             return response()->json(["message" => "Accès réservé aux administrateurs"], 403);
         }
         ;

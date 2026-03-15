@@ -3,7 +3,7 @@ import { AuthProvider } from './contexts/AuthProvider.jsx';
 
 // Pages publiques
 import Login from './pages/Login';
-import Register from './pages/Register';
+import Register from './pages/register';
 import Accueil from './pages/Accueil.jsx';
 import Spaces from './pages/Spaces';
 import SpaceShow from './pages/SpaceShow';
@@ -22,6 +22,7 @@ import AdminSpaceForm from './pages/admin/AdminSpaceForm';
 import AdminReservations from './pages/admin/AdminReservations';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminProfil from './pages/admin/AdminProfil';
+import AdminEquipements from './pages/admin/AdminEquipements';
 
 import './App.css';
 
@@ -56,6 +57,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/spaces" element={<Spaces />} />
           <Route path="/spaces/:id" element={<SpaceShow />} />
+          <Route path="/admin/equipements" element={<AdminEquipements />} />
 
           {/* Routes user protégées */}
           <Route
