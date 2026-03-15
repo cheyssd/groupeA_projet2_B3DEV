@@ -21,7 +21,7 @@ class SpaceController extends Controller
     {
         $perPage = $request->query('per_page', 15);
 
-        $spaces = Space::with('equipements')->when($request->search, function ($query) use ($request) {
+        $spaces = Space::with('images','equipements')->when($request->search, function ($query) use ($request) {
             $query->where('name', 'like', '%' . $request->search . '%');
         })
             ->when($request->type, function ($query) use ($request) {
@@ -31,6 +31,7 @@ class SpaceController extends Controller
                 $query->where('is_active', $request->is_active);
             })
             ->paginate($perPage);
+
 
         return response()->json($spaces);
     }
@@ -130,4 +131,10 @@ class SpaceController extends Controller
 
         return response()->json($spaces->get());
     }
+
+    public function syncEquipements(Request $request, $id) {
+    $space = Space::findOrFail($id);
+    $space->equipements()->sync($request->equipement_ids ?? []);
+    return response()->json(['success' => true]);
+}
 }

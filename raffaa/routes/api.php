@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\EquipementController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\SpaceController;
@@ -33,7 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
         ->only(['index', 'store', 'update','show', 'destroy']);
 
     // Invoice
-    Route::get('/reservations/{id}/invoice', [InvoiceController::class, 'download']);
+    Route::get('/reservations/{id}/invoice', [InvoiceController::class, 'download']); 
 });
 
 
@@ -61,4 +62,10 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::get('/admin/users/{id}', [AdminController::class, 'showUser']);
     Route::put('/admin/users/{id}', [AdminController::class, 'updateUser']);
     Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser']);
+
+    // Equipements
+    Route::apiResource('equipements', EquipementController::class);
+
+    // Attacher équipements à un espace
+    Route::post('/spaces/{id}/equipements', [SpaceController::class, 'syncEquipements']);
 });

@@ -25,11 +25,11 @@ class StoreSpaceRequest extends FormRequest
             'name' => 'required|string|max:255',
             'surface' => 'required|numeric',
             'capacity' => 'required|integer',
-            'type' => 'required|in:bureau,salle_reunion,conference',
+            'type' => 'required|in:bureau_prive,espace_partage,salle_reunion,salle_conference',
             'price_per_day' => 'required|numeric',
             'is_active' => 'boolean',
             'equipment_ids' => 'nullable|array',
-            'equipment_ids.*' => 'exists:equipment,id'
+            'equipment_ids.*' => 'exists:equipements,id'
         ];
     }
 }

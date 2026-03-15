@@ -18,7 +18,7 @@ return new class extends Migration
             $table->decimal('surface', 6, 2); // m²
             $table->integer('capacity');
 
-            $table->enum('type', ['bureau', 'salle_reunion', 'conference']);
+            $table->enum('type', ['bureau_prive', 'espace_partage', 'salle_reunion', 'salle_conference']);
 
             $table->decimal('price_per_day', 10, 2);
 
