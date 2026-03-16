@@ -37,18 +37,27 @@ class SpaceImageController extends Controller
             return response()->json(['message' => 'Aucune image envoyée'], 400);
         }
 
-        $path = $request->file('image')->store('spaces', 'public');
+
+        $image = $request->file('image');
+        $imageName = time() . '_' . uniqid() . '.webp';
+        $imagePath = 'spaces/' . $imageName;
+
+
+        $img = \Intervention\Image\Facades\Image::make($image);
+        $img->encode('webp', 80);
+
+        \Storage::disk('public')->put($imagePath, (string) $img);
 
         $spaceImage = SpaceImage::create([
             'space_id' => $space->id,
-            'filename' => $path,
+            'filename' => $imagePath,
             'alt_text' => $request->input('alt_text', 'Image de ' . $space->name),
             'position' => $request->input('position', SpaceImage::where('space_id', $spaceId)->max('position') + 1),
         ]);
 
         return response()->json([
             'message' => 'Image ajoutée avec succès',
-            'url' => asset('storage/' . $path),
+            'url' => asset('storage/' . $imagePath),
             'data' => $spaceImage,
         ], 201);
     }
