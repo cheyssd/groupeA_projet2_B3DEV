@@ -1,11 +1,18 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useTheme } from '../contexts/ThemeContext'
-import { useState, useEffect } from 'react'
+import { useContext, useState, useEffect } from 'react'
+import { AuthContext } from '../contexts/AuthContext'
 import heroLight from '../assets/hero-light.jpeg'
 
 export default function HeroBanner() {
   const { isDark, toggle } = useTheme()
+  const { logout } = useContext(AuthContext)
   const navigate = useNavigate()
+
+  // Vérifier si connecté
+  const token = localStorage.getItem('token')
+  const user = JSON.parse(localStorage.getItem('user') || '{}')
+  const isLoggedIn = !!token
 
   const [spaces, setSpaces] = useState([])
   const [selectedSpace, setSelectedSpace] = useState("")
@@ -43,14 +50,21 @@ export default function HeroBanner() {
   const today = new Date().toISOString().split('T')[0]
 
   const handleSubmit = () => {
-  if (selectedSpace) {
-    navigate(`/spaces/${selectedSpace}`, {
-      state: { preselectedDate: selectedDate }
-    })
-  } else {
-    navigate('/spaces')
+    if (selectedSpace) {
+      navigate(`/spaces/${selectedSpace}`, {
+        state: { preselectedDate: selectedDate }
+      })
+    } else {
+      navigate('/spaces')
+    }
   }
-}
+
+  const handleLogout = async () => {
+    if (confirm('Voulez-vous vraiment vous déconnecter ?')) {
+      await logout()
+      navigate('/login')
+    }
+  }
 
   return (
     <section className="relative w-full min-h-screen overflow-hidden" style={{ background: "var(--bg-primary)" }}>
@@ -78,7 +92,8 @@ export default function HeroBanner() {
       {/* NAVBAR */}
       <nav className="relative z-10 flex items-center justify-between px-12 pt-7">
         <div className="flex flex-col gap-0.5">
-          <span className="font-black text-xl uppercase tracking-wide"
+          <span className="font-black text-xl uppercase tracking-wide cursor-pointer hover:opacity-70 transition"
+            onClick={() => navigate('/')}
             style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "var(--text-primary)" }}>
             ECOWORK<span style={{ color: "var(--accent)" }}>.</span>
           </span>
@@ -90,15 +105,16 @@ export default function HeroBanner() {
 
         <span className="text-[11px] tracking-[3px] uppercase pt-1"
           style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-secondary)" }}>
-          Paris XI&nbsp;&nbsp;/&nbsp;&nbsp;2.378SE
+          Abidjan, CI&nbsp;&nbsp;/&nbsp;&nbsp;5.3599°N
         </span>
 
         <div className="flex items-center gap-3">
+          {/* Toggle */}
           <button onClick={toggle}
             className="flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-300 cursor-pointer"
             style={{ borderColor: "var(--border-color)", background: "var(--bg-card)", color: "var(--text-secondary)" }}>
             {isDark ? (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="12" cy="12" r="5"/>
                 <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
                 <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
@@ -106,7 +122,7 @@ export default function HeroBanner() {
                 <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
               </svg>
             ) : (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
               </svg>
             )}
@@ -115,17 +131,59 @@ export default function HeroBanner() {
             </span>
           </button>
 
-          <Link to="/login"
-            className="flex items-center gap-2 px-4 py-1.5 rounded-full border transition-all duration-300 cursor-pointer text-[9px] tracking-[2px] uppercase font-bold"
-            style={{ borderColor: "var(--border-color)", background: "transparent", color: "var(--text-secondary)", fontFamily: "'Rajdhani', sans-serif" }}>
-            Connexion
-          </Link>
+          {/* Si connecté */}
+          {isLoggedIn ? (
+            <>
+              {/* Avatar + Nom */}
+              <button
+                onClick={() => navigate(user.role === 'admin' ? '/admin/adminOverview' : '/user/dashboard')}
+                className="flex items-center gap-2 px-4 py-1.5 rounded-full border transition-all duration-300 cursor-pointer hover:scale-105"
+                style={{
+                  borderColor: "var(--border-color)",
+                  background: "var(--bg-card)",
+                  color: "var(--text-primary)",
+                }}
+              >
+                <div 
+                  className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black"
+                  style={{ background: 'var(--accent)', color: '#000' }}
+                >
+                  {user.firstname?.charAt(0)}
+                </div>
+                <span className="text-[9px] tracking-[2px] uppercase font-bold" style={{ fontFamily: "'Rajdhani', sans-serif" }}>
+                  {user.firstname}
+                </span>
+              </button>
 
-          <Link to="/register"
-            className="flex items-center gap-2 px-4 py-1.5 rounded-full transition-all duration-300 cursor-pointer text-[9px] tracking-[2px] uppercase font-bold"
-            style={{ background: "var(--accent)", color: "#000", fontFamily: "'Rajdhani', sans-serif" }}>
-            Inscription
-          </Link>
+              {/* Déconnexion */}
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-4 py-1.5 rounded-full transition-all duration-300 cursor-pointer text-[9px] tracking-[2px] uppercase font-bold hover:scale-105"
+                style={{
+                  background: isDark ? 'rgba(239, 68, 68, 0.1)' : 'rgba(239, 68, 68, 0.05)',
+                  color: '#ef4444',
+                  fontFamily: "'Rajdhani', sans-serif",
+                }}
+              >
+                Déconnexion
+              </button>
+            </>
+          ) : (
+            <>
+              {/* Si pas connecté */}
+              <Link to="/login"
+                className="flex items-center gap-2 px-4 py-1.5 rounded-full border transition-all duration-300 cursor-pointer text-[9px] tracking-[2px] uppercase font-bold hover:scale-105"
+                style={{ borderColor: "var(--border-color)", background: "transparent", color: "var(--text-secondary)", fontFamily: "'Rajdhani', sans-serif" }}>
+                Connexion
+              </Link>
+
+              <Link to="/register"
+                className="flex items-center gap-2 px-4 py-1.5 rounded-full transition-all duration-300 cursor-pointer text-[9px] tracking-[2px] uppercase font-bold hover:scale-105"
+                style={{ background: "var(--accent)", color: "#000", fontFamily: "'Rajdhani', sans-serif" }}>
+                Inscription
+              </Link>
+            </>
+          )}
         </div>
       </nav>
 
@@ -145,7 +203,7 @@ export default function HeroBanner() {
           </p>
         </div>
 
-        {/* Booking card */}
+        {/* Booking card ORIGINAL */}
         <div className="w-80 flex-shrink-0 rounded-2xl p-8 border"
           style={{ background: "var(--bg-card)", borderColor: "var(--border-color)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)" }}>
 

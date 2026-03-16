@@ -51,33 +51,51 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* Routes publiques */}
-          <Route path="/" element={<Accueil />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/spaces" element={<Spaces />} />
-          <Route path="/spaces/:id" element={<SpaceShow />} />
-          <Route path="/admin/equipements" element={<AdminEquipements />} />
-
-          {/* Routes user protégées */}
-          <Route
-          path="/checkout"
-          element={
-            <ProtectedRoute>
-              <CheckoutPage />
-            </ProtectedRoute>
-          }
-          />
 
           <Route
-          path="/confirmation"
-          element={
-            <ProtectedRoute>
-              <ConfirmationReservation />
-            </ProtectedRoute>
-          }
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Accueil />
+              </ProtectedRoute>
+            }
           />
-          
+          <Route
+            path="/spaces"
+            element={
+              <ProtectedRoute>
+                <Spaces />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/spaces/:id"
+            element={
+              <ProtectedRoute>
+                <SpaceShow />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Routes user */}
+          <Route
+            path="/checkout"
+            element={
+              <ProtectedRoute>
+                <CheckoutPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/confirmation"
+            element={
+              <ProtectedRoute>
+                <ConfirmationReservation />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/user/dashboard"
             element={
@@ -102,16 +120,8 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/checkout/checkoutpage"
-            element={
-              <ProtectedRoute>
-                <CheckoutPage />
-              </ProtectedRoute>
-            }
-          />
 
-          {/* Routes admin protégées */}
+          {/* Routes admin */}
           <Route
             path="/admin/adminOverview"
             element={
@@ -120,7 +130,6 @@ function App() {
               </AdminRoute>
             }
           />
-
           <Route
             path="/admin/spaces"
             element={
@@ -153,7 +162,6 @@ function App() {
               </AdminRoute>
             }
           />
-  
           <Route
             path="/admin/users"
             element={
@@ -167,6 +175,14 @@ function App() {
             element={
               <AdminRoute>
                 <AdminProfil />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/equipements"
+            element={
+              <AdminRoute>
+                <AdminEquipements />
               </AdminRoute>
             }
           />
