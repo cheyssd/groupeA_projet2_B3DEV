@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import { useTheme } from "../../contexts/ThemeContext";
 import { Sidebar } from "./AdminOverview";
 
-const API = "http://127.0.0.1:8000/api";
+const API_URL = window.location.hostname === 'localhost'
+  ? 'http://127.0.0.1:8000'
+  : 'https://api-raffaa.ifran-b3dev.com';
 
 export default function AdminProfil() {
   const { isDark, toggle } = useTheme();
@@ -21,7 +23,7 @@ export default function AdminProfil() {
   };
 
   useEffect(() => {
-    fetch(`${API}/user`, { headers })
+    fetch(`${API_URL}/api/user`, { headers })
       .then((r) => r.json())
       .then((data) => {
         setUser(data);
@@ -38,7 +40,7 @@ export default function AdminProfil() {
 
   const handleSave = async () => {
     setSaving(true);
-    await fetch(`${API}/admin/users/${user.id}`, { method: "PUT", headers, body: JSON.stringify(form) });
+    await fetch(`${API_URL}/api/admin/users/${user.id}`, { method: "PUT", headers, body: JSON.stringify(form) });
     setSaving(false);
     setSuccess(true);
     setTimeout(() => setSuccess(false), 3000);

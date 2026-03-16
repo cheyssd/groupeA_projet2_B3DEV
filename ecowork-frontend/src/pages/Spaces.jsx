@@ -8,6 +8,10 @@ const PLACEHOLDER_IMGS = [
   "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&q=80",
 ];
 
+const API_URL = window.location.hostname === 'localhost' 
+  ? 'http://127.0.0.1:8000'
+  : 'https://api-raffaa.ifran-b3dev.com';
+
 export default function Spaces() {
   const { isDark } = useTheme();
   const navigate = useNavigate();
@@ -35,7 +39,7 @@ export default function Spaces() {
         let page = 1;
         let lastPage = 1;
         do {
-          const res = await fetch(`http://127.0.0.1:8000/api/spaces?page=${page}&per_page=100`);
+          const res = await fetch(`${API_URL}/api/spaces?page=${page}&per_page=100`);
           const data = await res.json();
           allSpaces = [...allSpaces, ...(data.data || [])];
           lastPage = data.last_page || 1;
@@ -96,7 +100,7 @@ export default function Spaces() {
               }}>
               {selectedTypes.includes(type) && (
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="3">
-                  <polyline points="20 6 9 17 4 12"/>
+                  <polyline points="20 6 9 17 4 12" />
                 </svg>
               )}
             </div>
@@ -177,9 +181,9 @@ export default function Spaces() {
         {/* NAVBAR */}
         <nav className="flex items-center justify-between px-6 md:px-12 py-5 border-b"
           style={{ borderColor: "var(--border-color)" }}>
-          <span className="font-black text-lg uppercase cursor-pointer"
-            style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "var(--text-primary)" }}
-            onClick={() => navigate("/")}>
+          <span className="font-black text-lg uppercase tracking-wide cursor-pointer"
+            onClick={() => navigate('/')}
+            style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "var(--text-primary)" }}>
             ECOWORK<span style={{ color: "var(--accent)" }}>.</span>
           </span>
 
@@ -202,7 +206,7 @@ export default function Spaces() {
             onClick={() => setFilterOpen(o => !o)}
             style={{ borderColor: "var(--border-color)", color: "var(--text-secondary)", background: "var(--bg-card)" }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/>
+              <line x1="4" y1="6" x2="20" y2="6" /><line x1="8" y1="12" x2="16" y2="12" /><line x1="11" y1="18" x2="13" y2="18" />
             </svg>
             <span className="text-[9px] tracking-[2px] uppercase font-semibold" style={{ fontFamily: "'Rajdhani', sans-serif" }}>
               Filtres {selectedTypes.length + (budgetMax < 500000 ? 1 : 0) > 0 ? `(${selectedTypes.length + (budgetMax < 500000 ? 1 : 0)})` : ""}
@@ -238,7 +242,7 @@ export default function Spaces() {
             <button className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center flex-shrink-0 cursor-pointer hover:opacity-80"
               style={{ background: "var(--text-primary)" }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--bg-primary)" strokeWidth="2.5">
-                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
               </svg>
             </button>
           </div>
@@ -289,10 +293,13 @@ export default function Spaces() {
                     <div className="relative rounded-2xl overflow-hidden mb-4" style={{ height: "220px" }}>
                       <img
                         src={space.images?.[0]?.filename
-                          ? `http://127.0.0.1:8000/storage/${space.images[0].filename}`
+                          ? `${API_URL}/storage/${space.images[0].filename}`
                           : PLACEHOLDER_IMGS[index % PLACEHOLDER_IMGS.length]}
                         alt={space.name}
                         className="space-card-img"
+                        onError={(e) => {
+                          e.target.src = PLACEHOLDER_IMGS[index % PLACEHOLDER_IMGS.length];
+                        }}
                       />
                       {space.is_active === 1 && (
                         <div className="absolute bottom-3 left-3 px-3 py-1 rounded-full text-[9px] tracking-[2px] uppercase font-semibold"
@@ -321,7 +328,7 @@ export default function Spaces() {
                         </p>
                         <p className="text-[10px] tracking-[1px] mt-0.5"
                           style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
-                          Paris XI — {space.type}
+                          Abidjan, CI — {space.type}
                         </p>
                       </div>
                       <div className="text-right shrink-0">

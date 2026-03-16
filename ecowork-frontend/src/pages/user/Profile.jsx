@@ -3,6 +3,10 @@ import { get } from "../../services/api";
 import UserNavbar from "./components/UserNavbar";
 import { useTheme } from "../../contexts/ThemeContext";
 
+const API_URL = window.location.hostname === 'localhost'
+    ? 'http://127.0.0.1:8000'
+    : 'https://api-raffaa.ifran-b3dev.com';
+
 const Profile = () => {
     const { isDark } = useTheme();
     const [user, setUser] = useState(null);
@@ -40,7 +44,7 @@ const Profile = () => {
         e.preventDefault();
         setSaving(true);
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/user/update', {
+            const response = await fetch(`${API_URL}/api/user/update`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

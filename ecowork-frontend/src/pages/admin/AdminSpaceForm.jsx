@@ -2,23 +2,25 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTheme } from "../../contexts/ThemeContext";
 import { Sidebar } from "./AdminOverview";
-
-const API = "http://127.0.0.1:8000/api";
-
+ 
+const API_URL = window.location.hostname === 'localhost'
+  ? 'http://127.0.0.1:8000'
+  : 'https://api-raffaa.ifran-b3dev.com';
+ 
 const TYPE_LABELS = {
   bureau_prive: "Bureau Privé",
   espace_partage: "Espace Partagé",
   salle_reunion: "Salle de Réunion",
   salle_conference: "Salle de Conférence",
 };
-
+ 
 export default function AdminSpaceForm() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isDark, toggle } = useTheme();
   const token = localStorage.getItem("token");
   const isEdit = !!id;
-
+ 
   const [form, setForm] = useState({
     name: "", surface: "", capacity: "", type: "bureau_prive", price_per_day: "", is_active: 1,
   });
@@ -28,23 +30,23 @@ export default function AdminSpaceForm() {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(isEdit);
   const [errors, setErrors] = useState({});
-
+ 
   const headers = {
     Authorization: `Bearer ${token}`,
     Accept: "application/json",
     "Content-Type": "application/json",
   };
-
+ 
   useEffect(() => {
-    fetch(`${API}/equipements`, { headers })
+    fetch(`${API_URL}/api/equipements`, { headers })
       .then((r) => r.json())
       .then((data) => setEquipements(Array.isArray(data) ? data : []))
       .catch(() => setEquipements([]));
   }, []);
-
+ 
   useEffect(() => {
     if (isEdit) {
-      fetch(`${API}/spaces/${id}`, { headers })
+      fetch(`${API_URL}/api/spaces/${id}`, { headers })
         .then((r) => r.json())
         .then((data) => {
           setForm({
@@ -56,13 +58,13 @@ export default function AdminSpaceForm() {
         });
     }
   }, [id]);
-
+ 
   const toggleEquipement = (eqId) => {
     setSelectedEquipements((prev) =>
       prev.includes(eqId) ? prev.filter((e) => e !== eqId) : [...prev, eqId]
     );
   };
-
+ 
   const validate = () => {
     const e = {};
     if (!form.name) e.name = "Nom requis";
@@ -72,17 +74,17 @@ export default function AdminSpaceForm() {
     setErrors(e);
     return Object.keys(e).length === 0;
   };
-
+ 
   const handleSubmit = async () => {
     if (!validate()) return;
     setLoading(true);
-    const url = isEdit ? `${API}/spaces/${id}` : `${API}/spaces`;
+    const url = isEdit ? `${API_URL}/api/spaces/${id}` : `${API_URL}/api/spaces`;
     const method = isEdit ? "PUT" : "POST";
     const res = await fetch(url, { method, headers, body: JSON.stringify(form) });
     const data = await res.json();
     const spaceId = data.space?.id || data.id || id;
     if (spaceId && selectedEquipements.length >= 0) {
-      await fetch(`${API}/spaces/${spaceId}/equipements`, {
+      await fetch(`${API_URL}/api/spaces/${spaceId}/equipements`, {
         method: "POST", headers,
         body: JSON.stringify({ equipement_ids: selectedEquipements }),
       });
@@ -90,35 +92,35 @@ export default function AdminSpaceForm() {
     if (!isEdit && spaceId && images.length > 0) await uploadImages(spaceId);
     if (data.success || spaceId) navigate("/admin/spaces");
   };
-
+ 
   const uploadImages = async (spaceId) => {
     for (const image of images) {
       const formData = new FormData();
       formData.append("image", image.file);
       formData.append("alt_text", image.alt || "Photo espace");
-      await fetch(`${API}/spaces/${spaceId}/images`, {
+      await fetch(`${API_URL}/api/spaces/${spaceId}/images`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
         body: formData,
       });
     }
   };
-
+ 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     const newImages = files.map((file) => ({ file, preview: URL.createObjectURL(file), alt: "" }));
     setImages([...images, ...newImages]);
   };
-
+ 
   const removeImage = (index) => setImages(images.filter((_, i) => i !== index));
-
+ 
   const fields = [
     { key: "name", label: "Nom de l'espace", type: "text", placeholder: "Ex: Bonoua Space", full: true },
     { key: "surface", label: "Surface (m²)", type: "number", placeholder: "Ex: 600" },
     { key: "capacity", label: "Capacité (personnes)", type: "number", placeholder: "Ex: 80" },
     { key: "price_per_day", label: "Prix par jour (FCFA)", type: "number", placeholder: "Ex: 20000" },
   ];
-
+ 
   return (
     <>
       <style>{`

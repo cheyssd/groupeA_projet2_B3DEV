@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "../contexts/ThemeContext";
 
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = window.location.hostname === 'localhost'
+  ? 'http://127.0.0.1:8000/api'
+  : 'https://api-raffaa.ifran-b3dev.com/api';
 
 export default function SpaceShow() {
   const { id } = useParams();
@@ -11,7 +13,7 @@ export default function SpaceShow() {
   const { isDark } = useTheme();
 
   const [space, setSpace] = useState(null);
-  const [reservations, setReservations] = useState([]); 
+  const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -26,7 +28,7 @@ export default function SpaceShow() {
   useEffect(() => {
     Promise.all([
       fetch(`${API_URL}/api/spaces/${id}`).then(r => r.json()),
-      fetch(`${API_URL}/api/spaces/${id}/reservations`).then(r => r.json()) 
+      fetch(`${API_URL}/api/spaces/${id}/reservations`).then(r => r.json())
     ])
       .then(([spaceData, reservationsData]) => {
         setSpace(spaceData);
@@ -61,12 +63,12 @@ export default function SpaceShow() {
 
   const handleDateClick = (day) => {
     const clickedDate = new Date(currentYear, currentMonth, day);
-    
+
     if (isReserved(day)) {
       alert('Cette date est déjà réservée !');
       return;
     }
-    
+
     if (!startDate || (startDate && endDate)) {
       setStartDate(clickedDate);
       setEndDate(null);
@@ -139,8 +141,8 @@ export default function SpaceShow() {
   }
 
   const images = space.images || [];
-  const mainImageUrl = images.length > 0 
-    ? `${API_URL}/storage/${images[0].filename}` 
+  const mainImageUrl = images.length > 0
+    ? `${API_URL}/storage/${images[0].filename}`
     : "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80";
   const secondaryImages = images.length > 1 ? images.slice(1, 3) : [];
 
@@ -185,13 +187,13 @@ export default function SpaceShow() {
             </h1>
 
             <div className="rounded-2xl overflow-hidden mb-4" style={{ height: "320px", background: "var(--border-color)" }}>
-              <img 
+              <img
                 src={mainImageUrl}
-                alt={space.name} 
+                alt={space.name}
                 onError={(e) => {
                   e.target.src = "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80";
                 }}
-                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} 
+                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
               />
             </div>
 
@@ -199,14 +201,14 @@ export default function SpaceShow() {
               <div className="grid grid-cols-2 gap-4 mb-10">
                 {secondaryImages.map((img, i) => (
                   <div key={img.id} className="rounded-2xl overflow-hidden" style={{ height: "200px", background: "var(--border-color)" }}>
-                    <img 
+                    <img
                       src={`${API_URL}/storage/${img.filename}`}
-                      alt={img.alt_text || `${space.name} ${i + 2}`} 
+                      alt={img.alt_text || `${space.name} ${i + 2}`}
                       loading="lazy"
                       onError={(e) => {
                         e.target.src = `https://images.unsplash.com/photo-${i === 0 ? '1519389950473' : '1504384308090'}-47ba0277781c?w=800&q=80`;
                       }}
-                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} 
+                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                     />
                   </div>
                 ))}
@@ -299,7 +301,7 @@ export default function SpaceShow() {
                     const reserved = isReserved(day);
                     const inRange = isInRange(day);
                     const disabled = past || reserved;
-                    
+
                     return (
                       <button key={day} onClick={() => !disabled && handleDateClick(day)} disabled={disabled}
                         className="text-center text-xs py-1 rounded-full transition-all"

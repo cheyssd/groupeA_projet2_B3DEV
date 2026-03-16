@@ -3,6 +3,9 @@ import { get } from "../../services/api";
 import UserNavbar from "./components/UserNavbar";
 import { useTheme } from "../../contexts/ThemeContext";
 
+const API_URL = window.location.hostname === 'localhost'
+    ? 'http://127.0.0.1:8000'
+    : 'https://api-raffaa.ifran-b3dev.com';
 const Reservation = () => {
     const { isDark } = useTheme();
     const [user, setUser] = useState(null);
@@ -30,7 +33,7 @@ const Reservation = () => {
         if (!confirm('Voulez-vous vraiment annuler cette réservation ?')) return;
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://127.0.0.1:8000/api/reservations/${id}`, {
+            const response = await fetch(`${API_URL}/api/reservations/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`,

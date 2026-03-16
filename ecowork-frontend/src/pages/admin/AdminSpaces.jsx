@@ -2,15 +2,17 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../contexts/ThemeContext";
 import { Sidebar } from "./AdminOverview";
-
-const API = "http://127.0.0.1:8000/api";
-
+ 
+const API_URL = window.location.hostname === 'localhost'
+  ? 'http://127.0.0.1:8000'
+  : 'https://api-raffaa.ifran-b3dev.com';
+ 
 const TYPE_LABELS = {
   conference: "Conférence",
   private_office: "Private Office",
   shared_desk: "Shared Desk",
 };
-
+ 
 function Modal({ title, onClose, children }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4"
@@ -32,19 +34,19 @@ function Modal({ title, onClose, children }) {
     </div>
   );
 }
-
+ 
 function SpaceForm({ initial, onSubmit, onClose, loading }) {
   const [form, setForm] = useState(initial || {
     name: "", surface: "", capacity: "", type: "conference", price_per_day: "", is_active: 1,
   });
-
+ 
   const fields = [
     { key: "name", label: "Nom", type: "text", placeholder: "Ex: Bonoua Space" },
     { key: "surface", label: "Surface (m²)", type: "number", placeholder: "Ex: 600" },
     { key: "capacity", label: "Capacité", type: "number", placeholder: "Ex: 80" },
     { key: "price_per_day", label: "Prix / jour (FCFA)", type: "number", placeholder: "Ex: 20000" },
   ];
-
+ 
   return (
     <div className="flex flex-col gap-4">
       {fields.map((f) => (
@@ -59,7 +61,7 @@ function SpaceForm({ initial, onSubmit, onClose, loading }) {
             style={{ background: "var(--border-color)", border: "1px solid var(--border-color)", color: "var(--text-primary)", fontFamily: "'Barlow', sans-serif" }} />
         </div>
       ))}
-
+ 
       <div>
         <label className="text-[9px] tracking-[3px] uppercase block mb-1.5"
           style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
@@ -73,7 +75,7 @@ function SpaceForm({ initial, onSubmit, onClose, loading }) {
           ))}
         </select>
       </div>
-
+ 
       <div className="flex items-center gap-3">
         <div onClick={() => setForm({ ...form, is_active: form.is_active ? 0 : 1 })}
           className="w-10 h-6 rounded-full cursor-pointer transition-all flex items-center px-1"
@@ -85,7 +87,7 @@ function SpaceForm({ initial, onSubmit, onClose, loading }) {
           Espace actif
         </span>
       </div>
-
+ 
       <div className="flex gap-3 mt-2">
         <button onClick={onClose} className="flex-1 py-3 rounded-xl text-xs tracking-[2px] uppercase font-semibold cursor-pointer"
           style={{ border: "1px solid var(--border-color)", color: "var(--text-secondary)", background: "transparent", fontFamily: "'Rajdhani', sans-serif" }}>
@@ -100,12 +102,12 @@ function SpaceForm({ initial, onSubmit, onClose, loading }) {
     </div>
   );
 }
-
+ 
 export default function AdminSpaces() {
   const { isDark, toggle } = useTheme();
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-
+ 
   const [spaces, setSpaces] = useState([]);
   const [meta, setMeta] = useState({ total: 0, last_page: 1, current_page: 1 });
   const [loading, setLoading] = useState(true);
@@ -113,20 +115,20 @@ export default function AdminSpaces() {
   const [filterType, setFilterType] = useState("");
   const [filterActive, setFilterActive] = useState("");
   const [page, setPage] = useState(1);
-
+ 
   const [showDelete, setShowDelete] = useState(null);
   const [saving, setSaving] = useState(false);
-
+ 
   const headers = { Authorization: `Bearer ${token}`, Accept: "application/json", "Content-Type": "application/json" };
-
+ 
   const fetchSpaces = () => {
     setLoading(true);
     const params = new URLSearchParams({ page });
     if (search) params.append("search", search);
     if (filterType) params.append("type", filterType);
     if (filterActive !== "") params.append("is_active", filterActive);
-
-    fetch(`${API}/spaces?${params}`, { headers })
+ 
+    fetch(`${API_URL}/api/spaces?${params}`, { headers })
       .then((r) => r.json())
       .then((data) => {
         setSpaces(data.data);
@@ -135,29 +137,29 @@ export default function AdminSpaces() {
       })
       .catch(() => setLoading(false));
   };
-
+ 
   useEffect(() => { fetchSpaces(); }, [page, filterType, filterActive]);
   useEffect(() => {
     const t = setTimeout(() => { setPage(1); fetchSpaces(); }, 400);
     return () => clearTimeout(t);
   }, [search]);
-
+ 
   const handleDelete = async () => {
     setSaving(true);
-    await fetch(`${API}/spaces/${showDelete.id}`, { method: "DELETE", headers });
+    await fetch(`${API_URL}/api/spaces/${showDelete.id}`, { method: "DELETE", headers });
     setSaving(false);
     setShowDelete(null);
     fetchSpaces();
   };
-
+ 
   const toggleActive = async (space) => {
-    await fetch(`${API}/spaces/${space.id}`, {
+    await fetch(`${API_URL}/api/spaces/${space.id}`, {
       method: "PUT", headers,
       body: JSON.stringify({ ...space, is_active: space.is_active ? 0 : 1 }),
     });
     fetchSpaces();
   };
-
+ 
   return (
     <>
       <style>{`

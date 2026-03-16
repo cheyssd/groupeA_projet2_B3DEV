@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import { useTheme } from "../../contexts/ThemeContext";
 import { Sidebar } from "./AdminOverview";
 
-const API = "http://127.0.0.1:8000/api";
+const API_URL = window.location.hostname === 'localhost'
+  ? 'http://127.0.0.1:8000'
+  : 'https://api-raffaa.ifran-b3dev.com';
 
 function Modal({ title, onClose, children }) {
   return (
@@ -17,7 +19,7 @@ function Modal({ title, onClose, children }) {
           </h2>
           <button onClick={onClose} className="cursor-pointer" style={{ color: "var(--text-muted)" }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           </button>
         </div>
@@ -47,7 +49,7 @@ export default function AdminEquipements() {
 
   const fetchEquipements = () => {
     setLoading(true);
-    fetch(`${API}/equipements`, { headers })
+    fetch(`${API_URL}/api/equipements`, { headers })
       .then((r) => r.json())
       .then((data) => { setEquipements(data); setLoading(false); })
       .catch(() => setLoading(false));
@@ -62,7 +64,7 @@ export default function AdminEquipements() {
     if (!formName.trim()) return;
     setSaving(true);
     const isEdit = showForm !== "create";
-    const url = isEdit ? `${API}/equipements/${showForm.id}` : `${API}/equipements`;
+    const url = isEdit ? `${API_URL}/api/equipements/${showForm.id}` : `${API_URL}/api/equipements`;
     const method = isEdit ? "PUT" : "POST";
     await fetch(url, { method, headers, body: JSON.stringify({ name: formName }) });
     setSaving(false);
@@ -72,7 +74,7 @@ export default function AdminEquipements() {
 
   const handleDelete = async () => {
     setSaving(true);
-    await fetch(`${API}/equipements/${showDelete.id}`, { method: "DELETE", headers });
+    await fetch(`${API_URL}/api/equipements/${showDelete.id}`, { method: "DELETE", headers });
     setSaving(false);
     setShowDelete(null);
     fetchEquipements();
@@ -109,14 +111,14 @@ export default function AdminEquipements() {
                 style={{ borderColor: "var(--border-color)", background: "var(--bg-card)", color: "var(--text-secondary)" }}>
                 {isDark ? (
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                    <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    <circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" />
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                    <line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" />
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
                   </svg>
                 ) : (
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
                   </svg>
                 )}
                 <span className="hidden sm:inline text-[9px] tracking-[2px] uppercase" style={{ fontFamily: "'Rajdhani', sans-serif" }}>
@@ -128,7 +130,7 @@ export default function AdminEquipements() {
                 className="flex items-center gap-2 px-3 md:px-4 py-2 rounded-xl cursor-pointer text-xs tracking-[2px] uppercase font-bold"
                 style={{ background: "var(--accent)", color: "#000", fontFamily: "'Rajdhani', sans-serif" }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                  <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
                 </svg>
                 <span className="hidden sm:inline">Ajouter</span>
               </button>
@@ -140,25 +142,19 @@ export default function AdminEquipements() {
             style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
 
             {/* Desktop header */}
-            <div className="hidden md:grid px-6 py-3"
-              style={{ gridTemplateColumns: "1fr 2fr 1fr", borderBottom: "1px solid var(--border-color)" }}>
-              {["#", "Nom de l'équipement", "Actions"].map((h) => (
-                <p key={h} className="text-[8px] tracking-[2px] uppercase"
-                  style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
-                  {h}
-                </p>
-              ))}
+            <div className="hidden md:grid px-6 py-3 border-b"
+              style={{ gridTemplateColumns: "1fr 2fr 1fr", borderColor: "var(--border-color)", background: "rgba(255,255,255,0.01)" }}>
+              <p className="text-[9px] tracking-[3px] uppercase font-semibold" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>ID</p>
+              <p className="text-[9px] tracking-[3px] uppercase font-semibold" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>Nom</p>
+              <p className="text-[9px] tracking-[3px] uppercase font-semibold" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>Actions</p>
             </div>
 
             {loading ? (
-              <p className="px-6 py-8 text-sm" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif", letterSpacing: "2px" }}>
-                Chargement...
-              </p>
+              <div className="px-6 py-12 flex items-center justify-center">
+                <p className="text-sm italic" style={{ color: "var(--text-muted)" }}>Chargement...</p>
+              </div>
             ) : equipements.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-16 gap-3">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ color: "var(--text-muted)" }}>
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                </svg>
+              <div className="px-6 py-12 flex items-center justify-center">
                 <p className="text-sm italic" style={{ color: "var(--text-muted)" }}>Aucun équipement. Commencez par en ajouter !</p>
               </div>
             ) : (
@@ -174,7 +170,7 @@ export default function AdminEquipements() {
                       <div className="w-8 h-8 rounded-lg flex items-center justify-center"
                         style={{ background: "rgba(41,212,224,0.1)", color: "var(--accent)" }}>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                         </svg>
                       </div>
                       <p className="text-sm font-bold" style={{ color: "var(--text-primary)", fontFamily: "'Barlow Condensed', sans-serif" }}>
@@ -186,17 +182,17 @@ export default function AdminEquipements() {
                         className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:opacity-80"
                         style={{ background: "rgba(41,212,224,0.1)", color: "var(--accent)" }}>
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                         </svg>
                       </button>
                       <button onClick={() => setShowDelete(eq)}
                         className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:opacity-80"
                         style={{ background: "rgba(248,113,113,0.1)", color: "#f87171" }}>
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                          <path d="M10 11v6"/><path d="M14 11v6"/>
-                          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                          <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                          <path d="M10 11v6" /><path d="M14 11v6" />
+                          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
                         </svg>
                       </button>
                     </div>
@@ -208,7 +204,7 @@ export default function AdminEquipements() {
                       <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
                         style={{ background: "rgba(41,212,224,0.1)", color: "var(--accent)" }}>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                         </svg>
                       </div>
                       <div className="min-w-0">
@@ -223,17 +219,17 @@ export default function AdminEquipements() {
                         className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer"
                         style={{ background: "rgba(41,212,224,0.1)", color: "var(--accent)" }}>
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                         </svg>
                       </button>
                       <button onClick={() => setShowDelete(eq)}
                         className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer"
                         style={{ background: "rgba(248,113,113,0.1)", color: "#f87171" }}>
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                          <path d="M10 11v6"/><path d="M14 11v6"/>
-                          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                          <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                          <path d="M10 11v6" /><path d="M14 11v6" />
+                          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
                         </svg>
                       </button>
                     </div>

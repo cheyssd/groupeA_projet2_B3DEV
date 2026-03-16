@@ -1,15 +1,17 @@
 import { useState, useEffect } from "react";
 import { useTheme } from "../../contexts/ThemeContext";
 import { Sidebar } from "./AdminOverview";
-
-const API = "http://127.0.0.1:8000/api";
-
+ 
+const API_URL = window.location.hostname === 'localhost'
+  ? 'http://127.0.0.1:8000'
+  : 'https://api-raffaa.ifran-b3dev.com';
+ 
 const STATUS_MAP = {
   confirmee:  { label: "Confirmée",  bg: "rgba(74,222,128,0.12)",  color: "#4ade80" },
   en_attente: { label: "En attente", bg: "rgba(251,146,60,0.12)",  color: "#fb923c" },
   annulee:    { label: "Annulée",    bg: "rgba(248,113,113,0.12)", color: "#f87171" },
 };
-
+ 
 function StatusBadge({ status }) {
   const s = STATUS_MAP[status] || { label: status, bg: "rgba(255,255,255,0.05)", color: "var(--text-muted)" };
   return (
@@ -19,7 +21,7 @@ function StatusBadge({ status }) {
     </span>
   );
 }
-
+ 
 function Modal({ title, onClose, children }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4"
@@ -42,35 +44,35 @@ function Modal({ title, onClose, children }) {
     </div>
   );
 }
-
+ 
 export default function AdminReservations() {
   const { isDark, toggle } = useTheme();
   const token = localStorage.getItem("token");
-
+ 
   const [reservations, setReservations] = useState([]);
   const [meta, setMeta] = useState({ total: 0, last_page: 1, current_page: 1 });
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState("");
   const [filterPaid, setFilterPaid] = useState("");
   const [page, setPage] = useState(1);
-
+ 
   const [showStatus, setShowStatus] = useState(null);
   const [showDelete, setShowDelete] = useState(null);
   const [saving, setSaving] = useState(false);
-
+ 
   const headers = {
     Authorization: `Bearer ${token}`,
     Accept: "application/json",
     "Content-Type": "application/json",
   };
-
+ 
   const fetchReservations = () => {
     setLoading(true);
     const params = new URLSearchParams({ page });
     if (filterStatus) params.append("status", filterStatus);
     if (filterPaid !== "") params.append("is_paid", filterPaid);
-
-    fetch(`${API}/admin/reservations?${params}`, { headers })
+ 
+    fetch(`${API_URL}/api/admin/reservations?${params}`, { headers })
       .then((r) => r.json())
       .then((data) => {
         setReservations(data.data || []);
@@ -79,34 +81,34 @@ export default function AdminReservations() {
       })
       .catch(() => setLoading(false));
   };
-
+ 
   useEffect(() => { fetchReservations(); }, [page, filterStatus, filterPaid]);
-
+ 
   const handleUpdateStatus = async (status) => {
     setSaving(true);
-    await fetch(`${API}/reservations/${showStatus.id}/status`, {
+    await fetch(`${API_URL}/api/reservations/${showStatus.id}/status`, {
       method: "PATCH", headers, body: JSON.stringify({ status }),
     });
     setSaving(false);
     setShowStatus(null);
     fetchReservations();
   };
-
+ 
   const handleMarkPaid = async (reservation) => {
-    await fetch(`${API}/reservations/${reservation.id}/paid`, { method: "PATCH", headers });
+    await fetch(`${API_URL}/api/reservations/${reservation.id}/paid`, { method: "PATCH", headers });
     fetchReservations();
   };
-
+ 
   const handleDelete = async () => {
     setSaving(true);
-    await fetch(`${API}/reservations/${showDelete.id}`, { method: "DELETE", headers });
+    await fetch(`${API_URL}/api/reservations/${showDelete.id}`, { method: "DELETE", headers });
     setSaving(false);
     setShowDelete(null);
     fetchReservations();
   };
-
+ 
   const formatDate = (d) => new Date(d).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" });
-
+ 
   return (
     <>
       <style>{`

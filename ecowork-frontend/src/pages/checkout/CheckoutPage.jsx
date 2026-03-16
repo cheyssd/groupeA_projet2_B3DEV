@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+const API_URL = window.location.hostname === 'localhost'
+    ? 'http://127.0.0.1:8000'
+    : 'https://api-raffaa.ifran-b3dev.com';
 const Checkout = () => {
     const location = useLocation();
     const navigate = useNavigate();
@@ -34,7 +37,7 @@ const Checkout = () => {
                 status: 'confirmee'
             };
 
-            const response = await fetch('http://127.0.0.1:8000/api/reservations', {
+            const response = await fetch(`${API_URL}/api/reservations`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -47,7 +50,7 @@ const Checkout = () => {
             const data = await response.json();
 
             if (response.ok) {
-           
+
                 navigate('/confirmation', {
                     state: {
                         reservation: data,

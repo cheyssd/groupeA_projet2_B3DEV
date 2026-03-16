@@ -21,8 +21,11 @@ const Login = () => {
         if (email.trim() !== "" && password.trim() !== "") {
             setLoading(true);
 
+            const API_URL = window.location.hostname === 'localhost'
+                ? 'http://127.0.0.1:8000/api'
+                : 'https://api-raffaa.ifran-b3dev.com/api';
 
-            fetch('http://127.0.0.1:8000/api/login', {
+            fetch(`${API_URL}/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

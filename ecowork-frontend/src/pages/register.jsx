@@ -23,7 +23,11 @@ const Register = () => {
 
         setLoading(true);
 
-        fetch('http://127.0.0.1:8000/api/register', {
+        const API_URL = window.location.hostname === 'localhost'
+            ? 'http://127.0.0.1:8000/api'
+            : 'https://api-raffaa.ifran-b3dev.com/api';
+
+        fetch(`${API_URL}/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -150,9 +154,9 @@ const Register = () => {
             <div className="hidden lg:block lg:fixed lg:right-0 lg:top-0 lg:w-1/2 lg:h-screen overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-r from-white to-transparent z-10"></div>
                 <picture>
-                    <source 
-                        srcSet="https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&q=80&w=1200&fm=webp" 
-                        type="image/webp" 
+                    <source
+                        srcSet="https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&q=80&w=1200&fm=webp"
+                        type="image/webp"
                     />
                     <img
                         src="https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&q=80&w=1200"

@@ -3,7 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../contexts/ThemeContext";
 import { Sidebar } from "./AdminOverview";
 
-const API = "http://127.0.0.1:8000/api";
+const API_URL = window.location.hostname === 'localhost'
+  ? 'http://127.0.0.1:8000'
+  : 'https://api-raffaa.ifran-b3dev.com';
 
 const ROLE_MAP = {
   admin: { label: "Admin", bg: "rgba(167,139,250,0.12)", color: "#a78bfa" },
@@ -137,7 +139,7 @@ export default function AdminUsers() {
     const params = new URLSearchParams({ page });
     if (search) params.append("search", search);
     if (filterRole) params.append("role", filterRole);
-    fetch(`${API}/admin/users?${params}`, { headers })
+    fetch(`${API_URL}/api/admin/users?${params}`, { headers })
       .then((r) => r.json())
       .then((data) => {
         setUsers(data.data || []);
@@ -155,7 +157,7 @@ export default function AdminUsers() {
 
   const handleEdit = async (form) => {
     setSaving(true);
-    await fetch(`${API}/admin/users/${showEdit.id}`, { method: "PUT", headers, body: JSON.stringify(form) });
+    await fetch(`${API_URL}/api/admin/users/${showEdit.id}`, { method: "PUT", headers, body: JSON.stringify(form) });
     setSaving(false);
     setShowEdit(null);
     fetchUsers();
@@ -163,7 +165,7 @@ export default function AdminUsers() {
 
   const handleDelete = async () => {
     setSaving(true);
-    await fetch(`${API}/admin/users/${showDelete.id}`, { method: "DELETE", headers });
+    await fetch(`${API_URL}/api/admin/users/${showDelete.id}`, { method: "DELETE", headers });
     setSaving(false);
     setShowDelete(null);
     fetchUsers();
