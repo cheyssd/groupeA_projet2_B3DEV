@@ -85,8 +85,8 @@ const Profile = () => {
     const inputStyle = {
         borderBottom: "2px solid var(--border-color)",
         outline: "none",
-        padding: "16px 0",
-        fontSize: "20px",
+        padding: "12px 0",
+        fontSize: "clamp(16px, 4vw, 20px)",
         fontWeight: "900",
         fontStyle: "italic",
         letterSpacing: "-0.5px",
@@ -100,19 +100,20 @@ const Profile = () => {
         <div className="antialiased min-h-screen" style={{ background: 'var(--bg-primary)' }}>
             <UserNavbar user={user} />
 
-            <main className="max-w-5xl mx-auto px-6 py-20">
+            <main className="max-w-5xl mx-auto px-4 md:px-6 py-10 md:py-20">
 
                 {success && (
-                    <div className="fixed top-6 right-6 z-50 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest"
+                    <div className="fixed top-4 right-4 z-50 px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest"
                         style={{ background: "rgba(74,222,128,0.15)", color: "#4ade80", border: "1px solid rgba(74,222,128,0.3)" }}>
                         ✓ Profil mis à jour !
                     </div>
                 )}
 
-                <header className="flex flex-col md:flex-row items-center gap-12 mb-24">
-                    <div className="relative overflow-hidden rounded-[60px] w-48 h-48 shrink-0 group"
+                {/* Header */}
+                <header className="flex flex-col sm:flex-row items-center gap-8 md:gap-12 mb-16 md:mb-24">
+                    <div className="relative overflow-hidden rounded-[40px] md:rounded-[60px] w-36 h-36 md:w-48 md:h-48 shrink-0 group"
                         style={{ background: isDark ? 'rgba(255,255,255,0.05)' : '#f3f4f6', border: '1px solid var(--border-color)' }}>
-                        <div className="w-full h-full flex items-center justify-center text-6xl font-black"
+                        <div className="w-full h-full flex items-center justify-center text-5xl md:text-6xl font-black"
                             style={{ color: 'var(--accent)' }}>
                             {user?.firstname?.charAt(0)}{user?.lastname?.charAt(0)}
                         </div>
@@ -124,12 +125,12 @@ const Profile = () => {
                         </div>
                     </div>
 
-                    <div className="text-center md:text-left">
-                        <span className="text-[10px] font-black uppercase tracking-[0.5em] mb-4 block"
+                    <div className="text-center sm:text-left">
+                        <span className="text-[10px] font-black uppercase tracking-[0.5em] mb-3 block"
                             style={{ color: 'var(--accent)' }}>
                             Identity Status: Verified
                         </span>
-                        <h1 className="text-6xl md:text-8xl font-black tracking-tighter uppercase leading-none"
+                        <h1 className="text-5xl md:text-8xl font-black tracking-tighter uppercase leading-none"
                             style={{ color: 'var(--text-primary)' }}>
                             {user?.firstname} <br />
                             <span className="italic font-light" style={{ color: 'var(--text-secondary)' }}>
@@ -139,9 +140,10 @@ const Profile = () => {
                     </div>
                 </header>
 
-                <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-16">
+                <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-x-12 md:gap-x-20 gap-y-10 md:gap-y-16">
 
-                    <div className="space-y-10">
+                    {/* Personal Details */}
+                    <div className="space-y-8 md:space-y-10">
                         <h3 className="text-[11px] font-black uppercase tracking-[0.4em] pb-4"
                             style={{ color: 'var(--text-muted)', borderBottom: '1px solid var(--border-color)' }}>
                             Personal Details
@@ -170,7 +172,8 @@ const Profile = () => {
                         ))}
                     </div>
 
-                    <div className="space-y-10">
+                    {/* Contact & Location */}
+                    <div className="space-y-8 md:space-y-10">
                         <h3 className="text-[11px] font-black uppercase tracking-[0.4em] pb-4"
                             style={{ color: 'var(--text-muted)', borderBottom: '1px solid var(--border-color)' }}>
                             Contact & Location
@@ -197,9 +200,9 @@ const Profile = () => {
                             </div>
                         ))}
 
-                        <div className="pt-6">
+                        <div className="pt-4 md:pt-6">
                             <button type="button" className="group flex items-center gap-4 cursor-pointer">
-                                <div className="w-12 h-12 rounded-full flex items-center justify-center transition-all"
+                                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all"
                                     style={{ border: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>
                                     <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                         <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -213,30 +216,31 @@ const Profile = () => {
                         </div>
                     </div>
 
-                    <div className="md:col-span-2 pt-20 flex flex-col md:flex-row justify-between items-center gap-6">
-                        <p className="text-[9px] font-bold uppercase tracking-widest"
+                    {/* Footer actions */}
+                    <div className="md:col-span-2 pt-12 md:pt-20 flex flex-col sm:flex-row justify-between items-center gap-6">
+                        <p className="text-[9px] font-bold uppercase tracking-widest text-center sm:text-left"
                             style={{ color: 'var(--text-muted)' }}>
                             Dernière mise à jour : {new Date(user?.updated_at).toLocaleDateString('fr-FR')}
                         </p>
 
-                        <div className="flex gap-4">
+                        <div className="flex gap-3 w-full sm:w-auto">
                             <button type="button" onClick={handleReset}
-                                className="px-10 py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition cursor-pointer"
+                                className="flex-1 sm:flex-none px-6 md:px-10 py-4 md:py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition cursor-pointer"
                                 style={{ border: '1px solid var(--border-color)', color: 'var(--text-secondary)', background: 'transparent' }}>
                                 Reset
                             </button>
 
                             <button type="submit" disabled={saving}
-                                className="px-10 py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition cursor-pointer"
+                                className="flex-1 sm:flex-none px-6 md:px-10 py-4 md:py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition cursor-pointer"
                                 style={{ background: 'var(--accent)', color: '#000', opacity: saving ? 0.6 : 1 }}>
-                                {saving ? 'Enregistrement...' : 'Enregistrer les changements'}
+                                {saving ? 'Enregistrement...' : 'Enregistrer'}
                             </button>
                         </div>
                     </div>
                 </form>
             </main>
 
-            <footer className="py-20 text-center" style={{ opacity: 0.2 }}>
+            <footer className="py-12 md:py-20 text-center" style={{ opacity: 0.2 }}>
                 <span className="text-[10px] font-black uppercase tracking-[0.5em] italic"
                     style={{ color: 'var(--text-primary)' }}>
                     EcoWork Identity Protocol

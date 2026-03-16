@@ -155,9 +155,9 @@ export default function SpaceShow() {
             </div>
 
             <div className="grid grid-cols-2 gap-4 mb-10">
-              {IMAGES.slice(1).map((img, i) => (
+              {(space.images?.length > 1 ? space.images.slice(1, 3) : []).map((img, i) => (
                 <div key={i} className="rounded-2xl overflow-hidden" style={{ height: "200px" }}>
-                  <img src={img} alt={`${space.name} ${i + 2}`} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                  <img src={`http://127.0.0.1:8000/storage/${img.filename}`} alt={`${space.name} ${i + 2}`} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
                 </div>
               ))}
             </div>

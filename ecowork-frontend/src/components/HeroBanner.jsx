@@ -7,6 +7,7 @@ import heroLight from '../assets/hero-light.jpeg'
 export default function HeroBanner() {
   const { isDark, toggle } = useTheme()
   const { logout } = useContext(AuthContext)
+  const { logout } = useContext(AuthContext)
   const navigate = useNavigate()
 
   // Vérifier si connecté
@@ -20,6 +21,7 @@ export default function HeroBanner() {
   const [availableSpaces, setAvailableSpaces] = useState([])
   const [loadingSpaces, setLoadingSpaces] = useState(false)
   const [filtered, setFiltered] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
     fetch("http://127.0.0.1:8000/api/spaces?per_page=100")
@@ -65,18 +67,32 @@ export default function HeroBanner() {
       navigate('/login')
     }
   }
+    if (selectedSpace) {
+      navigate(`/spaces/${selectedSpace}`, {
+        state: { preselectedDate: selectedDate }
+      })
+    } else {
+      navigate('/spaces')
+    }
+  }
+
+  const handleLogout = async () => {
+    if (confirm('Voulez-vous vraiment vous déconnecter ?')) {
+      await logout()
+      navigate('/login')
+    }
+  }
 
   return (
     <section className="relative w-full min-h-screen overflow-hidden" style={{ background: "var(--bg-primary)" }}>
 
       {/* Background image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center"
+      <div className="absolute inset-0 bg-cover bg-center"
         style={{
           backgroundImage: isDark
             ? "url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80')"
             : `url(${heroLight})`,
-          filter: isDark ? "brightness(0.6) saturate(0.75)" : "brightness(0.85) saturate(0.6)",
+          filter: isDark ? "brightness(0.6) saturate(0.75)" : "brightness(0.6) saturate(0.8)",
         }}
       />
 
@@ -85,12 +101,13 @@ export default function HeroBanner() {
         style={{
           background: isDark
             ? "linear-gradient(to bottom, rgba(0,0,0,0.0) 0%, rgba(0,0,0,0.0) 40%, rgba(0,0,0,0.7) 70%, rgba(0,0,0,1) 100%)"
-            : "linear-gradient(to bottom, rgba(245,245,240,0.0) 0%, rgba(245,245,240,0.0) 40%, rgba(245,245,240,0.7) 70%, rgba(245,245,240,1) 100%)",
+            : "linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.4) 100%)",
         }}
       />
 
       {/* NAVBAR */}
-      <nav className="relative z-10 flex items-center justify-between px-12 pt-7">
+      <nav className="relative z-10 flex items-center justify-between px-6 md:px-12 pt-7">
+        {/* Logo */}
         <div className="flex flex-col gap-0.5">
           <span className="font-black text-xl uppercase tracking-wide cursor-pointer hover:opacity-70 transition"
             onClick={() => navigate('/')}
@@ -103,7 +120,8 @@ export default function HeroBanner() {
           </span>
         </div>
 
-        <span className="text-[11px] tracking-[3px] uppercase pt-1"
+        {/* Coordinates — hidden on mobile */}
+        <span className="hidden md:block text-[11px] tracking-[3px] uppercase pt-1"
           style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-secondary)" }}>
           Abidjan, CI&nbsp;&nbsp;/&nbsp;&nbsp;5.3599°N
         </span>
@@ -187,17 +205,73 @@ export default function HeroBanner() {
         </div>
       </nav>
 
-      {/* HERO CONTENT */}
-      <div className="relative z-10 flex items-center justify-between px-12 pt-20 gap-8">
+      {/* Mobile menu dropdown */}
+      {menuOpen && (
+        <div className="relative z-20 mx-6 mt-2 rounded-2xl border p-4 flex flex-col gap-2 md:hidden"
+          style={{ background: "var(--bg-card)", borderColor: "var(--border-color)", backdropFilter: "blur(20px)" }}>
+          {isLoggedIn ? (
+            <>
+              <Link
+                to={user.role === 'admin' ? '/admin/adminoverview' : '/user/dashboard'}
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-2 px-4 py-2 rounded-full border transition-all duration-300"
+                style={{ borderColor: "var(--border-color)", color: "var(--text-primary)" }}>
+                <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black"
+                  style={{ background: 'var(--accent)', color: '#000' }}>
+                  {user.firstname?.charAt(0)}
+                </div>
+                <span className="text-[9px] tracking-[2px] uppercase font-bold" style={{ fontFamily: "'Rajdhani', sans-serif" }}>
+                  {user.firstname}
+                </span>
+              </Link>
+              <button onClick={() => { setMenuOpen(false); handleLogout() }}
+                className="px-4 py-2 rounded-full text-[9px] tracking-[2px] uppercase font-bold text-left"
+                style={{ color: '#ef4444', background: isDark ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.05)', fontFamily: "'Rajdhani', sans-serif" }}>
+                Déconnexion
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" onClick={() => setMenuOpen(false)}
+                className="px-4 py-2 rounded-full border text-[9px] tracking-[2px] uppercase font-bold text-center"
+                style={{ borderColor: "var(--border-color)", color: "var(--text-secondary)", fontFamily: "'Rajdhani', sans-serif" }}>
+                Connexion
+              </Link>
+              <Link to="/register" onClick={() => setMenuOpen(false)}
+                className="px-4 py-2 rounded-full text-[9px] tracking-[2px] uppercase font-bold text-center"
+                style={{ background: "var(--accent)", color: "#000", fontFamily: "'Rajdhani', sans-serif" }}>
+                Inscription
+              </Link>
+            </>
+          )}
+        </div>
+      )}
 
-        <div className="flex-1 max-w-2xl">
+      {/* HERO CONTENT */}
+      <div className="relative z-10 flex flex-col lg:flex-row items-center lg:items-start justify-between px-6 md:px-12 pt-12 md:pt-20 gap-8 pb-8">
+
+        {/* Left: Heading + tagline */}
+        <div className="flex-1 max-w-2xl text-center lg:text-left">
           <h1 className="font-black uppercase leading-none"
-            style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "clamp(64px, 9vw, 118px)", letterSpacing: "-1px", color: "var(--text-primary)" }}>
+            style={{
+              fontFamily: "'Barlow Condensed', sans-serif",
+              fontSize: "clamp(56px, 12vw, 118px)",
+              letterSpacing: "-1px",
+              color: isDark ? "var(--text-primary)" : "#fff",
+            }}>
             L'ESPACE
-            <span className="block" style={{ color: "var(--accent)" }}>SANS LIMITES.</span>
+            <span className="block" style={{
+              color: "transparent",
+              WebkitTextStroke: isDark ? "2px var(--accent)" : "2px #fff"
+            }}>SANS LIMITES.</span>
           </h1>
-          <p className="mt-6 text-sm italic leading-relaxed pl-4 max-w-xs border-l-2"
-            style={{ fontFamily: "'Barlow', sans-serif", color: "var(--text-secondary)", borderColor: "var(--accent)" }}>
+
+          <p className="mt-6 text-sm italic leading-relaxed pl-4 max-w-xs border-l-2 mx-auto lg:mx-0"
+            style={{
+              fontFamily: "'Barlow', sans-serif",
+              color: isDark ? "var(--text-secondary)" : "rgba(255,255,255,0.85)",
+              borderColor: "var(--accent)",
+            }}>
             Sobriété numérique, confort absolu. Bienvenue<br />
             dans l'écosystème GreenSpace.
           </p>
@@ -226,14 +300,14 @@ export default function HeroBanner() {
                 <rect x="3" y="4" width="18" height="18" rx="2"/>
                 <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
               </svg>
-              <input
-                type="date"
-                min={today}
-                value={selectedDate}
+              <input type="date" min={today} value={selectedDate}
                 onChange={e => setSelectedDate(e.target.value)}
                 className="bg-transparent outline-none text-sm flex-1 cursor-pointer"
-                style={{ color: selectedDate ? "var(--text-primary)" : "var(--text-muted)", fontFamily: "'Barlow', sans-serif",
-                  colorScheme: isDark ? "dark" : "light" }}
+                style={{
+                  color: selectedDate ? "var(--text-primary)" : "var(--text-muted)",
+                  fontFamily: "'Barlow', sans-serif",
+                  colorScheme: isDark ? "dark" : "light",
+                }}
               />
             </div>
           </div>
@@ -249,9 +323,7 @@ export default function HeroBanner() {
               <svg className="w-4 h-4 flex-shrink-0" style={{ color: "var(--accent)" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
               </svg>
-              <select
-                value={selectedSpace}
-                onChange={e => setSelectedSpace(e.target.value)}
+              <select value={selectedSpace} onChange={e => setSelectedSpace(e.target.value)}
                 className="bg-transparent outline-none text-sm flex-1 cursor-pointer"
                 style={{ color: selectedSpace ? "var(--text-primary)" : "var(--text-muted)", fontFamily: "'Barlow', sans-serif" }}>
                 <option value="">
@@ -266,8 +338,7 @@ export default function HeroBanner() {
             </div>
           </div>
 
-          <button
-            onClick={handleSubmit}
+          <button onClick={handleSubmit}
             className="w-full py-4 font-bold text-xs tracking-[3px] uppercase rounded-xl transition-colors duration-200 cursor-pointer"
             style={{ fontFamily: "'Rajdhani', sans-serif", background: "var(--text-primary)", color: "var(--bg-primary)" }}>
             Vérifier la disponibilité
@@ -276,7 +347,7 @@ export default function HeroBanner() {
       </div>
 
       {/* BOTTOM BAR */}
-      <div className="relative z-10 flex items-end justify-between px-12 pb-10 mt-16">
+      <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-end justify-between px-6 md:px-12 pb-10 mt-8 md:mt-16 gap-6 sm:gap-0">
         <div className="flex gap-10">
           <div>
             <p className="text-[9px] tracking-[3px] uppercase mb-1"

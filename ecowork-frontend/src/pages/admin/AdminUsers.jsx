@@ -22,9 +22,9 @@ function RoleBadge({ role }) {
 
 function Modal({ title, onClose, children }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center"
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4"
       style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}>
-      <div className="w-full max-w-lg rounded-2xl p-8 relative"
+      <div className="w-full max-w-lg rounded-2xl p-6 md:p-8 relative"
         style={{ background: "var(--bg-primary)", border: "1px solid var(--border-color)" }}>
         <div className="flex items-center justify-between mb-6">
           <h2 className="font-black uppercase"
@@ -58,24 +58,21 @@ function UserForm({ initial, onSubmit, onClose, loading }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {fields.map((f) => (
-          <div key={f.key} className={f.full ? "col-span-2" : ""}>
+          <div key={f.key} className={f.full ? "sm:col-span-2" : ""}>
             <label className="text-[9px] tracking-[3px] uppercase block mb-1.5"
               style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
               {f.label}
             </label>
-            <input
-              type="text" value={form[f.key] || ""} placeholder={f.placeholder}
+            <input type="text" value={form[f.key] || ""} placeholder={f.placeholder}
               onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
-              className="w-full px-4 py-3 rounded-xl outline-none text-sm transition-colors"
-              style={{ background: "var(--border-color)", border: "1px solid var(--border-color)", color: "var(--text-primary)", fontFamily: "'Barlow', sans-serif" }}
-            />
+              className="w-full px-4 py-3 rounded-xl outline-none text-sm"
+              style={{ background: "var(--border-color)", border: "1px solid var(--border-color)", color: "var(--text-primary)", fontFamily: "'Barlow', sans-serif" }} />
           </div>
         ))}
 
-        {/* Rôle */}
-        <div className="col-span-2">
+        <div className="sm:col-span-2">
           <label className="text-[9px] tracking-[3px] uppercase block mb-1.5"
             style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
             Rôle
@@ -140,7 +137,6 @@ export default function AdminUsers() {
     const params = new URLSearchParams({ page });
     if (search) params.append("search", search);
     if (filterRole) params.append("role", filterRole);
-
     fetch(`${API}/admin/users?${params}`, { headers })
       .then((r) => r.json())
       .then((data) => {
@@ -187,80 +183,75 @@ export default function AdminUsers() {
       <div className="flex min-h-screen" style={{ background: "var(--bg-primary)" }}>
         <Sidebar active="users" />
 
-        <main className="flex-1 px-10 py-8 overflow-auto" style={{ fontFamily: "'Barlow', sans-serif" }}>
+        <main className="flex-1 px-4 md:px-10 py-6 md:py-8 overflow-auto pt-20 md:pt-8" style={{ fontFamily: "'Barlow', sans-serif" }}>
 
-          {/* ── Header ── */}
-          <div className="flex items-center justify-between mb-8">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-6 md:mb-8 gap-3">
             <div>
               <p className="text-[9px] tracking-[4px] uppercase mb-1"
                 style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
                 Admin · Utilisateurs
               </p>
               <h1 className="font-black uppercase leading-none"
-                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "36px", color: "var(--text-primary)", letterSpacing: "-0.5px" }}>
+                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "clamp(18px, 4vw, 36px)", color: "var(--text-primary)", letterSpacing: "-0.5px" }}>
                 Gestion des utilisateurs
               </h1>
             </div>
 
-            <div className="flex items-center gap-3">
-              <button onClick={toggle}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all cursor-pointer"
-                style={{ borderColor: "var(--border-color)", background: "var(--bg-card)", color: "var(--text-secondary)" }}>
-                {isDark ? (
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                    <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-                  </svg>
-                ) : (
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                  </svg>
-                )}
-                <span className="text-[9px] tracking-[2px] uppercase" style={{ fontFamily: "'Rajdhani', sans-serif" }}>
-                  {isDark ? "Light" : "Dark"}
-                </span>
-              </button>
-            </div>
+            <button onClick={toggle}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all cursor-pointer flex-shrink-0"
+              style={{ borderColor: "var(--border-color)", background: "var(--bg-card)", color: "var(--text-secondary)" }}>
+              {isDark ? (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                  <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                </svg>
+              ) : (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+              )}
+              <span className="hidden sm:inline text-[9px] tracking-[2px] uppercase" style={{ fontFamily: "'Rajdhani', sans-serif" }}>
+                {isDark ? "Light" : "Dark"}
+              </span>
+            </button>
           </div>
 
-          {/* ── Filters ── */}
-          <div className="flex items-center gap-3 mb-6">
-            {/* Search */}
-            <div className="flex items-center gap-2 flex-1 px-4 py-2.5 rounded-xl"
+          {/* Filters */}
+          <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-5 md:mb-6">
+            <div className="flex items-center gap-2 flex-1 min-w-[160px] px-3 md:px-4 py-2 md:py-2.5 rounded-xl"
               style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: "var(--text-muted)" }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: "var(--text-muted)", flexShrink: 0 }}>
                 <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
               </svg>
               <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
-                placeholder="Rechercher un utilisateur..."
+                placeholder="Rechercher..."
                 className="bg-transparent outline-none text-sm flex-1"
-                style={{ color: "var(--text-primary)", fontFamily: "'Barlow', sans-serif" }}
-              />
+                style={{ color: "var(--text-primary)", fontFamily: "'Barlow', sans-serif" }} />
             </div>
 
-            {/* Role filter */}
             <select value={filterRole} onChange={(e) => { setFilterRole(e.target.value); setPage(1); }}
-              className="px-4 py-2.5 rounded-xl outline-none text-xs cursor-pointer"
-              style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", fontFamily: "'Rajdhani', sans-serif", letterSpacing: "1px" }}>
-              <option value="">Tous les rôles</option>
+              className="px-3 md:px-4 py-2 md:py-2.5 rounded-xl outline-none text-xs cursor-pointer"
+              style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", fontFamily: "'Rajdhani', sans-serif" }}>
+              <option value="">Tous rôles</option>
               <option value="user">Users</option>
               <option value="admin">Admins</option>
             </select>
 
             <span className="text-[10px] tracking-[2px] uppercase whitespace-nowrap"
               style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
-              {meta.total} utilisateur{meta.total > 1 ? "s" : ""}
+              {meta.total} user{meta.total > 1 ? "s" : ""}
             </span>
           </div>
 
-          {/* ── Table ── */}
+          {/* Table */}
           <div className="rounded-2xl overflow-hidden"
             style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
 
-            {/* Col headers */}
-            <div className="grid px-6 py-3"
+            {/* Desktop header */}
+            <div className="hidden lg:grid px-6 py-3"
               style={{ gridTemplateColumns: "2.5fr 2fr 1fr 1.5fr 1fr", borderBottom: "1px solid var(--border-color)" }}>
               {["Utilisateur", "Email", "Rôle", "Inscrit le", "Actions"].map((h) => (
                 <p key={h} className="text-[8px] tracking-[2px] uppercase"
@@ -285,14 +276,55 @@ export default function AdminUsers() {
             ) : (
               users.map((user, i) => (
                 <div key={user.id}
-                  className="row-hover grid px-6 py-4 items-center transition-colors"
-                  style={{
-                    gridTemplateColumns: "2.5fr 2fr 1fr 1.5fr 1fr",
-                    borderBottom: i < users.length - 1 ? "1px solid var(--border-color)" : "none",
-                  }}>
+                  style={{ borderBottom: i < users.length - 1 ? "1px solid var(--border-color)" : "none" }}>
 
-                  {/* Utilisateur */}
-                  <div className="flex items-center gap-3">
+                  {/* Desktop row */}
+                  <div className="row-hover hidden lg:grid px-6 py-4 items-center transition-colors"
+                    style={{ gridTemplateColumns: "2.5fr 2fr 1fr 1.5fr 1fr" }}>
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-sm"
+                        style={{
+                          background: user.role === "admin" ? "rgba(167,139,250,0.2)" : "rgba(41,212,224,0.15)",
+                          color: user.role === "admin" ? "#a78bfa" : "var(--accent)",
+                          fontFamily: "'Barlow Condensed', sans-serif",
+                        }}>
+                        {user.firstname?.[0]}{user.lastname?.[0]}
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold" style={{ color: "var(--text-primary)", fontFamily: "'Barlow Condensed', sans-serif" }}>
+                          {user.firstname} {user.lastname}
+                        </p>
+                        <p className="text-[10px]" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>
+                          {user.phone || "—"}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="text-sm truncate" style={{ color: "var(--text-secondary)", fontFamily: "'Barlow', sans-serif" }}>{user.email}</p>
+                    <RoleBadge role={user.role} />
+                    <p className="text-[11px]" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>{formatDate(user.created_at)}</p>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => setShowEdit(user)}
+                        className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:opacity-80"
+                        style={{ background: "rgba(41,212,224,0.1)", color: "var(--accent)" }}>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                      </button>
+                      <button onClick={() => setShowDelete(user)}
+                        className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:opacity-80"
+                        style={{ background: "rgba(248,113,113,0.1)", color: "#f87171" }}>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                          <path d="M10 11v6"/><path d="M14 11v6"/>
+                          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Mobile card */}
+                  <div className="lg:hidden px-4 py-3 flex items-center gap-3">
                     <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-sm"
                       style={{
                         background: user.role === "admin" ? "rgba(167,139,250,0.2)" : "rgba(41,212,224,0.15)",
@@ -301,66 +333,55 @@ export default function AdminUsers() {
                       }}>
                       {user.firstname?.[0]}{user.lastname?.[0]}
                     </div>
-                    <div>
-                      <p className="text-sm font-bold" style={{ color: "var(--text-primary)", fontFamily: "'Barlow Condensed', sans-serif" }}>
-                        {user.firstname} {user.lastname}
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-sm font-bold truncate" style={{ color: "var(--text-primary)", fontFamily: "'Barlow Condensed', sans-serif" }}>
+                          {user.firstname} {user.lastname}
+                        </p>
+                        <RoleBadge role={user.role} />
+                      </div>
+                      <p className="text-[9px] truncate mt-0.5" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>
+                        {user.email}
                       </p>
-                      <p className="text-[10px]" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>
-                        {user.phone || "—"}
-                      </p>
+                      <div className="flex items-center justify-between mt-2">
+                        <p className="text-[9px]" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>
+                          {formatDate(user.created_at)}
+                        </p>
+                        <div className="flex gap-2">
+                          <button onClick={() => setShowEdit(user)}
+                            className="w-7 h-7 rounded-lg flex items-center justify-center cursor-pointer"
+                            style={{ background: "rgba(41,212,224,0.1)", color: "var(--accent)" }}>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                            </svg>
+                          </button>
+                          <button onClick={() => setShowDelete(user)}
+                            className="w-7 h-7 rounded-lg flex items-center justify-center cursor-pointer"
+                            style={{ background: "rgba(248,113,113,0.1)", color: "#f87171" }}>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                              <path d="M10 11v6"/><path d="M14 11v6"/>
+                              <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-
-                  {/* Email */}
-                  <p className="text-sm truncate" style={{ color: "var(--text-secondary)", fontFamily: "'Barlow', sans-serif" }}>
-                    {user.email}
-                  </p>
-
-                  {/* Rôle */}
-                  <RoleBadge role={user.role} />
-
-                  {/* Date inscription */}
-                  <p className="text-[11px]" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>
-                    {formatDate(user.created_at)}
-                  </p>
-
-                  {/* Actions */}
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => setShowEdit(user)}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-all hover:opacity-80"
-                      style={{ background: "rgba(41,212,224,0.1)", color: "var(--accent)" }}
-                      title="Modifier">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                      </svg>
-                    </button>
-                    <button onClick={() => setShowDelete(user)}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-all hover:opacity-80"
-                      style={{ background: "rgba(248,113,113,0.1)", color: "#f87171" }}
-                      title="Supprimer">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polyline points="3 6 5 6 21 6"/>
-                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                        <path d="M10 11v6"/><path d="M14 11v6"/>
-                        <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-                      </svg>
-                    </button>
                   </div>
                 </div>
               ))
             )}
           </div>
 
-          {/* ── Pagination ── */}
+          {/* Pagination */}
           {meta.last_page > 1 && (
-            <div className="flex items-center justify-center gap-2 mt-6">
+            <div className="flex items-center justify-center gap-2 mt-6 flex-wrap">
               <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
                 className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer"
                 style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", color: "var(--text-muted)", opacity: page === 1 ? 0.4 : 1 }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M15 18l-6-6 6-6"/>
-                </svg>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
               </button>
               {Array.from({ length: meta.last_page }).map((_, i) => (
                 <button key={i} onClick={() => setPage(i + 1)}
@@ -377,23 +398,21 @@ export default function AdminUsers() {
               <button onClick={() => setPage(p => Math.min(meta.last_page, p + 1))} disabled={page === meta.last_page}
                 className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer"
                 style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", color: "var(--text-muted)", opacity: page === meta.last_page ? 0.4 : 1 }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M9 18l6-6-6-6"/>
-                </svg>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
               </button>
             </div>
           )}
         </main>
       </div>
 
-      {/* ── Modal Modifier ── */}
+      {/* Modal Modifier */}
       {showEdit && (
         <Modal title="Modifier l'utilisateur" onClose={() => setShowEdit(null)}>
           <UserForm initial={showEdit} onSubmit={handleEdit} onClose={() => setShowEdit(null)} loading={saving} />
         </Modal>
       )}
 
-      {/* ── Modal Supprimer ── */}
+      {/* Modal Supprimer */}
       {showDelete && (
         <Modal title="Supprimer l'utilisateur" onClose={() => setShowDelete(null)}>
           <p className="text-sm mb-6" style={{ color: "var(--text-secondary)", fontFamily: "'Barlow', sans-serif" }}>

@@ -5,14 +5,14 @@ export default function ProductivitySection() {
 
     return (
         <section 
-            className="relative z-30 py-32 px-6 md:px-20 transition-colors duration-500 overflow-hidden"
+            className="relative z-30 py-16 px-6 md:px-20 transition-colors duration-500 overflow-hidden"
             style={{ 
-                background: "var(--bg-primary)", // Utilise ton thème
+                background: "var(--bg-primary)", 
                 color: "var(--text-primary)" 
             }}
         >
             {/* Ligne de séparation discrète */}
-            <div className="max-w-7xl mx-auto h-px mb-32" style={{ background: "var(--border-color)" }}></div>
+            <div className="max-w-7xl mx-auto h-px mb-16" style={{ background: "var(--border-color)" }}></div>
 
             <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-20 items-center">
 

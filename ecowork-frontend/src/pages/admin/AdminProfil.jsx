@@ -38,10 +38,7 @@ export default function AdminProfil() {
 
   const handleSave = async () => {
     setSaving(true);
-    await fetch(`${API}/admin/users/${user.id}`, {
-      method: "PUT", headers,
-      body: JSON.stringify(form),
-    });
+    await fetch(`${API}/admin/users/${user.id}`, { method: "PUT", headers, body: JSON.stringify(form) });
     setSaving(false);
     setSuccess(true);
     setTimeout(() => setSuccess(false), 3000);
@@ -66,17 +63,17 @@ export default function AdminProfil() {
       <div className="flex min-h-screen" style={{ background: "var(--bg-primary)" }}>
         <Sidebar active="profil" />
 
-        <main className="flex-1 px-10 py-8" style={{ fontFamily: "'Barlow', sans-serif" }}>
+        <main className="flex-1 px-4 md:px-10 py-6 md:py-8 pt-20 md:pt-8" style={{ fontFamily: "'Barlow', sans-serif" }}>
 
           {/* Header */}
-          <div className="flex items-center justify-between mb-10">
+          <div className="flex items-center justify-between mb-8 md:mb-10">
             <div>
               <p className="text-[9px] tracking-[4px] uppercase mb-1"
                 style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
                 Admin · Profil
               </p>
               <h1 className="font-black uppercase leading-none"
-                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "36px", color: "var(--text-primary)", letterSpacing: "-0.5px" }}>
+                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "clamp(20px, 4vw, 36px)", color: "var(--text-primary)", letterSpacing: "-0.5px" }}>
                 Mon profil
               </h1>
             </div>
@@ -96,7 +93,7 @@ export default function AdminProfil() {
                   <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
                 </svg>
               )}
-              <span className="text-[9px] tracking-[2px] uppercase" style={{ fontFamily: "'Rajdhani', sans-serif" }}>
+              <span className="hidden sm:inline text-[9px] tracking-[2px] uppercase" style={{ fontFamily: "'Rajdhani', sans-serif" }}>
                 {isDark ? "Light" : "Dark"}
               </span>
             </button>
@@ -105,21 +102,19 @@ export default function AdminProfil() {
           {loading ? (
             <p style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif", letterSpacing: "2px" }}>Chargement...</p>
           ) : (
-            <div className="flex gap-8 max-w-4xl">
+            <div className="flex flex-col md:flex-row gap-6 md:gap-8 max-w-4xl">
 
-              {/* ── Avatar card ── */}
-              <div className="w-56 flex-shrink-0">
+              {/* Avatar card */}
+              <div className="w-full md:w-56 md:flex-shrink-0">
                 <div className="rounded-2xl p-6 flex flex-col items-center gap-4"
                   style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
-
-                  {/* Avatar */}
-                  <div className="w-20 h-20 rounded-full flex items-center justify-center font-black text-2xl"
+                  <div className="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center font-black text-xl md:text-2xl"
                     style={{ background: "var(--accent)", color: "#000", fontFamily: "'Barlow Condensed', sans-serif" }}>
                     {user.firstname?.[0]}{user.lastname?.[0]}
                   </div>
 
                   <div className="text-center">
-                    <p className="font-black text-lg leading-none mb-1"
+                    <p className="font-black text-base md:text-lg leading-none mb-1"
                       style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "var(--text-primary)" }}>
                       {user.firstname} {user.lastname}
                     </p>
@@ -130,33 +125,29 @@ export default function AdminProfil() {
                   </div>
 
                   <div className="w-full pt-4" style={{ borderTop: "1px solid var(--border-color)" }}>
-                    <div className="flex flex-col gap-2">
-                      <div>
-                        <p className="text-[8px] tracking-[2px] uppercase mb-0.5"
-                          style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
-                          Membre depuis
-                        </p>
-                        <p className="text-xs" style={{ color: "var(--text-secondary)", fontFamily: "'Rajdhani', sans-serif" }}>
-                          {new Date(user.created_at).toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" })}
-                        </p>
-                      </div>
-                    </div>
+                    <p className="text-[8px] tracking-[2px] uppercase mb-0.5"
+                      style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
+                      Membre depuis
+                    </p>
+                    <p className="text-xs" style={{ color: "var(--text-secondary)", fontFamily: "'Rajdhani', sans-serif" }}>
+                      {new Date(user.created_at).toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" })}
+                    </p>
                   </div>
                 </div>
               </div>
 
-              {/* ── Form ── */}
-              <div className="flex-1 rounded-2xl p-8"
+              {/* Form */}
+              <div className="flex-1 rounded-2xl p-5 md:p-8"
                 style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
 
-                <p className="text-[9px] tracking-[3px] uppercase mb-6"
+                <p className="text-[9px] tracking-[3px] uppercase mb-5 md:mb-6"
                   style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
                   Informations personnelles
                 </p>
 
-                <div className="grid grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
                   {fields.map((f) => (
-                    <div key={f.key} className={f.full ? "col-span-2" : ""}>
+                    <div key={f.key} className={f.full ? "sm:col-span-2" : ""}>
                       <label className="block text-[9px] tracking-[3px] uppercase mb-2"
                         style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
                         {f.label}
@@ -178,11 +169,11 @@ export default function AdminProfil() {
                   ))}
                 </div>
 
-                <div className="mt-8" style={{ borderTop: "1px solid var(--border-color)" }} />
+                <div className="mt-6 md:mt-8" style={{ borderTop: "1px solid var(--border-color)" }} />
 
-                <div className="flex items-center gap-4 mt-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-5 md:mt-6">
                   <button onClick={handleSave} disabled={saving}
-                    className="flex items-center gap-2 px-8 py-3 rounded-xl text-xs tracking-[2px] uppercase font-bold cursor-pointer transition-all"
+                    className="flex items-center gap-2 px-6 md:px-8 py-3 rounded-xl text-xs tracking-[2px] uppercase font-bold cursor-pointer transition-all w-full sm:w-auto justify-center"
                     style={{ background: "var(--accent)", color: "#000", fontFamily: "'Rajdhani', sans-serif", opacity: saving ? 0.7 : 1 }}>
                     {saving ? "Enregistrement..." : (
                       <>
@@ -194,7 +185,6 @@ export default function AdminProfil() {
                     )}
                   </button>
 
-                  {/* Success message */}
                   {success && (
                     <div className="flex items-center gap-2 px-4 py-2 rounded-xl"
                       style={{ background: "rgba(74,222,128,0.12)", border: "1px solid rgba(74,222,128,0.3)" }}>

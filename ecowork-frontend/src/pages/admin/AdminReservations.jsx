@@ -22,9 +22,9 @@ function StatusBadge({ status }) {
 
 function Modal({ title, onClose, children }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center"
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4"
       style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}>
-      <div className="w-full max-w-md rounded-2xl p-8 relative"
+      <div className="w-full max-w-md rounded-2xl p-6 md:p-8 relative"
         style={{ background: "var(--bg-primary)", border: "1px solid var(--border-color)" }}>
         <div className="flex items-center justify-between mb-6">
           <h2 className="font-black uppercase"
@@ -70,7 +70,7 @@ export default function AdminReservations() {
     if (filterStatus) params.append("status", filterStatus);
     if (filterPaid !== "") params.append("is_paid", filterPaid);
 
-   fetch(`${API}/admin/reservations?${params}`, { headers })
+    fetch(`${API}/admin/reservations?${params}`, { headers })
       .then((r) => r.json())
       .then((data) => {
         setReservations(data.data || []);
@@ -93,9 +93,7 @@ export default function AdminReservations() {
   };
 
   const handleMarkPaid = async (reservation) => {
-    await fetch(`${API}/reservations/${reservation.id}/paid`, {
-      method: "PATCH", headers,
-    });
+    await fetch(`${API}/reservations/${reservation.id}/paid`, { method: "PATCH", headers });
     fetchReservations();
   };
 
@@ -120,17 +118,17 @@ export default function AdminReservations() {
       <div className="flex min-h-screen" style={{ background: "var(--bg-primary)" }}>
         <Sidebar active="reservations" />
 
-        <main className="flex-1 px-10 py-8 overflow-auto" style={{ fontFamily: "'Barlow', sans-serif" }}>
+        <main className="flex-1 px-4 md:px-10 py-6 md:py-8 overflow-auto pt-20 md:pt-8" style={{ fontFamily: "'Barlow', sans-serif" }}>
 
-          {/* ── Header ── */}
-          <div className="flex items-center justify-between mb-8">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-6 md:mb-8">
             <div>
               <p className="text-[9px] tracking-[4px] uppercase mb-1"
                 style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
                 Admin · Réservations
               </p>
               <h1 className="font-black uppercase leading-none"
-                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "36px", color: "var(--text-primary)", letterSpacing: "-0.5px" }}>
+                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "clamp(20px, 4vw, 36px)", color: "var(--text-primary)", letterSpacing: "-0.5px" }}>
                 Gestion des réservations
               </h1>
             </div>
@@ -150,30 +148,26 @@ export default function AdminReservations() {
                   <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
                 </svg>
               )}
-              <span className="text-[9px] tracking-[2px] uppercase" style={{ fontFamily: "'Rajdhani', sans-serif" }}>
+              <span className="hidden sm:inline text-[9px] tracking-[2px] uppercase" style={{ fontFamily: "'Rajdhani', sans-serif" }}>
                 {isDark ? "Light" : "Dark"}
               </span>
             </button>
-
           </div>
 
-          {/* ── Filters ── */}
-          <div className="flex items-center gap-3 mb-6">
-
-            {/* Statut */}
+          {/* Filters */}
+          <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-5 md:mb-6">
             <select value={filterStatus} onChange={(e) => { setFilterStatus(e.target.value); setPage(1); }}
-              className="px-4 py-2.5 rounded-xl outline-none text-xs cursor-pointer"
-              style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", fontFamily: "'Rajdhani', sans-serif", letterSpacing: "1px" }}>
-              <option value="">Tous les statuts</option>
+              className="px-3 md:px-4 py-2 md:py-2.5 rounded-xl outline-none text-xs cursor-pointer"
+              style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", fontFamily: "'Rajdhani', sans-serif" }}>
+              <option value="">Tous statuts</option>
               <option value="en_attente">En attente</option>
               <option value="confirmee">Confirmée</option>
               <option value="annulee">Annulée</option>
             </select>
 
-            {/* Paiement */}
             <select value={filterPaid} onChange={(e) => { setFilterPaid(e.target.value); setPage(1); }}
-              className="px-4 py-2.5 rounded-xl outline-none text-xs cursor-pointer"
-              style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", fontFamily: "'Rajdhani', sans-serif", letterSpacing: "1px" }}>
+              className="px-3 md:px-4 py-2 md:py-2.5 rounded-xl outline-none text-xs cursor-pointer"
+              style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", fontFamily: "'Rajdhani', sans-serif" }}>
               <option value="">Tout paiement</option>
               <option value="1">Payées</option>
               <option value="0">Non payées</option>
@@ -181,16 +175,16 @@ export default function AdminReservations() {
 
             <span className="text-[10px] tracking-[2px] uppercase ml-auto"
               style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
-              {meta.total} réservation{meta.total > 1 ? "s" : ""}
+              {meta.total} résv.
             </span>
           </div>
 
-          {/* ── Table ── */}
+          {/* Table container */}
           <div className="rounded-2xl overflow-hidden"
             style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
 
-            {/* Col headers */}
-            <div className="grid px-6 py-3"
+            {/* Desktop header */}
+            <div className="hidden lg:grid px-6 py-3"
               style={{ gridTemplateColumns: "2fr 1.5fr 2fr 1.2fr 1fr 1fr 1fr", borderBottom: "1px solid var(--border-color)" }}>
               {["Client", "Espace", "Dates", "Montant", "Statut", "Paiement", "Actions"].map((h) => (
                 <p key={h} className="text-[8px] tracking-[2px] uppercase"
@@ -215,106 +209,163 @@ export default function AdminReservations() {
             ) : (
               reservations.map((r, i) => (
                 <div key={r.id}
-                  className="row-hover grid px-6 py-4 items-center transition-colors"
-                  style={{
-                    gridTemplateColumns: "2fr 1.5fr 2fr 1.2fr 1fr 1fr 1fr",
-                    borderBottom: i < reservations.length - 1 ? "1px solid var(--border-color)" : "none",
-                  }}>
+                  style={{ borderBottom: i < reservations.length - 1 ? "1px solid var(--border-color)" : "none" }}>
 
-                  {/* Client */}
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-xs"
-                      style={{ background: "var(--accent)", color: "#000", fontFamily: "'Barlow Condensed', sans-serif" }}>
-                      {r.user?.firstname?.[0]}{r.user?.lastname?.[0]}
+                  {/* Desktop row */}
+                  <div className="row-hover hidden lg:grid px-6 py-4 items-center transition-colors"
+                    style={{ gridTemplateColumns: "2fr 1.5fr 2fr 1.2fr 1fr 1fr 1fr" }}>
+
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-xs"
+                        style={{ background: "var(--accent)", color: "#000", fontFamily: "'Barlow Condensed', sans-serif" }}>
+                        {r.user?.firstname?.[0]}{r.user?.lastname?.[0]}
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold" style={{ color: "var(--text-primary)", fontFamily: "'Barlow Condensed', sans-serif" }}>
+                          {r.user?.firstname} {r.user?.lastname}
+                        </p>
+                        <p className="text-[10px]" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>
+                          {r.user?.email}
+                        </p>
+                      </div>
                     </div>
+
+                    <p className="text-sm" style={{ color: "var(--text-secondary)", fontFamily: "'Barlow Condensed', sans-serif" }}>
+                      {r.space?.name}
+                    </p>
+
                     <div>
-                      <p className="text-sm font-bold" style={{ color: "var(--text-primary)", fontFamily: "'Barlow Condensed', sans-serif" }}>
-                        {r.user?.firstname} {r.user?.lastname}
-                      </p>
-                      <p className="text-[10px]" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>
-                        {r.user?.email}
-                      </p>
+                      <p className="text-[10px]" style={{ color: "var(--text-secondary)", fontFamily: "'Rajdhani', sans-serif" }}>{formatDate(r.start_date)}</p>
+                      <p className="text-[10px]" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>→ {formatDate(r.end_date)}</p>
+                    </div>
+
+                    <p className="text-sm font-bold" style={{ color: "var(--accent)", fontFamily: "'Barlow Condensed', sans-serif" }}>
+                      {Number(r.total_price).toLocaleString()} <span className="text-[10px]">FCFA</span>
+                    </p>
+
+                    <StatusBadge status={r.status} />
+
+                    <div>
+                      {r.is_paid ? (
+                        <span className="px-2.5 py-1 rounded-full text-[9px] tracking-[1px] uppercase font-bold"
+                          style={{ background: "rgba(74,222,128,0.12)", color: "#4ade80", fontFamily: "'Rajdhani', sans-serif" }}>
+                          Payée
+                        </span>
+                      ) : (
+                        <button onClick={() => handleMarkPaid(r)}
+                          className="px-2.5 py-1 rounded-full text-[9px] tracking-[1px] uppercase font-bold cursor-pointer hover:opacity-80"
+                          style={{ background: "rgba(251,146,60,0.12)", color: "#fb923c", fontFamily: "'Rajdhani', sans-serif" }}>
+                          Non payée
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => setShowStatus(r)}
+                        className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:opacity-80"
+                        style={{ background: "rgba(167,139,250,0.1)", color: "#a78bfa" }}>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <polyline points="9 11 12 14 22 4"/>
+                          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                        </svg>
+                      </button>
+                      <button onClick={() => setShowDelete(r)}
+                        className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:opacity-80"
+                        style={{ background: "rgba(248,113,113,0.1)", color: "#f87171" }}>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                          <path d="M10 11v6"/><path d="M14 11v6"/>
+                          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                        </svg>
+                      </button>
                     </div>
                   </div>
 
-                  {/* Espace */}
-                  <p className="text-sm" style={{ color: "var(--text-secondary)", fontFamily: "'Barlow Condensed', sans-serif" }}>
-                    {r.space?.name}
-                  </p>
+                  {/* Mobile/tablet card */}
+                  <div className="lg:hidden px-4 py-4 space-y-3">
+                    {/* Top: avatar + name + status */}
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-xs"
+                          style={{ background: "var(--accent)", color: "#000", fontFamily: "'Barlow Condensed', sans-serif" }}>
+                          {r.user?.firstname?.[0]}{r.user?.lastname?.[0]}
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold" style={{ color: "var(--text-primary)", fontFamily: "'Barlow Condensed', sans-serif" }}>
+                            {r.user?.firstname} {r.user?.lastname}
+                          </p>
+                          <p className="text-[9px]" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>
+                            {r.user?.email}
+                          </p>
+                        </div>
+                      </div>
+                      <StatusBadge status={r.status} />
+                    </div>
 
-                  {/* Dates */}
-                  <div>
-                    <p className="text-[10px]" style={{ color: "var(--text-secondary)", fontFamily: "'Rajdhani', sans-serif" }}>
-                      {formatDate(r.start_date)}
-                    </p>
-                    <p className="text-[10px]" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>
-                      → {formatDate(r.end_date)}
-                    </p>
-                  </div>
+                    {/* Middle: space + dates + price */}
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-bold" style={{ color: "var(--text-secondary)", fontFamily: "'Barlow Condensed', sans-serif" }}>
+                          {r.space?.name}
+                        </p>
+                        <p className="text-[9px]" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>
+                          {formatDate(r.start_date)} → {formatDate(r.end_date)}
+                        </p>
+                      </div>
+                      <p className="text-sm font-bold" style={{ color: "var(--accent)", fontFamily: "'Barlow Condensed', sans-serif" }}>
+                        {Number(r.total_price).toLocaleString()} FCFA
+                      </p>
+                    </div>
 
-                  {/* Montant */}
-                  <p className="text-sm font-bold" style={{ color: "var(--accent)", fontFamily: "'Barlow Condensed', sans-serif" }}>
-                    {Number(r.total_price).toLocaleString()} <span className="text-[10px]">FCFA</span>
-                  </p>
-
-                  {/* Statut */}
-                  <StatusBadge status={r.status} />
-
-                  {/* Paiement */}
-                  <div>
-                    {r.is_paid ? (
-                      <span className="px-2.5 py-1 rounded-full text-[9px] tracking-[1px] uppercase font-bold"
-                        style={{ background: "rgba(74,222,128,0.12)", color: "#4ade80", fontFamily: "'Rajdhani', sans-serif" }}>
-                        Payée
-                      </span>
-                    ) : (
-                      <button onClick={() => handleMarkPaid(r)}
-                        className="px-2.5 py-1 rounded-full text-[9px] tracking-[1px] uppercase font-bold cursor-pointer transition-all hover:opacity-80"
-                        style={{ background: "rgba(251,146,60,0.12)", color: "#fb923c", fontFamily: "'Rajdhani', sans-serif" }}>
-                        Non payée
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex items-center gap-2">
-                    {/* Changer statut */}
-                    <button onClick={() => setShowStatus(r)}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-all hover:opacity-80"
-                      style={{ background: "rgba(167,139,250,0.1)", color: "#a78bfa" }}
-                      title="Changer le statut">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polyline points="9 11 12 14 22 4"/>
-                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
-                      </svg>
-                    </button>
-                    {/* Supprimer */}
-                    <button onClick={() => setShowDelete(r)}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-all hover:opacity-80"
-                      style={{ background: "rgba(248,113,113,0.1)", color: "#f87171" }}
-                      title="Supprimer">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polyline points="3 6 5 6 21 6"/>
-                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                        <path d="M10 11v6"/><path d="M14 11v6"/>
-                        <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-                      </svg>
-                    </button>
+                    {/* Bottom: payment + actions */}
+                    <div className="flex items-center justify-between pt-1">
+                      <div>
+                        {r.is_paid ? (
+                          <span className="px-2.5 py-1 rounded-full text-[9px] uppercase font-bold"
+                            style={{ background: "rgba(74,222,128,0.12)", color: "#4ade80", fontFamily: "'Rajdhani', sans-serif" }}>
+                            Payée
+                          </span>
+                        ) : (
+                          <button onClick={() => handleMarkPaid(r)}
+                            className="px-2.5 py-1 rounded-full text-[9px] uppercase font-bold cursor-pointer"
+                            style={{ background: "rgba(251,146,60,0.12)", color: "#fb923c", fontFamily: "'Rajdhani', sans-serif" }}>
+                            Non payée
+                          </button>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        <button onClick={() => setShowStatus(r)}
+                          className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer"
+                          style={{ background: "rgba(167,139,250,0.1)", color: "#a78bfa" }}>
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <polyline points="9 11 12 14 22 4"/>
+                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                          </svg>
+                        </button>
+                        <button onClick={() => setShowDelete(r)}
+                          className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer"
+                          style={{ background: "rgba(248,113,113,0.1)", color: "#f87171" }}>
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                            <path d="M10 11v6"/><path d="M14 11v6"/>
+                            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))
             )}
           </div>
 
-          {/* ── Pagination ── */}
+          {/* Pagination */}
           {meta.last_page > 1 && (
-            <div className="flex items-center justify-center gap-2 mt-6">
+            <div className="flex items-center justify-center gap-2 mt-6 flex-wrap">
               <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
                 className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer"
                 style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", color: "var(--text-muted)", opacity: page === 1 ? 0.4 : 1 }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M15 18l-6-6 6-6"/>
-                </svg>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
               </button>
               {Array.from({ length: meta.last_page }).map((_, i) => (
                 <button key={i} onClick={() => setPage(i + 1)}
@@ -331,16 +382,14 @@ export default function AdminReservations() {
               <button onClick={() => setPage(p => Math.min(meta.last_page, p + 1))} disabled={page === meta.last_page}
                 className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer"
                 style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", color: "var(--text-muted)", opacity: page === meta.last_page ? 0.4 : 1 }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M9 18l6-6-6-6"/>
-                </svg>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
               </button>
             </div>
           )}
         </main>
       </div>
 
-      {/* ── Modal Statut ── */}
+      {/* Modal Statut */}
       {showStatus && (
         <Modal title="Changer le statut" onClose={() => setShowStatus(null)}>
           <p className="text-sm mb-6" style={{ color: "var(--text-secondary)", fontFamily: "'Barlow', sans-serif" }}>
@@ -366,7 +415,7 @@ export default function AdminReservations() {
         </Modal>
       )}
 
-      {/* ── Modal Suppression ── */}
+      {/* Modal Suppression */}
       {showDelete && (
         <Modal title="Supprimer la réservation" onClose={() => setShowDelete(null)}>
           <p className="text-sm mb-6" style={{ color: "var(--text-secondary)", fontFamily: "'Barlow', sans-serif" }}>
