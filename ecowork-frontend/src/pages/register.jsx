@@ -10,7 +10,6 @@ const Register = () => {
         e.preventDefault();
         setError(null);
 
-
         const firstname = e.target.firstname.value;
         const lastname = e.target.lastname.value;
         const email = e.target.email.value;
@@ -38,23 +37,16 @@ const Register = () => {
                 password_confirmation
             })
         })
-
             .then(response => {
                 if (!response.ok) throw new Error("Erreur lors de l'inscription");
                 return response.json();
             })
-
             .then(data => {
-                console.log(" Inscription réussie :", data);
-
-
+                console.log("Inscription réussie :", data);
                 localStorage.setItem('token', data.access_token);
                 localStorage.setItem('user', JSON.stringify(data.user));
-
-
                 navigate('/user/dashboard');
             })
-
             .catch(err => {
                 setError(err.message);
             })
@@ -64,27 +56,25 @@ const Register = () => {
     };
 
     return (
-        <div className="flex min-h-screen w-full">
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 md:p-24 bg-white z-20">
-                <div className="w-full max-w-md fade-in">
+        <div className="flex h-screen w-full overflow-hidden">
+            <div className="w-full lg:w-1/2 flex items-start justify-center py-8 px-6 md:px-12 bg-white z-20 overflow-y-auto">
+                <div className="w-full max-w-md">
 
-                    <div className="mb-12">
+                    <div className="mb-10">
                         <span className="text-2xl font-black tracking-tighter uppercase italic">EcoWork.</span>
                         <div className="h-1 w-12 bg-[#b2f7ef] mt-2"></div>
                     </div>
 
                     <h1 className="text-4xl font-black tracking-tighter uppercase mb-2">Rejoindre</h1>
-                    <p className="text-gray-400 text-sm mb-10 font-medium italic">Commencez votre expérience EcoWork aujourd'hui.</p>
+                    <p className="text-gray-400 text-sm mb-8 font-medium italic">Commencez votre expérience EcoWork aujourd'hui.</p>
 
-                    <form className="space-y-5" onSubmit={handleSubmit}>
-                        {/* Afficher erreur */}
+                    <form className="space-y-4" onSubmit={handleSubmit}>
                         {error && (
                             <div className="bg-red-100 text-red-700 px-4 py-3 rounded-lg text-sm">
                                 {error}
                             </div>
                         )}
 
-                        {/* Prénom */}
                         <div className="space-y-2">
                             <label className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500 ml-2">Prénom</label>
                             <input
@@ -96,7 +86,6 @@ const Register = () => {
                             />
                         </div>
 
-                        {/* Nom */}
                         <div className="space-y-2">
                             <label className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500 ml-2">Nom</label>
                             <input
@@ -108,7 +97,6 @@ const Register = () => {
                             />
                         </div>
 
-                        {/* Email */}
                         <div className="space-y-2">
                             <label className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500 ml-2">Email</label>
                             <input
@@ -120,7 +108,6 @@ const Register = () => {
                             />
                         </div>
 
-                        {/* Password */}
                         <div className="space-y-2">
                             <label className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500 ml-2">Mot de passe</label>
                             <input
@@ -132,7 +119,6 @@ const Register = () => {
                             />
                         </div>
 
-                        {/* Confirmation */}
                         <div className="space-y-2">
                             <label className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500 ml-2">Confirmer</label>
                             <input
@@ -153,21 +139,29 @@ const Register = () => {
                         </button>
                     </form>
 
-                    <p className="mt-12 text-center text-sm font-medium text-gray-400">
+                    <p className="mt-8 mb-4 text-center text-sm font-medium text-gray-400">
                         Déjà membre ?
                         <a href="/login" className="text-black font-black border-b-2 border-black ml-2">Se connecter</a>
                     </p>
 
                 </div>
             </div>
+
             <div className="hidden lg:block lg:fixed lg:right-0 lg:top-0 lg:w-1/2 lg:h-screen overflow-hidden">
-                {/*                    ^^^^^ fixed + right-0 + top-0 + h-screen */}
                 <div className="absolute inset-0 bg-gradient-to-r from-white to-transparent z-10"></div>
-                <img
-                    src="https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&q=80"
-                    className="w-full h-full object-cover grayscale-[20%] hover:grayscale-0 transition-all duration-1000"
-                    alt="Design Studio"
-                />
+                <picture>
+                    <source 
+                        srcSet="https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&q=80&w=1200&fm=webp" 
+                        type="image/webp" 
+                    />
+                    <img
+                        src="https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&q=80&w=1200"
+                        className="w-full h-full object-cover grayscale-[20%] hover:grayscale-0 transition-all duration-1000"
+                        alt="Design Studio"
+                        loading="eager"
+                        decoding="async"
+                    />
+                </picture>
             </div>
         </div>
     );
