@@ -75,14 +75,15 @@ const Reservation = () => {
         <div className="antialiased min-h-screen" style={{ background: 'var(--bg-primary)' }}>
             <UserNavbar user={user} />
 
-            <main className="max-w-7xl mx-auto px-6 md:px-12 py-16">
+            <main className="max-w-7xl mx-auto px-4 md:px-12 py-10 md:py-16">
 
-                <header className="mb-16">
+                {/* Header */}
+                <header className="mb-10 md:mb-16">
                     <span className="text-[10px] font-black uppercase tracking-[0.4em] mb-4 block"
                         style={{ color: 'var(--text-muted)' }}>
                         Mes Réservations
                     </span>
-                    <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.85] uppercase"
+                    <h1 className="text-5xl md:text-8xl font-black tracking-tighter leading-[0.85] uppercase"
                         style={{ color: 'var(--text-primary)' }}>
                         Booking <br />
                         <span className="italic font-light underline decoration-[#7bdff2] decoration-4 underline-offset-8"
@@ -92,7 +93,8 @@ const Reservation = () => {
                     </h1>
                 </header>
 
-                <div className="flex gap-4 mb-12 flex-wrap">
+                {/* Filters */}
+                <div className="flex gap-2 md:gap-4 mb-10 md:mb-12 flex-wrap">
                     {[
                         { key: 'all', label: 'Toutes' },
                         { key: 'upcoming', label: 'À venir' },
@@ -100,7 +102,7 @@ const Reservation = () => {
                         { key: 'cancelled', label: 'Annulées' }
                     ].map(f => (
                         <button key={f.key} onClick={() => setFilter(f.key)}
-                            className="px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition cursor-pointer"
+                            className="px-4 md:px-6 py-2.5 md:py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition cursor-pointer"
                             style={{
                                 background: filter === f.key ? 'var(--accent)' : 'var(--bg-card)',
                                 color: filter === f.key ? '#000' : 'var(--text-secondary)',
@@ -116,7 +118,7 @@ const Reservation = () => {
                         Aucune réservation dans cette catégorie
                     </p>
                 ) : (
-                    <div className="space-y-8">
+                    <div className="space-y-5 md:space-y-8">
                         {filteredReservations.map((reservation) => {
                             const isPast = new Date(reservation.start_date) < new Date();
                             const canCancel = !isPast && reservation.status !== 'annulee';
@@ -124,21 +126,22 @@ const Reservation = () => {
 
                             return (
                                 <div key={reservation.id}
-                                    className="rounded-[40px] p-8 md:p-10 transition-all"
+                                    className="rounded-[28px] md:rounded-[40px] p-5 md:p-10 transition-all"
                                     style={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)' }}>
-                                    <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
 
-                                        <div className="w-32 h-32 rounded-[30px] shrink-0 flex items-center justify-center"
+                                    {/* Top: avatar + info + status */}
+                                    <div className="flex items-start gap-4 md:gap-8">
+                                        <div className="w-14 h-14 md:w-32 md:h-32 rounded-[18px] md:rounded-[30px] shrink-0 flex items-center justify-center"
                                             style={{ background: isDark ? 'rgba(255,255,255,0.05)' : '#f3f4f6' }}>
-                                            <span className="text-3xl font-black" style={{ color: 'var(--accent)' }}>
+                                            <span className="text-2xl md:text-3xl font-black" style={{ color: 'var(--accent)' }}>
                                                 {reservation.space?.name?.charAt(0)}
                                             </span>
                                         </div>
 
-                                        <div className="flex-1 space-y-4">
-                                            <div className="flex justify-between items-start gap-4">
-                                                <div>
-                                                    <h3 className="text-3xl font-black uppercase tracking-tighter italic"
+                                        <div className="flex-1 min-w-0 space-y-3 md:space-y-4">
+                                            <div className="flex justify-between items-start gap-2">
+                                                <div className="min-w-0">
+                                                    <h3 className="text-xl md:text-3xl font-black uppercase tracking-tighter italic leading-tight truncate"
                                                         style={{ color: 'var(--text-primary)' }}>
                                                         {reservation.space?.name}
                                                     </h3>
@@ -147,7 +150,7 @@ const Reservation = () => {
                                                         #{reservation.id} · {reservation.space?.type}
                                                     </p>
                                                 </div>
-                                                <span className="text-[8px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest"
+                                                <span className="text-[8px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest shrink-0"
                                                     style={{
                                                         background: reservation.status === 'confirmee' ? 'rgba(74,222,128,0.12)' :
                                                             reservation.status === 'en_attente' ? 'rgba(251,146,60,0.12)' : 'rgba(248,113,113,0.12)',
@@ -159,7 +162,8 @@ const Reservation = () => {
                                                 </span>
                                             </div>
 
-                                            <div className="flex gap-8 flex-wrap">
+                                            {/* Dates + prix */}
+                                            <div className="flex gap-5 md:gap-8 flex-wrap">
                                                 {[
                                                     { label: 'Début', value: new Date(reservation.start_date).toLocaleDateString('fr-FR') },
                                                     { label: 'Fin', value: new Date(reservation.end_date).toLocaleDateString('fr-FR') },
@@ -176,26 +180,29 @@ const Reservation = () => {
                                                 ))}
                                             </div>
 
-                                            <div className="flex gap-3 pt-4">
-                                                {needsPayment && (
-                                                    <button onClick={() => handlePay(reservation.id)}
-                                                        className="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition cursor-pointer"
-                                                        style={{ background: 'var(--accent)', color: '#000' }}>
-                                                        Payer maintenant
-                                                    </button>
-                                                )}
-                                                {canCancel && (
-                                                    <button onClick={() => handleCancel(reservation.id)}
-                                                        className="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition cursor-pointer"
-                                                        style={{
-                                                            border: '1px solid var(--border-color)',
-                                                            color: '#f87171',
-                                                            background: 'rgba(248,113,113,0.08)'
-                                                        }}>
-                                                        Annuler
-                                                    </button>
-                                                )}
-                                            </div>
+                                            {/* Actions */}
+                                            {(needsPayment || canCancel) && (
+                                                <div className="flex gap-2 md:gap-3 pt-2 md:pt-4 flex-wrap">
+                                                    {needsPayment && (
+                                                        <button onClick={() => handlePay(reservation.id)}
+                                                            className="px-4 md:px-6 py-2.5 md:py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition cursor-pointer"
+                                                            style={{ background: 'var(--accent)', color: '#000' }}>
+                                                            Payer maintenant
+                                                        </button>
+                                                    )}
+                                                    {canCancel && (
+                                                        <button onClick={() => handleCancel(reservation.id)}
+                                                            className="px-4 md:px-6 py-2.5 md:py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition cursor-pointer"
+                                                            style={{
+                                                                border: '1px solid var(--border-color)',
+                                                                color: '#f87171',
+                                                                background: 'rgba(248,113,113,0.08)'
+                                                            }}>
+                                                            Annuler
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -205,7 +212,7 @@ const Reservation = () => {
                 )}
             </main>
 
-            <footer className="py-20 text-center" style={{ opacity: 0.2 }}>
+            <footer className="py-12 md:py-20 text-center" style={{ opacity: 0.2 }}>
                 <span className="text-[10px] font-black uppercase tracking-[0.5em]"
                     style={{ color: 'var(--text-primary)' }}>
                     EcoWork Experience Protocol

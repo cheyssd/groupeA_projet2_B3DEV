@@ -7,6 +7,8 @@ export function Sidebar({ active }) {
   const navigate = useNavigate();
   const { isDark } = useTheme();
   const [adminUser, setAdminUser] = useState(null);
+  const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -55,56 +57,69 @@ export function Sidebar({ active }) {
     },
   ];
 
-  return (
-    <aside className="w-56 flex-shrink-0 min-h-screen flex flex-col py-8 px-4 border-r"
-      style={{ background: "var(--bg-primary)", borderColor: "var(--border-color)" }}>
-
+  const SidebarContent = () => (
+    <>
       {/* Logo */}
-      <div className="px-2 mb-10">
-        <div className="font-black text-lg uppercase cursor-pointer"
-          style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "var(--text-primary)" }}
-          onClick={() => navigate("/")}>
-          ECOWORK<span style={{ color: "var(--accent)" }}>.</span>
+      <div className="px-2 mb-10 flex items-center justify-between">
+        <div>
+          <div className="font-black text-lg uppercase cursor-pointer"
+            style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "var(--text-primary)" }}
+            onClick={() => navigate("/")}>
+            {collapsed ? "E." : <>ECOWORK<span style={{ color: "var(--accent)" }}>.</span></>}
+          </div>
+          {!collapsed && (
+            <div className="text-[9px] tracking-[3px] uppercase mt-0.5"
+              style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
+              Admin Panel
+            </div>
+          )}
         </div>
-        <div className="text-[9px] tracking-[3px] uppercase mt-0.5"
-          style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
-          Admin Panel
-        </div>
+        {/* Collapse toggle — desktop only */}
+        <button
+          onClick={() => setCollapsed(c => !c)}
+          className="hidden md:flex w-6 h-6 items-center justify-center rounded cursor-pointer"
+          style={{ color: "var(--text-muted)" }}>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            {collapsed ? <path d="M9 18l6-6-6-6"/> : <path d="M15 18l-6-6 6-6"/>}
+          </svg>
+        </button>
       </div>
 
       {/* Links */}
       <nav className="flex flex-col gap-0.5 flex-1">
-        <p className="text-[8px] tracking-[3px] uppercase px-2 mb-2"
-          style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
-          Navigation
-        </p>
+        {!collapsed && (
+          <p className="text-[8px] tracking-[3px] uppercase px-2 mb-2"
+            style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
+            Navigation
+          </p>
+        )}
         {links.map((link) => {
           const isActive = active === link.key;
           return (
             <button
               key={link.key}
-              onClick={() => navigate(link.path)}
+              onClick={() => { navigate(link.path); setMobileOpen(false); }}
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all w-full"
               style={{
                 background: isActive ? "var(--accent)" : "transparent",
                 color: isActive ? (isDark ? "#000" : "#fff") : "var(--text-secondary)",
-                boxShadow: isActive && !isDark ? "0 4px 12px -2px rgba(14, 165, 233, 0.3)" : "none",
+                boxShadow: isActive && !isDark ? "0 4px 12px -2px rgba(14,165,233,0.3)" : "none",
                 fontFamily: "'Rajdhani', sans-serif",
                 fontWeight: isActive ? 700 : 500,
+                justifyContent: collapsed ? "center" : "flex-start",
               }}
+              title={collapsed ? link.label : undefined}
             >
-              <span style={{ opacity: isActive ? 1 : 0.6 }}>{link.icon}</span>
-              {link.label}
+              <span style={{ opacity: isActive ? 1 : 0.6, flexShrink: 0 }}>{link.icon}</span>
+              {!collapsed && link.label}
             </button>
           );
         })}
       </nav>
 
-      {/* ── Admin user info + logout ── */}
+      {/* Admin info + logout */}
       <div className="mt-4 pt-4" style={{ borderTop: "1px solid var(--border-color)" }}>
-
-        {/* Avatar + nom */}
-        {adminUser && (
+        {adminUser && !collapsed && (
           <div className="flex items-center gap-3 px-2 mb-3">
             <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-xs"
               style={{ background: "var(--accent)", color: "#000", fontFamily: "'Barlow Condensed', sans-serif" }}>
@@ -123,27 +138,71 @@ export function Sidebar({ active }) {
           </div>
         )}
 
-        {/* Retour au site */}
         <button onClick={() => navigate("/")}
           className="flex items-center gap-2 px-3 py-2 rounded-xl w-full cursor-pointer transition-all mb-1"
-          style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif", fontSize: "11px" }}>
+          style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif", fontSize: "11px", justifyContent: collapsed ? "center" : "flex-start" }}
+          title={collapsed ? "Retour au site" : undefined}>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M19 12H5M12 5l-7 7 7 7" />
           </svg>
-          Retour au site
+          {!collapsed && "Retour au site"}
         </button>
 
-        {/* Déconnexion */}
         <button onClick={handleLogout}
           className="flex items-center gap-2 px-3 py-2 rounded-xl w-full cursor-pointer transition-all"
-          style={{ color: "#f87171", fontFamily: "'Rajdhani', sans-serif", fontSize: "11px", background: "rgba(248,113,113,0.08)" }}>
+          style={{ color: "#f87171", fontFamily: "'Rajdhani', sans-serif", fontSize: "11px", background: "rgba(248,113,113,0.08)", justifyContent: collapsed ? "center" : "flex-start" }}
+          title={collapsed ? "Déconnexion" : undefined}>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
-          Déconnexion
+          {!collapsed && "Déconnexion"}
         </button>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile top bar */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3 border-b"
+        style={{ background: "var(--bg-primary)", borderColor: "var(--border-color)" }}>
+        <div className="font-black text-base uppercase cursor-pointer"
+          style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "var(--text-primary)" }}
+          onClick={() => navigate("/")}>
+          ECOWORK<span style={{ color: "var(--accent)" }}>.</span>
+        </div>
+        <button onClick={() => setMobileOpen(o => !o)}
+          className="flex flex-col justify-center items-center w-9 h-9 rounded-full border cursor-pointer"
+          style={{ borderColor: "var(--border-color)", background: "var(--bg-card)" }}>
+          <span className="block w-4 h-px mb-1" style={{ background: "var(--text-primary)" }} />
+          <span className="block w-4 h-px mb-1" style={{ background: "var(--text-primary)" }} />
+          <span className="block w-4 h-px" style={{ background: "var(--text-primary)" }} />
+        </button>
+      </div>
+
+      {/* Mobile drawer */}
+      {mobileOpen && (
+        <div className="md:hidden fixed inset-0 z-40 flex">
+          <div className="w-64 h-full flex flex-col py-6 px-4 pt-16 border-r overflow-y-auto"
+            style={{ background: "var(--bg-primary)", borderColor: "var(--border-color)" }}>
+            <SidebarContent />
+          </div>
+          <div className="flex-1" onClick={() => setMobileOpen(false)}
+            style={{ background: "rgba(0,0,0,0.5)" }} />
+        </div>
+      )}
+
+      {/* Desktop sidebar */}
+      <aside
+        className="hidden md:flex flex-shrink-0 min-h-screen flex-col py-8 px-4 border-r transition-all duration-300"
+        style={{
+          background: "var(--bg-primary)",
+          borderColor: "var(--border-color)",
+          width: collapsed ? "64px" : "224px",
+        }}>
+        <SidebarContent />
+      </aside>
+    </>
   );
 }
 
@@ -151,8 +210,8 @@ export function Sidebar({ active }) {
 function StatCard({ label, value, sub, icon, accent }) {
   const { isDark } = useTheme();
   return (
-    <div className="rounded-2xl p-6 flex flex-col justify-between transition-all"
-      style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", minHeight: "160px" }}>
+    <div className="rounded-2xl p-5 md:p-6 flex flex-col justify-between transition-all"
+      style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", minHeight: "140px" }}>
       <div className="flex items-start justify-between">
         <p className="text-[9px] tracking-[3px] uppercase font-bold"
           style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
@@ -165,7 +224,7 @@ function StatCard({ label, value, sub, icon, accent }) {
       </div>
       <div>
         <p className="font-black leading-none mb-1"
-          style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "44px", color: isDark ? accent : "var(--text-primary)", letterSpacing: "-1px" }}>
+          style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "clamp(32px, 5vw, 44px)", color: isDark ? accent : "var(--text-primary)", letterSpacing: "-1px" }}>
           {value}
         </p>
         <p className="text-[10px] tracking-[1px] font-medium"
@@ -213,7 +272,7 @@ export default function AdminOverview() {
     return (
       <div className="flex min-h-screen" style={{ background: "var(--bg-primary)" }}>
         <Sidebar active="overview" />
-        <main className="flex-1 flex items-center justify-center">
+        <main className="flex-1 flex items-center justify-center pt-14 md:pt-0">
           <p style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>
             Erreur — vérifie ton token ou que Laravel est lancé.
           </p>
@@ -255,17 +314,17 @@ export default function AdminOverview() {
       <div className="flex min-h-screen" style={{ background: "var(--bg-primary)" }}>
         <Sidebar active="overview" />
 
-        <main className="flex-1 px-10 py-8 overflow-auto" style={{ fontFamily: "'Barlow', sans-serif" }}>
+        <main className="flex-1 px-4 md:px-10 py-6 md:py-8 overflow-auto pt-20 md:pt-8" style={{ fontFamily: "'Barlow', sans-serif" }}>
 
-          {/* ── Header ── */}
-          <div className="flex items-center justify-between mb-10">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-8 md:mb-10">
             <div>
               <p className="text-[9px] tracking-[4px] uppercase mb-1"
                 style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
                 Admin · Dashboard
               </p>
               <h1 className="font-black uppercase leading-none"
-                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "36px", color: "var(--text-primary)", letterSpacing: "-0.5px" }}>
+                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "clamp(24px, 4vw, 36px)", color: "var(--text-primary)", letterSpacing: "-0.5px" }}>
                 Overview
               </h1>
             </div>
@@ -285,7 +344,7 @@ export default function AdminOverview() {
                   <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
                 </svg>
               )}
-              <span className="text-[9px] tracking-[2px] uppercase" style={{ fontFamily: "'Rajdhani', sans-serif" }}>
+              <span className="hidden sm:inline text-[9px] tracking-[2px] uppercase" style={{ fontFamily: "'Rajdhani', sans-serif" }}>
                 {isDark ? "Light" : "Dark"}
               </span>
             </button>
@@ -299,18 +358,18 @@ export default function AdminOverview() {
             </div>
           ) : (
             <>
-              {/* ── 2x2 Stat Cards ── */}
-              <div className="grid grid-cols-2 gap-5 mb-8">
+              {/* Stat Cards — 2 cols on mobile, 2x2 on md */}
+              <div className="grid grid-cols-2 gap-3 md:gap-5 mb-6 md:mb-8">
                 {statCards.map((card) => (
                   <StatCard key={card.label} {...card} />
                 ))}
               </div>
 
-              {/* ── Réservations récentes ── */}
+              {/* Réservations récentes */}
               <div className="rounded-2xl overflow-hidden"
                 style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
 
-                <div className="flex items-center justify-between px-6 py-5"
+                <div className="flex items-center justify-between px-4 md:px-6 py-4 md:py-5"
                   style={{ borderBottom: "1px solid var(--border-color)" }}>
                   <p className="text-[9px] tracking-[4px] uppercase font-bold"
                     style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
@@ -322,7 +381,8 @@ export default function AdminOverview() {
                   </span>
                 </div>
 
-                <div className="grid px-6 py-3"
+                {/* Desktop table header */}
+                <div className="hidden md:grid px-6 py-3"
                   style={{ gridTemplateColumns: "2fr 1.5fr 2fr 1.5fr 1fr", borderBottom: "1px solid var(--border-color)" }}>
                   {["Client", "Espace", "Dates", "Montant", "Statut"].map((h) => (
                     <p key={h} className="text-[8px] tracking-[2px] uppercase"
@@ -339,45 +399,64 @@ export default function AdminOverview() {
                 ) : (
                   stats.recent_reservations.map((r, i) => (
                     <div key={r.id}
-                      className="table-row px-6 py-4 transition-colors"
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "2fr 1.5fr 2fr 1.5fr 1fr",
-                        alignItems: "center",
-                        borderBottom: i < stats.recent_reservations.length - 1 ? "1px solid var(--border-color)" : "none",
-                      }}>
+                      style={{ borderBottom: i < stats.recent_reservations.length - 1 ? "1px solid var(--border-color)" : "none" }}>
 
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-xs"
-                          style={{ background: "var(--accent)", color: "#000", fontFamily: "'Barlow Condensed', sans-serif" }}>
-                          {r.user.firstname[0]}{r.user.lastname[0]}
+                      {/* Desktop row */}
+                      <div className="table-row hidden md:grid px-6 py-4 transition-colors items-center"
+                        style={{ gridTemplateColumns: "2fr 1.5fr 2fr 1.5fr 1fr" }}>
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-xs"
+                            style={{ background: "var(--accent)", color: "#000", fontFamily: "'Barlow Condensed', sans-serif" }}>
+                            {r.user.firstname[0]}{r.user.lastname[0]}
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold" style={{ color: "var(--text-primary)", fontFamily: "'Barlow Condensed', sans-serif" }}>
+                              {r.user.firstname} {r.user.lastname}
+                            </p>
+                            <p className="text-[10px]" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>
+                              {r.user.email}
+                            </p>
+                          </div>
                         </div>
+                        <p className="text-sm" style={{ color: "var(--text-secondary)", fontFamily: "'Barlow Condensed', sans-serif" }}>
+                          {r.space.name}
+                        </p>
                         <div>
-                          <p className="text-sm font-bold" style={{ color: "var(--text-primary)", fontFamily: "'Barlow Condensed', sans-serif" }}>
-                            {r.user.firstname} {r.user.lastname}
-                          </p>
-                          <p className="text-[10px]" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>
-                            {r.user.email}
+                          <p className="text-[10px]" style={{ color: "var(--text-secondary)", fontFamily: "'Rajdhani', sans-serif" }}>{r.start_date}</p>
+                          <p className="text-[10px]" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>→ {r.end_date}</p>
+                        </div>
+                        <p className="text-sm font-bold" style={{ color: "var(--accent)", fontFamily: "'Barlow Condensed', sans-serif" }}>
+                          {Number(r.total_price).toLocaleString()} <span className="text-[10px]">FCFA</span>
+                        </p>
+                        <StatusBadge status={r.status} />
+                      </div>
+
+                      {/* Mobile card */}
+                      <div className="md:hidden px-4 py-4 flex flex-col gap-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0"
+                              style={{ background: "var(--accent)", color: "#000", fontFamily: "'Barlow Condensed', sans-serif" }}>
+                              {r.user.firstname[0]}{r.user.lastname[0]}
+                            </div>
+                            <div>
+                              <p className="text-sm font-bold" style={{ color: "var(--text-primary)", fontFamily: "'Barlow Condensed', sans-serif" }}>
+                                {r.user.firstname} {r.user.lastname}
+                              </p>
+                              <p className="text-[9px]" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>{r.user.email}</p>
+                            </div>
+                          </div>
+                          <StatusBadge status={r.status} />
+                        </div>
+                        <div className="flex items-center justify-between mt-1">
+                          <p className="text-xs" style={{ color: "var(--text-secondary)", fontFamily: "'Barlow Condensed', sans-serif" }}>{r.space.name}</p>
+                          <p className="text-sm font-bold" style={{ color: "var(--accent)", fontFamily: "'Barlow Condensed', sans-serif" }}>
+                            {Number(r.total_price).toLocaleString()} FCFA
                           </p>
                         </div>
-                      </div>
-
-                      <p className="text-sm self-center" style={{ color: "var(--text-secondary)", fontFamily: "'Barlow Condensed', sans-serif" }}>
-                        {r.space.name}
-                      </p>
-
-                      <div className="self-center">
-                        <p className="text-[10px]" style={{ color: "var(--text-secondary)", fontFamily: "'Rajdhani', sans-serif" }}>{r.start_date}</p>
-                        <p className="text-[10px]" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>→ {r.end_date}</p>
-                      </div>
-
-                      <p className="text-sm font-bold self-center"
-                        style={{ color: "var(--accent)", fontFamily: "'Barlow Condensed', sans-serif" }}>
-                        {Number(r.total_price).toLocaleString()} <span className="text-[10px]">FCFA</span>
-                      </p>
-
-                      <div className="self-center">
-                        <StatusBadge status={r.status} />
+                        <p className="text-[9px]" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>
+                          {r.start_date} → {r.end_date}
+                        </p>
                       </div>
                     </div>
                   ))

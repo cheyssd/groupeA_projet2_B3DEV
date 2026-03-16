@@ -27,8 +27,8 @@ export default function ExploreSection() {
 
   if (loading) {
     return (
-      <section className="w-full px-12 py-24">
-        <p>Loading spaces...</p>
+      <section className="w-full px-6 md:px-12 py-24">
+        <p style={{ color: "var(--text-muted)" }}>Loading spaces...</p>
       </section>
     );
   }
@@ -37,7 +37,6 @@ export default function ExploreSection() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;0,900;1,800;1,900&family=Barlow:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap');
-
         .card-img {
           display: block;
           width: 100%;
@@ -46,95 +45,50 @@ export default function ExploreSection() {
         }
       `}</style>
 
-      <section
-        className="w-full px-12 py-24"
-        style={{
-          background: "var(--bg-primary)",
-          fontFamily: "'Barlow', sans-serif",
-        }}
-      >
+      <section className="w-full px-6 md:px-12 py-16 md:py-24"
+        style={{ background: "var(--bg-primary)", fontFamily: "'Barlow', sans-serif" }}>
+
         {/* DISCOVER */}
         <div className="flex items-center gap-4 mb-10">
-          <div
-            className="w-10 h-px"
-            style={{ background: "var(--text-muted)" }}
-          />
-          <span
-            className="text-[10px] tracking-[5px] uppercase"
-            style={{
-              fontFamily: "'Rajdhani', sans-serif",
-              color: "var(--text-muted)",
-            }}
-          >
+          <div className="w-10 h-px" style={{ background: "var(--text-muted)" }} />
+          <span className="text-[10px] tracking-[5px] uppercase"
+            style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
             Discover
           </span>
         </div>
 
         {/* TITRE + FILTERS */}
-        <div className="flex items-end justify-between mb-16">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 md:mb-16 gap-6">
           <div>
-            <h2
-              className="font-black uppercase leading-none"
-              style={{
-                fontFamily: "'Barlow Condensed', sans-serif",
-                fontSize: "clamp(52px, 7vw, 96px)",
-                letterSpacing: "-1px",
-                color: "var(--text-primary)",
-              }}
-            >
+            <h2 className="font-black uppercase leading-none"
+              style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "clamp(52px, 7vw, 96px)", letterSpacing: "-1px", color: "var(--text-primary)" }}>
               EXPLORE
             </h2>
-
-            <h2
-              className="font-black uppercase italic leading-none"
-              style={{
-                fontFamily: "'Barlow Condensed', sans-serif",
-                fontSize: "clamp(52px, 7vw, 96px)",
-                letterSpacing: "-1px",
-                color: "var(--text-primary)",
-              }}
-            >
+            <h2 className="font-black uppercase italic leading-none"
+              style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "clamp(52px, 7vw, 96px)", letterSpacing: "-1px", color: "var(--text-primary)" }}>
               SPACE.
             </h2>
           </div>
 
-          <div className="text-right flex flex-col items-end gap-6 max-w-xs">
-            <p
-              className="text-sm italic leading-relaxed"
-              style={{ color: "var(--text-secondary)" }}
-            >
-              Une sélection rigoureuse
-              <br />
-              d'environnements conçus pour la
-              <br />
+          <div className="flex flex-col items-start md:items-end gap-4 md:gap-6 max-w-xs">
+            <p className="text-sm italic leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+              Une sélection rigoureuse<br className="hidden md:block" />
+              d'environnements conçus pour la<br className="hidden md:block" />
               performance cognitive.
             </p>
 
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-4 md:gap-6">
               {filters.map((f) => (
-                <button
-                  key={f}
-                  onClick={() => setActiveFilter(f)}
+                <button key={f} onClick={() => setActiveFilter(f)}
                   className="relative cursor-pointer transition-colors duration-200"
-                  style={{ fontFamily: "'Rajdhani', sans-serif" }}
-                >
-                  <span
-                    className="text-xs tracking-[2px] uppercase font-semibold"
-                    style={{
-                      color:
-                        activeFilter === f
-                          ? "var(--text-primary)" 
-                          : "var(--text-muted)",
-                    }}
-                  >
+                  style={{ fontFamily: "'Rajdhani', sans-serif" }}>
+                  <span className="text-xs tracking-[2px] uppercase font-semibold"
+                    style={{ color: activeFilter === f ? "var(--text-primary)" : "var(--text-muted)" }}>
                     {f}
                   </span>
-
                   {activeFilter === f && (
-                    <div
-                      className="absolute -bottom-1 left-0 right-0 h-px"
-                      style={{ background: "var(--text-primary)" }}
-                    />
+                    <div className="absolute -bottom-1 left-0 right-0 h-px"
+                      style={{ background: "var(--text-primary)" }} />
                   )}
                 </button>
               ))}
@@ -143,60 +97,41 @@ export default function ExploreSection() {
         </div>
 
         {/* CARDS */}
-        <div className="grid grid-cols-3 gap-6">
-         {spaces.slice(0, 3).map((space) => (
-            <div key={space.id} className="flex flex-col cursor-pointer" onClick={() => navigate(`/spaces/${space.id}`)}>
-              <div className="relative rounded-2xl overflow-hidden h-72">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {spaces.slice(0, 3).map((space) => (
+            <div key={space.id} className="flex flex-col cursor-pointer"
+              onClick={() => navigate(`/spaces/${space.id}`)}>
+              <div className="relative rounded-2xl overflow-hidden h-56 sm:h-64 md:h-72">
                 <img
-                  src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80"
+                  src={space.images?.[0]?.filename
+                    ? `http://127.0.0.1:8000/storage/${space.images[0].filename}`
+                    : "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80"}
                   alt={space.name}
                   className="card-img"
+                  loading="lazy"
                 />
               </div>
 
               <div className="flex items-start justify-between mt-4 px-1">
                 <div>
-                  <p
-                    className="font-bold text-base"
-                    style={{
-                      fontFamily: "'Barlow Condensed', sans-serif",
-                      letterSpacing: "0.3px",
-                      color: "var(--text-primary)",
-                    }}
-                  >
+                  <p className="font-bold text-base"
+                    style={{ fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: "0.3px", color: "var(--text-primary)" }}>
                     {space.name}
                   </p>
-
-                  <p
-                    className="text-[10px] tracking-[2px] uppercase mt-0.5"
-                    style={{
-                      fontFamily: "'Rajdhani', sans-serif",
-                      color: "var(--text-muted)",
-                    }}
-                  >
+                  <p className="text-[10px] tracking-[2px] uppercase mt-0.5"
+                    style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
                     {space.type}
                   </p>
                 </div>
 
                 <div className="text-right">
-                  <p
-                    className="font-bold text-base"
-                    style={{
-                      fontFamily: "'Barlow Condensed', sans-serif",
-                      color: "var(--accent)",
-                    }}
-                  >
+                  <p className="font-bold text-base"
+                    style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "var(--accent)" }}>
                     {Number(space.price_per_day).toLocaleString()} FCFA
                   </p>
-
-                  <p
-                    className="text-[10px] tracking-[1px] uppercase mt-0.5"
-                    style={{
-                      fontFamily: "'Rajdhani', sans-serif",
-                      color: "var(--text-muted)",
-                    }}
-                  >
-                    / jour
+                  <p className="text-[10px] tracking-[1px] uppercase mt-0.5"
+                    style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
+                    / heure
                   </p>
                 </div>
               </div>
@@ -205,10 +140,9 @@ export default function ExploreSection() {
         </div>
 
         {/* Voir tous les espaces */}
-        <div className="flex justify-center mt-12">
-          <button
-            onClick={() => navigate('/spaces')}
-            className="flex items-center gap-3 px-8 py-4 rounded-full cursor-pointer transition-all duration-300 hover:gap-5"
+        <div className="flex justify-center mt-10 md:mt-12">
+          <button onClick={() => navigate('/spaces')}
+            className="flex items-center gap-3 px-6 md:px-8 py-4 rounded-full cursor-pointer transition-all duration-300 hover:gap-5"
             style={{
               border: "1px solid var(--border-color)",
               background: "transparent",
@@ -216,8 +150,7 @@ export default function ExploreSection() {
               fontFamily: "'Rajdhani', sans-serif",
               fontSize: "11px",
               letterSpacing: "3px",
-            }}
-          >
+            }}>
             VOIR TOUS LES ESPACES
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M5 12h14M12 5l7 7-7 7"/>

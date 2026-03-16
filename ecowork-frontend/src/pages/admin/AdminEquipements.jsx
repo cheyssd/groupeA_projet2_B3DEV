@@ -6,9 +6,9 @@ const API = "http://127.0.0.1:8000/api";
 
 function Modal({ title, onClose, children }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center"
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4"
       style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}>
-      <div className="w-full max-w-md rounded-2xl p-8 relative"
+      <div className="w-full max-w-md rounded-2xl p-6 md:p-8 relative"
         style={{ background: "var(--bg-primary)", border: "1px solid var(--border-color)" }}>
         <div className="flex items-center justify-between mb-6">
           <h2 className="font-black uppercase"
@@ -35,7 +35,7 @@ export default function AdminEquipements() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  const [showForm, setShowForm] = useState(null); // null | "create" | {id, name}
+  const [showForm, setShowForm] = useState(null);
   const [showDelete, setShowDelete] = useState(null);
   const [formName, setFormName] = useState("");
 
@@ -61,11 +61,9 @@ export default function AdminEquipements() {
   const handleSave = async () => {
     if (!formName.trim()) return;
     setSaving(true);
-
     const isEdit = showForm !== "create";
     const url = isEdit ? `${API}/equipements/${showForm.id}` : `${API}/equipements`;
     const method = isEdit ? "PUT" : "POST";
-
     await fetch(url, { method, headers, body: JSON.stringify({ name: formName }) });
     setSaving(false);
     setShowForm(null);
@@ -90,22 +88,22 @@ export default function AdminEquipements() {
       <div className="flex min-h-screen" style={{ background: "var(--bg-primary)" }}>
         <Sidebar active="equipements" />
 
-        <main className="flex-1 px-10 py-8 overflow-auto" style={{ fontFamily: "'Barlow', sans-serif" }}>
+        <main className="flex-1 px-4 md:px-10 py-6 md:py-8 overflow-auto pt-20 md:pt-8" style={{ fontFamily: "'Barlow', sans-serif" }}>
 
           {/* Header */}
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between mb-6 md:mb-8 gap-3">
             <div>
               <p className="text-[9px] tracking-[4px] uppercase mb-1"
                 style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
                 Admin · Équipements
               </p>
               <h1 className="font-black uppercase leading-none"
-                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "36px", color: "var(--text-primary)", letterSpacing: "-0.5px" }}>
+                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "clamp(20px, 4vw, 36px)", color: "var(--text-primary)", letterSpacing: "-0.5px" }}>
                 Gestion des équipements
               </h1>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 md:gap-3">
               <button onClick={toggle}
                 className="flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all cursor-pointer"
                 style={{ borderColor: "var(--border-color)", background: "var(--bg-card)", color: "var(--text-secondary)" }}>
@@ -121,18 +119,18 @@ export default function AdminEquipements() {
                     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
                   </svg>
                 )}
-                <span className="text-[9px] tracking-[2px] uppercase" style={{ fontFamily: "'Rajdhani', sans-serif" }}>
+                <span className="hidden sm:inline text-[9px] tracking-[2px] uppercase" style={{ fontFamily: "'Rajdhani', sans-serif" }}>
                   {isDark ? "Light" : "Dark"}
                 </span>
               </button>
 
               <button onClick={openCreate}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl cursor-pointer transition-all text-xs tracking-[2px] uppercase font-bold"
+                className="flex items-center gap-2 px-3 md:px-4 py-2 rounded-xl cursor-pointer text-xs tracking-[2px] uppercase font-bold"
                 style={{ background: "var(--accent)", color: "#000", fontFamily: "'Rajdhani', sans-serif" }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
                 </svg>
-                Ajouter
+                <span className="hidden sm:inline">Ajouter</span>
               </button>
             </div>
           </div>
@@ -141,7 +139,8 @@ export default function AdminEquipements() {
           <div className="rounded-2xl overflow-hidden"
             style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
 
-            <div className="grid px-6 py-3"
+            {/* Desktop header */}
+            <div className="hidden md:grid px-6 py-3"
               style={{ gridTemplateColumns: "1fr 2fr 1fr", borderBottom: "1px solid var(--border-color)" }}>
               {["#", "Nom de l'équipement", "Actions"].map((h) => (
                 <p key={h} className="text-[8px] tracking-[2px] uppercase"
@@ -165,55 +164,85 @@ export default function AdminEquipements() {
             ) : (
               equipements.map((eq, i) => (
                 <div key={eq.id}
-                  className="row-hover grid px-6 py-4 items-center transition-colors"
-                  style={{
-                    gridTemplateColumns: "1fr 2fr 1fr",
-                    borderBottom: i < equipements.length - 1 ? "1px solid var(--border-color)" : "none",
-                  }}>
+                  style={{ borderBottom: i < equipements.length - 1 ? "1px solid var(--border-color)" : "none" }}>
 
-                  <p className="text-xs font-bold" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>
-                    #{eq.id}
-                  </p>
-
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center"
-                      style={{ background: "rgba(41,212,224,0.1)", color: "var(--accent)" }}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                      </svg>
+                  {/* Desktop row */}
+                  <div className="row-hover hidden md:grid px-6 py-4 items-center transition-colors"
+                    style={{ gridTemplateColumns: "1fr 2fr 1fr" }}>
+                    <p className="text-xs font-bold" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>#{eq.id}</p>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg flex items-center justify-center"
+                        style={{ background: "rgba(41,212,224,0.1)", color: "var(--accent)" }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                      </div>
+                      <p className="text-sm font-bold" style={{ color: "var(--text-primary)", fontFamily: "'Barlow Condensed', sans-serif" }}>
+                        {eq.name}
+                      </p>
                     </div>
-                    <p className="text-sm font-bold"
-                      style={{ color: "var(--text-primary)", fontFamily: "'Barlow Condensed', sans-serif" }}>
-                      {eq.name}
-                    </p>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => openEdit(eq)}
+                        className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:opacity-80"
+                        style={{ background: "rgba(41,212,224,0.1)", color: "var(--accent)" }}>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                      </button>
+                      <button onClick={() => setShowDelete(eq)}
+                        className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:opacity-80"
+                        style={{ background: "rgba(248,113,113,0.1)", color: "#f87171" }}>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                          <path d="M10 11v6"/><path d="M14 11v6"/>
+                          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                        </svg>
+                      </button>
+                    </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => openEdit(eq)}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-all hover:opacity-80"
-                      style={{ background: "rgba(41,212,224,0.1)", color: "var(--accent)" }}>
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                      </svg>
-                    </button>
-                    <button onClick={() => setShowDelete(eq)}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-all hover:opacity-80"
-                      style={{ background: "rgba(248,113,113,0.1)", color: "#f87171" }}>
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polyline points="3 6 5 6 21 6"/>
-                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                        <path d="M10 11v6"/><path d="M14 11v6"/>
-                        <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-                      </svg>
-                    </button>
+                  {/* Mobile row */}
+                  <div className="md:hidden px-4 py-3 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                        style={{ background: "rgba(41,212,224,0.1)", color: "var(--accent)" }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-bold truncate" style={{ color: "var(--text-primary)", fontFamily: "'Barlow Condensed', sans-serif" }}>
+                          {eq.name}
+                        </p>
+                        <p className="text-[9px]" style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>#{eq.id}</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-2 flex-shrink-0">
+                      <button onClick={() => openEdit(eq)}
+                        className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer"
+                        style={{ background: "rgba(41,212,224,0.1)", color: "var(--accent)" }}>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                      </button>
+                      <button onClick={() => setShowDelete(eq)}
+                        className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer"
+                        style={{ background: "rgba(248,113,113,0.1)", color: "#f87171" }}>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                          <path d="M10 11v6"/><path d="M14 11v6"/>
+                          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))
             )}
           </div>
 
-          {/* Count */}
           <p className="text-[10px] tracking-[2px] uppercase mt-4"
             style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
             {equipements.length} équipement{equipements.length > 1 ? "s" : ""} au total
@@ -223,30 +252,17 @@ export default function AdminEquipements() {
 
       {/* Modal Form */}
       {showForm && (
-        <Modal
-          title={showForm === "create" ? "Ajouter un équipement" : "Modifier l'équipement"}
-          onClose={() => setShowForm(null)}>
+        <Modal title={showForm === "create" ? "Ajouter un équipement" : "Modifier l'équipement"} onClose={() => setShowForm(null)}>
           <div className="flex flex-col gap-4">
             <div>
               <label className="block text-[9px] tracking-[3px] uppercase mb-2"
                 style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
                 Nom de l'équipement
               </label>
-              <input
-                type="text"
-                value={formName}
-                onChange={(e) => setFormName(e.target.value)}
-                placeholder="Ex: Vidéo projecteur"
-                autoFocus
-                onKeyDown={(e) => e.key === "Enter" && handleSave()}
+              <input type="text" value={formName} onChange={(e) => setFormName(e.target.value)}
+                placeholder="Ex: Vidéo projecteur" autoFocus onKeyDown={(e) => e.key === "Enter" && handleSave()}
                 className="w-full px-4 py-3 rounded-xl outline-none text-sm"
-                style={{
-                  background: "var(--border-color)",
-                  border: "1px solid var(--border-color)",
-                  color: "var(--text-primary)",
-                  fontFamily: "'Barlow', sans-serif",
-                }}
-              />
+                style={{ background: "var(--border-color)", border: "1px solid var(--border-color)", color: "var(--text-primary)", fontFamily: "'Barlow', sans-serif" }} />
             </div>
             <div className="flex gap-3 mt-2">
               <button onClick={() => setShowForm(null)}
