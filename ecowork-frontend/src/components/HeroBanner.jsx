@@ -25,7 +25,7 @@ export default function HeroBanner() {
     fetch("http://127.0.0.1:8000/api/spaces?per_page=100")
       .then(r => r.json())
       .then(data => setSpaces(data.data || []))
-      .catch(() => {})
+      .catch(() => { })
   }, [])
 
   useEffect(() => {
@@ -69,13 +69,20 @@ export default function HeroBanner() {
   return (
     <section className="relative w-full min-h-screen overflow-hidden" style={{ background: "var(--bg-primary)" }}>
 
-      <div className="absolute inset-0 bg-cover bg-center"
+      <img
+        src={
+          isDark
+            ? "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80"
+            : heroLight
+        }
+        alt="Workspace hero"
+        className="absolute inset-0 w-full h-full object-cover"
         style={{
-          backgroundImage: isDark
-            ? "url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80')"
-            : `url(${heroLight})`,
-          filter: isDark ? "brightness(0.6) saturate(0.75)" : "brightness(0.6) saturate(0.8)",
+          filter: isDark
+            ? "brightness(0.6) saturate(0.75)"
+            : "brightness(0.6) saturate(0.8)",
         }}
+        loading="eager"
       />
 
       <div className="absolute inset-0"
@@ -112,15 +119,15 @@ export default function HeroBanner() {
             style={{ borderColor: "var(--border-color)", background: "var(--bg-card)", color: "var(--text-secondary)" }}>
             {isDark ? (
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="5"/>
-                <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
-                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
-                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                <circle cx="12" cy="12" r="5" />
+                <line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" />
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                <line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" />
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
               </svg>
             ) : (
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
               </svg>
             )}
             <span className="text-[9px] tracking-[2px] uppercase" style={{ fontFamily: "'Rajdhani', sans-serif" }}>
@@ -139,7 +146,7 @@ export default function HeroBanner() {
                   color: "var(--text-primary)",
                 }}
               >
-                <div 
+                <div
                   className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black"
                   style={{ background: 'var(--accent)', color: '#000' }}
                 >
@@ -276,8 +283,8 @@ export default function HeroBanner() {
             <div className="flex items-center gap-3 rounded-xl px-4 py-3"
               style={{ background: "var(--border-color)", border: "1px solid var(--border-color)" }}>
               <svg className="w-4 h-4 flex-shrink-0" style={{ color: "var(--accent)" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="4" width="18" height="18" rx="2"/>
-                <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                <rect x="3" y="4" width="18" height="18" rx="2" />
+                <line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
               </svg>
               <input type="date" min={today} value={selectedDate}
                 onChange={e => setSelectedDate(e.target.value)}
@@ -299,7 +306,7 @@ export default function HeroBanner() {
             <div className="flex items-center gap-3 rounded-xl px-4 py-3"
               style={{ background: "var(--border-color)", border: "1px solid var(--border-color)" }}>
               <svg className="w-4 h-4 flex-shrink-0" style={{ color: "var(--accent)" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" />
               </svg>
               <select value={selectedSpace} onChange={e => setSelectedSpace(e.target.value)}
                 className="bg-transparent outline-none text-sm flex-1 cursor-pointer"

@@ -74,7 +74,8 @@ const Login = () => {
                 <div className="absolute inset-0 bg-black/20 z-10"></div>
                 <img src="https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&q=80"
                     className="absolute inset-0 w-full h-full object-cover scale-105 hover:scale-100 transition-transform duration-[10s]"
-                    alt="Coworking Life" />
+                    alt="Coworking Life"
+                    loading="lazy" />
 
                 <div className="absolute bottom-20 left-20 z-20 text-white">
                     <span className="text-[10px] font-black uppercase tracking-[0.5em] mb-4 block text-[#7bdff2]">Member Access</span>

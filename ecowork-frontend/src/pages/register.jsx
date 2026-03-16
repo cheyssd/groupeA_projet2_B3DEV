@@ -162,7 +162,7 @@ const Register = () => {
                         src="https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&q=80&w=1200"
                         className="w-full h-full object-cover grayscale-[20%] hover:grayscale-0 transition-all duration-1000"
                         alt="Design Studio"
-                        loading="eager"
+                        loading="lazy"
                         decoding="async"
                     />
                 </picture>

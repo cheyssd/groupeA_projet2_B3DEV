@@ -190,6 +190,7 @@ export default function SpaceShow() {
               <img
                 src={mainImageUrl}
                 alt={space.name}
+                loading="lazy"
                 onError={(e) => {
                   e.target.src = "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80";
                 }}

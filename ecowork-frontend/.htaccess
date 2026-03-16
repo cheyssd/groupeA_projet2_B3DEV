@@ -1,0 +1,90 @@
+comme ça ? # ========================================
+# ECOWORK FRONTEND - OPTIMISATION CACHE
+# ========================================
+
+# Enable Rewrite Engine
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  
+  # Redirect all requests to index.html (SPA routing)
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
+
+# ========================================
+# CACHE CONTROL - 1 YEAR FOR STATIC ASSETS
+# ========================================
+<IfModule mod_expires.c>
+  ExpiresActive On
+  
+  # Images (1 year)
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/gif "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType image/x-icon "access plus 1 year"
+  
+  # CSS and JavaScript (1 year - vite ajoute hash dans filename)
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType text/javascript "access plus 1 year"
+  
+  # Fonts (1 year)
+  ExpiresByType font/woff "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType application/font-woff "access plus 1 year"
+  ExpiresByType application/font-woff2 "access plus 1 year"
+  
+  # HTML (pas de cache pour l'index.html)
+  ExpiresByType text/html "access plus 0 seconds"
+</IfModule>
+
+# Alternative avec Header (si mod_expires pas dispo)
+<IfModule mod_headers.c>
+  # Cache pour 1 an (31536000 secondes) pour assets avec hash
+  <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|woff|woff2|ttf|css|js|ico)$">
+    Header set Cache-Control "max-age=31536000, public, immutable"
+  </FilesMatch>
+  
+  # Pas de cache pour index.html
+  <FilesMatch "^index\.html$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires 0
+  </FilesMatch>
+</IfModule>
+
+# ========================================
+# COMPRESSION GZIP
+# ========================================
+<IfModule mod_deflate.c>
+  # Compress HTML, CSS, JavaScript, JSON, XML
+  AddOutputFilterByType DEFLATE text/html
+  AddOutputFilterByType DEFLATE text/css
+  AddOutputFilterByType DEFLATE text/javascript
+  AddOutputFilterByType DEFLATE application/javascript
+  AddOutputFilterByType DEFLATE application/json
+  AddOutputFilterByType DEFLATE application/xml
+  AddOutputFilterByType DEFLATE text/xml
+  AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# ========================================
+# SECURITY HEADERS
+# ========================================
+<IfModule mod_headers.c>
+  # Prevent clickjacking
+  Header always set X-Frame-Options "SAMEORIGIN"
+  
+  # XSS Protection
+  Header always set X-XSS-Protection "1; mode=block"
+  
+  # Prevent MIME sniffing
+  Header always set X-Content-Type-Options "nosniff"
+  
+  # Referrer Policy
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>

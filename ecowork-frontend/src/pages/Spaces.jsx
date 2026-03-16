@@ -296,6 +296,7 @@ export default function Spaces() {
                           ? `${API_URL}/storage/${space.images[0].filename}`
                           : PLACEHOLDER_IMGS[index % PLACEHOLDER_IMGS.length]}
                         alt={space.name}
+                        loading="lazy"
                         className="space-card-img"
                         onError={(e) => {
                           e.target.src = PLACEHOLDER_IMGS[index % PLACEHOLDER_IMGS.length];
