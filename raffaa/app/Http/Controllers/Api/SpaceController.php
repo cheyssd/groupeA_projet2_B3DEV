@@ -21,7 +21,7 @@ class SpaceController extends Controller
     {
         $perPage = $request->query('per_page', 15);
 
-        $spaces = Space::with('images','equipements')->when($request->search, function ($query) use ($request) {
+        $spaces = Space::with('images', 'equipements')->when($request->search, function ($query) use ($request) {
             $query->where('name', 'like', '%' . $request->search . '%');
         })
             ->when($request->type, function ($query) use ($request) {
@@ -61,6 +61,7 @@ class SpaceController extends Controller
      */
     public function show(Space $space)
     {
+        $space->load(['images', 'equipements']);
         return response()->json($space);
     }
 
@@ -111,9 +112,9 @@ class SpaceController extends Controller
         $endDate = $request->end_date;
 
         $unavailableSpaceIds = Reservation::where(function ($query) use ($startDate, $endDate) {
-                $query->where('start_date', '<=', $endDate)
-                    ->where('end_date', '>=', $startDate);
-            })
+            $query->where('start_date', '<=', $endDate)
+                ->where('end_date', '>=', $startDate);
+        })
             ->whereIn('status', ['en_attente', 'confirmee'])
             ->pluck('space_id')
             ->toArray();
@@ -132,9 +133,20 @@ class SpaceController extends Controller
         return response()->json($spaces->get());
     }
 
-    public function syncEquipements(Request $request, $id) {
-    $space = Space::findOrFail($id);
-    $space->equipements()->sync($request->equipement_ids ?? []);
-    return response()->json(['success' => true]);
-}
+    public function syncEquipements(Request $request, $id)
+    {
+        $space = Space::findOrFail($id);
+        $space->equipements()->sync($request->equipement_ids ?? []);
+        return response()->json(['success' => true]);
+    }
+
+    public function getReservations($id)
+    {
+        $reservations = Reservation::where('space_id', $id)
+            ->where('status', '!=', 'annulee') 
+            ->select('start_date', 'end_date', 'status')
+            ->get();
+
+        return response()->json($reservations);
+    }
 }

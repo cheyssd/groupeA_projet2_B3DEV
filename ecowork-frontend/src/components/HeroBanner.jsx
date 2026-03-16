@@ -7,10 +7,8 @@ import heroLight from '../assets/hero-light.jpeg'
 export default function HeroBanner() {
   const { isDark, toggle } = useTheme()
   const { logout } = useContext(AuthContext)
-  const { logout } = useContext(AuthContext)
   const navigate = useNavigate()
 
-  // Vérifier si connecté
   const token = localStorage.getItem('token')
   const user = JSON.parse(localStorage.getItem('user') || '{}')
   const isLoggedIn = !!token
@@ -67,26 +65,10 @@ export default function HeroBanner() {
       navigate('/login')
     }
   }
-    if (selectedSpace) {
-      navigate(`/spaces/${selectedSpace}`, {
-        state: { preselectedDate: selectedDate }
-      })
-    } else {
-      navigate('/spaces')
-    }
-  }
-
-  const handleLogout = async () => {
-    if (confirm('Voulez-vous vraiment vous déconnecter ?')) {
-      await logout()
-      navigate('/login')
-    }
-  }
 
   return (
     <section className="relative w-full min-h-screen overflow-hidden" style={{ background: "var(--bg-primary)" }}>
 
-      {/* Background image */}
       <div className="absolute inset-0 bg-cover bg-center"
         style={{
           backgroundImage: isDark
@@ -96,7 +78,6 @@ export default function HeroBanner() {
         }}
       />
 
-      {/* Gradient overlay */}
       <div className="absolute inset-0"
         style={{
           background: isDark
@@ -105,9 +86,8 @@ export default function HeroBanner() {
         }}
       />
 
-      {/* NAVBAR */}
       <nav className="relative z-10 flex items-center justify-between px-6 md:px-12 pt-7">
-        {/* Logo */}
+
         <div className="flex flex-col gap-0.5">
           <span className="font-black text-xl uppercase tracking-wide cursor-pointer hover:opacity-70 transition"
             onClick={() => navigate('/')}
@@ -120,14 +100,13 @@ export default function HeroBanner() {
           </span>
         </div>
 
-        {/* Coordinates — hidden on mobile */}
         <span className="hidden md:block text-[11px] tracking-[3px] uppercase pt-1"
           style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-secondary)" }}>
           Abidjan, CI&nbsp;&nbsp;/&nbsp;&nbsp;5.3599°N
         </span>
 
-        <div className="flex items-center gap-3">
-          {/* Toggle */}
+        <div className="hidden md:flex items-center gap-3">
+
           <button onClick={toggle}
             className="flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-300 cursor-pointer"
             style={{ borderColor: "var(--border-color)", background: "var(--bg-card)", color: "var(--text-secondary)" }}>
@@ -149,10 +128,8 @@ export default function HeroBanner() {
             </span>
           </button>
 
-          {/* Si connecté */}
           {isLoggedIn ? (
             <>
-              {/* Avatar + Nom */}
               <button
                 onClick={() => navigate(user.role === 'admin' ? '/admin/adminOverview' : '/user/dashboard')}
                 className="flex items-center gap-2 px-4 py-1.5 rounded-full border transition-all duration-300 cursor-pointer hover:scale-105"
@@ -173,7 +150,6 @@ export default function HeroBanner() {
                 </span>
               </button>
 
-              {/* Déconnexion */}
               <button
                 onClick={handleLogout}
                 className="flex items-center gap-2 px-4 py-1.5 rounded-full transition-all duration-300 cursor-pointer text-[9px] tracking-[2px] uppercase font-bold hover:scale-105"
@@ -188,7 +164,6 @@ export default function HeroBanner() {
             </>
           ) : (
             <>
-              {/* Si pas connecté */}
               <Link to="/login"
                 className="flex items-center gap-2 px-4 py-1.5 rounded-full border transition-all duration-300 cursor-pointer text-[9px] tracking-[2px] uppercase font-bold hover:scale-105"
                 style={{ borderColor: "var(--border-color)", background: "transparent", color: "var(--text-secondary)", fontFamily: "'Rajdhani', sans-serif" }}>
@@ -203,16 +178,24 @@ export default function HeroBanner() {
             </>
           )}
         </div>
+
+        {/* Mobile burger menu */}
+        <button onClick={() => setMenuOpen(!menuOpen)}
+          className="md:hidden flex flex-col gap-1 w-8 h-8 items-center justify-center"
+          style={{ color: "var(--text-primary)" }}>
+          <div className="w-5 h-0.5 transition-all" style={{ background: "currentColor", transform: menuOpen ? "rotate(45deg) translateY(6px)" : "none" }} />
+          <div className="w-5 h-0.5 transition-all" style={{ background: "currentColor", opacity: menuOpen ? 0 : 1 }} />
+          <div className="w-5 h-0.5 transition-all" style={{ background: "currentColor", transform: menuOpen ? "rotate(-45deg) translateY(-6px)" : "none" }} />
+        </button>
       </nav>
 
       {/* Mobile menu dropdown */}
       {menuOpen && (
-        <div className="relative z-20 mx-6 mt-2 rounded-2xl border p-4 flex flex-col gap-2 md:hidden"
-          style={{ background: "var(--bg-card)", borderColor: "var(--border-color)", backdropFilter: "blur(20px)" }}>
+        <div className="md:hidden absolute top-20 right-6 z-50 rounded-2xl p-4 border shadow-xl flex flex-col gap-3 min-w-[200px]"
+          style={{ background: "var(--bg-card)", borderColor: "var(--border-color)" }}>
           {isLoggedIn ? (
             <>
-              <Link
-                to={user.role === 'admin' ? '/admin/adminoverview' : '/user/dashboard'}
+              <Link to={user.role === 'admin' ? '/admin/adminOverview' : '/user/dashboard'}
                 onClick={() => setMenuOpen(false)}
                 className="flex items-center gap-2 px-4 py-2 rounded-full border transition-all duration-300"
                 style={{ borderColor: "var(--border-color)", color: "var(--text-primary)" }}>
@@ -247,10 +230,8 @@ export default function HeroBanner() {
         </div>
       )}
 
-      {/* HERO CONTENT */}
       <div className="relative z-10 flex flex-col lg:flex-row items-center lg:items-start justify-between px-6 md:px-12 pt-12 md:pt-20 gap-8 pb-8">
 
-        {/* Left: Heading + tagline */}
         <div className="flex-1 max-w-2xl text-center lg:text-left">
           <h1 className="font-black uppercase leading-none"
             style={{
@@ -277,8 +258,7 @@ export default function HeroBanner() {
           </p>
         </div>
 
-        {/* Booking card ORIGINAL */}
-        <div className="w-80 flex-shrink-0 rounded-2xl p-8 border"
+        <div className="w-full lg:w-80 flex-shrink-0 rounded-2xl p-8 border"
           style={{ background: "var(--bg-card)", borderColor: "var(--border-color)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)" }}>
 
           <div className="text-center mb-7">
@@ -288,7 +268,6 @@ export default function HeroBanner() {
             <p className="text-sm mt-0.5" style={{ color: "var(--text-secondary)" }}>espace de focus</p>
           </div>
 
-          {/* Date picker */}
           <div className="mb-3">
             <label className="block text-[9px] tracking-[3px] uppercase mb-2"
               style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
@@ -312,7 +291,6 @@ export default function HeroBanner() {
             </div>
           </div>
 
-          {/* Space select */}
           <div className="mb-5">
             <label className="block text-[9px] tracking-[3px] uppercase mb-2"
               style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
@@ -346,7 +324,6 @@ export default function HeroBanner() {
         </div>
       </div>
 
-      {/* BOTTOM BAR */}
       <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-end justify-between px-6 md:px-12 pb-10 mt-8 md:mt-16 gap-6 sm:gap-0">
         <div className="flex gap-10">
           <div>

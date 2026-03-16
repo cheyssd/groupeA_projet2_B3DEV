@@ -2,11 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "../contexts/ThemeContext";
 
-const IMAGES = [
-  "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80",
-  "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&q=80",
-  "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&q=80",
-];
+const API_URL = "http://127.0.0.1:8000";
 
 export default function SpaceShow() {
   const { id } = useParams();
@@ -15,6 +11,7 @@ export default function SpaceShow() {
   const { isDark } = useTheme();
 
   const [space, setSpace] = useState(null);
+  const [reservations, setReservations] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -25,12 +22,21 @@ export default function SpaceShow() {
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
 
-  // Fetch space
+  // Fetch space + réservations
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/spaces/${id}`)
-      .then((res) => res.json())
-      .then((data) => { setSpace(data); setLoading(false); })
-      .catch((err) => { console.error("Erreur API :", err); setLoading(false); });
+    Promise.all([
+      fetch(`${API_URL}/api/spaces/${id}`).then(r => r.json()),
+      fetch(`${API_URL}/api/spaces/${id}/reservations`).then(r => r.json()) 
+    ])
+      .then(([spaceData, reservationsData]) => {
+        setSpace(spaceData);
+        setReservations(reservationsData || []);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Erreur API :", err);
+        setLoading(false);
+      });
   }, [id]);
 
   // Pré-sélectionner la date depuis HeroBanner
@@ -55,6 +61,12 @@ export default function SpaceShow() {
 
   const handleDateClick = (day) => {
     const clickedDate = new Date(currentYear, currentMonth, day);
+    
+    if (isReserved(day)) {
+      alert('Cette date est déjà réservée !');
+      return;
+    }
+    
     if (!startDate || (startDate && endDate)) {
       setStartDate(clickedDate);
       setEndDate(null);
@@ -75,6 +87,23 @@ export default function SpaceShow() {
   const isPast = (day) => {
     const date = new Date(currentYear, currentMonth, day);
     return date < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  };
+
+  const isReserved = (day) => {
+    const date = new Date(currentYear, currentMonth, day);
+    date.setHours(0, 0, 0, 0);
+
+    return reservations.some(reservation => {
+      const startRes = new Date(reservation.start_date);
+      const endRes = new Date(reservation.end_date);
+      startRes.setHours(0, 0, 0, 0);
+      endRes.setHours(0, 0, 0, 0);
+
+
+      if (reservation.status === 'annulee') return false;
+
+      return date >= startRes && date <= endRes;
+    });
   };
 
   const calculateTotalHours = () => {
@@ -109,6 +138,12 @@ export default function SpaceShow() {
     );
   }
 
+  const images = space.images || [];
+  const mainImageUrl = images.length > 0 
+    ? `${API_URL}/storage/${images[0].filename}` 
+    : "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80";
+  const secondaryImages = images.length > 1 ? images.slice(1, 3) : [];
+
   return (
     <>
       <style>{`
@@ -139,7 +174,7 @@ export default function SpaceShow() {
                 {space.is_active ? "Available" : "Unavailable"}
               </span>
               <span className="text-[11px] tracking-[3px] uppercase" style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
-                Paris XI · Bastille
+                Abidjan, CI · Cocody
               </span>
             </div>
 
@@ -149,18 +184,34 @@ export default function SpaceShow() {
               <span style={{ color: "var(--text-primary)" }}>SPACE_0{id}</span>
             </h1>
 
-            <div className="rounded-2xl overflow-hidden mb-4" style={{ height: "320px" }}>
-              <img src={space.images?.[0]?.filename ? `http://127.0.0.1:8000/storage/${space.images[0].filename}` : IMAGES[0]}
-                alt={space.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+            <div className="rounded-2xl overflow-hidden mb-4" style={{ height: "320px", background: "var(--border-color)" }}>
+              <img 
+                src={mainImageUrl}
+                alt={space.name} 
+                onError={(e) => {
+                  e.target.src = "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80";
+                }}
+                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} 
+              />
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-10">
-              {(space.images?.length > 1 ? space.images.slice(1, 3) : []).map((img, i) => (
-                <div key={i} className="rounded-2xl overflow-hidden" style={{ height: "200px" }}>
-                  <img src={`http://127.0.0.1:8000/storage/${img.filename}`} alt={`${space.name} ${i + 2}`} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-                </div>
-              ))}
-            </div>
+            {secondaryImages.length > 0 && (
+              <div className="grid grid-cols-2 gap-4 mb-10">
+                {secondaryImages.map((img, i) => (
+                  <div key={img.id} className="rounded-2xl overflow-hidden" style={{ height: "200px", background: "var(--border-color)" }}>
+                    <img 
+                      src={`${API_URL}/storage/${img.filename}`}
+                      alt={img.alt_text || `${space.name} ${i + 2}`} 
+                      loading="lazy"
+                      onError={(e) => {
+                        e.target.src = `https://images.unsplash.com/photo-${i === 0 ? '1519389950473' : '1504384308090'}-47ba0277781c?w=800&q=80`;
+                      }}
+                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} 
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
 
             <div className="mb-8">
               <p className="text-[10px] tracking-[4px] uppercase mb-4" style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--accent)" }}>
@@ -182,7 +233,6 @@ export default function SpaceShow() {
               ))}
             </div>
 
-            {/* Équipements */}
             {space.equipements?.length > 0 && (
               <div className="mt-8">
                 <p className="text-[10px] tracking-[4px] uppercase mb-4" style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--accent)" }}>
@@ -246,17 +296,20 @@ export default function SpaceShow() {
                   {Array.from({ length: getDaysInMonth(currentMonth, currentYear) }).map((_, i) => {
                     const day = i + 1;
                     const past = isPast(day);
+                    const reserved = isReserved(day);
                     const inRange = isInRange(day);
+                    const disabled = past || reserved;
+                    
                     return (
-                      <button key={day} onClick={() => !past && handleDateClick(day)} disabled={past}
+                      <button key={day} onClick={() => !disabled && handleDateClick(day)} disabled={disabled}
                         className="text-center text-xs py-1 rounded-full transition-all"
                         style={{
                           fontFamily: "'Rajdhani', sans-serif",
-                          cursor: past ? "not-allowed" : "pointer",
-                          background: inRange ? "var(--accent)" : "transparent",
-                          color: past ? "var(--text-muted)" : inRange ? "#000" : "var(--text-primary)",
+                          cursor: disabled ? "not-allowed" : "pointer",
+                          background: reserved ? "#ff5050" : inRange ? "var(--accent)" : "transparent",
+                          color: disabled ? "#fff" : inRange ? "#000" : "var(--text-primary)",
                           opacity: past ? 0.3 : 1,
-                          fontWeight: inRange ? "700" : "400",
+                          fontWeight: inRange || reserved ? "700" : "400",
                         }}>
                         {day}
                       </button>

@@ -179,7 +179,7 @@ export default function Spaces() {
           style={{ borderColor: "var(--border-color)" }}>
           <span className="font-black text-lg uppercase cursor-pointer"
             style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "var(--text-primary)" }}
-            onClick={() => navigate("/accueil")}>
+            onClick={() => navigate("/")}>
             ECOWORK<span style={{ color: "var(--accent)" }}>.</span>
           </span>
 

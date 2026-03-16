@@ -19,6 +19,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::get('/spaces/available', [SpaceController::class, 'availableSpaces']);
 Route::get('/spaces', [SpaceController::class, 'index']);
 Route::get('/spaces/{space}', [SpaceController::class, 'show']);
+Route::get('/spaces/{id}/reservations', [SpaceController::class, 'getReservations']);
 
 
 // Protected Routes (Auth Required)
@@ -34,7 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
         ->only(['index', 'store', 'update','show', 'destroy']);
 
     // Invoice
-    Route::get('/reservations/{id}/invoice', [InvoiceController::class, 'download']); 
+    Route::get('/reservations/{id}/invoice', [InvoiceController::class, 'download']);
 });
 
 
