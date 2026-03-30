@@ -26,7 +26,19 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@ecowork.com',
             'password' => bcrypt('password123'),
             'role' => 'admin',
+            'accepted_tos' => true,
         ]);
+
+        //2.admin
+        User::factory()->create([
+            'firstname' => 'Admin2',
+            'lastname' => 'Second',
+            'email' => 'superadmin@ecowork.com',
+            'password' => bcrypt('superpass123'),
+            'role' => 'admin',
+            'accepted_tos' => true,
+        ]);
+
 
         // 2. Users normaux (10)
         User::factory(10)->create();

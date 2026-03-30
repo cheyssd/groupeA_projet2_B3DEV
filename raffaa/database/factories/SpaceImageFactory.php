@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Space;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -15,14 +16,22 @@ class SpaceImageFactory extends Factory
      * @return array<string, mixed>
      */
     public function definition(): array
-{
-    return [
-        'name' => $this->faker->company . ' Space',
-        'surface' => $this->faker->numberBetween(20, 200),
-        'capacity' => $this->faker->numberBetween(2, 50),
-        'type' => 'bureau',
-        'price_per_day' => 100,
-        'is_active' => true,
-    ];
-}
+    {
+        return [
+            'space_id' => Space::factory(), 
+            'filename' => $this->faker->uuid() . '.jpg',
+            'alt_text' => $this->faker->sentence(3),
+            'is_primary' => false,
+        ];
+    }
+
+    /**
+     * Définir l'image comme principale
+     */
+    public function primary(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_primary' => true,
+        ]);
+    }
 }

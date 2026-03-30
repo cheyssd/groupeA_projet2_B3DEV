@@ -3,8 +3,8 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "../contexts/ThemeContext";
 
 const API_URL = window.location.hostname === 'localhost'
-  ? 'http://127.0.0.1:8000/api'
-  : 'https://api-raffaa.ifran-b3dev.com/api';
+  ? 'http://127.0.0.1:8000'
+  : 'https://api-raffaa.ifran-b3dev.com';
 
 export default function SpaceShow() {
   const { id } = useParams();
@@ -24,24 +24,37 @@ export default function SpaceShow() {
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
 
-  // Fetch space + réservations
   useEffect(() => {
-    Promise.all([
-      fetch(`${API_URL}/api/spaces/${id}`).then(r => r.json()),
-      fetch(`${API_URL}/api/spaces/${id}/reservations`).then(r => r.json())
-    ])
-      .then(([spaceData, reservationsData]) => {
+    const fetchData = async () => {
+      try {
+        const resSpace = await fetch(`${API_URL}/api/spaces/${id}`);
+        const spaceData = await resSpace.json();
         setSpace(spaceData);
-        setReservations(reservationsData || []);
+
+        try {
+          const resResa = await fetch(`${API_URL}/api/spaces/${id}/reservations`);
+          if (resResa.ok) {
+            const reservationsData = await resResa.json();
+            setReservations(reservationsData || []);
+          } else {
+            setReservations([]);
+          }
+        } catch (errResa) {
+          console.warn("Réservations indisponibles en ligne");
+          setReservations([]);
+        }
+
+      } catch (err) {
+        console.error("Erreur API Espace :", err);
+        setSpace(null);
+      } finally {
         setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Erreur API :", err);
-        setLoading(false);
-      });
+      }
+    };
+
+    fetchData();
   }, [id]);
 
-  // Pré-sélectionner la date depuis HeroBanner
   useEffect(() => {
     if (location.state?.preselectedDate) {
       const date = new Date(location.state.preselectedDate);

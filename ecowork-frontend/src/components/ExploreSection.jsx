@@ -2,6 +2,10 @@ import { useState, useEffect } from "react";
 import { useTheme } from "../contexts/ThemeContext";
 import { useNavigate } from 'react-router-dom'
 
+const API_URL = window.location.hostname === 'localhost'
+  ? 'http://127.0.0.1:8000'
+  : 'https://api-raffaa.ifran-b3dev.com';
+
 export default function ExploreSection() {
   const { isDark } = useTheme();
 
@@ -13,10 +17,10 @@ export default function ExploreSection() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/spaces")
+    fetch(`${API_URL}/api/spaces`)
       .then((response) => response.json())
       .then((data) => {
-        setSpaces(data.data);
+        setSpaces(data.data || data);
         setLoading(false);
       })
       .catch((error) => {
@@ -153,7 +157,7 @@ export default function ExploreSection() {
             }}>
             VOIR TOUS LES ESPACES
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
+              <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
           </button>
         </div>
