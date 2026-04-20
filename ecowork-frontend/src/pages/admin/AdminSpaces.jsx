@@ -2,17 +2,17 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../contexts/ThemeContext";
 import { Sidebar } from "./AdminOverview";
- 
+
 const API_URL = window.location.hostname === 'localhost'
   ? 'http://127.0.0.1:8000'
   : 'https://api-raffaa.ifran-b3dev.com';
- 
+
 const TYPE_LABELS = {
   conference: "Conférence",
   private_office: "Private Office",
   shared_desk: "Shared Desk",
 };
- 
+
 function Modal({ title, onClose, children }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4"
@@ -25,7 +25,7 @@ function Modal({ title, onClose, children }) {
           </h2>
           <button onClick={onClose} className="cursor-pointer" style={{ color: "var(--text-muted)" }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           </button>
         </div>
@@ -34,19 +34,19 @@ function Modal({ title, onClose, children }) {
     </div>
   );
 }
- 
+
 function SpaceForm({ initial, onSubmit, onClose, loading }) {
   const [form, setForm] = useState(initial || {
     name: "", surface: "", capacity: "", type: "conference", price_per_day: "", is_active: 1,
   });
- 
+
   const fields = [
     { key: "name", label: "Nom", type: "text", placeholder: "Ex: Bonoua Space" },
     { key: "surface", label: "Surface (m²)", type: "number", placeholder: "Ex: 600" },
     { key: "capacity", label: "Capacité", type: "number", placeholder: "Ex: 80" },
-    { key: "price_per_day", label: "Prix / jour (FCFA)", type: "number", placeholder: "Ex: 20000" },
+    { key: "price_per_day", label: "Prix / jour (€)", type: "number", placeholder: "Ex: 20000" },
   ];
- 
+
   return (
     <div className="flex flex-col gap-4">
       {fields.map((f) => (
@@ -61,7 +61,7 @@ function SpaceForm({ initial, onSubmit, onClose, loading }) {
             style={{ background: "var(--border-color)", border: "1px solid var(--border-color)", color: "var(--text-primary)", fontFamily: "'Barlow', sans-serif" }} />
         </div>
       ))}
- 
+
       <div>
         <label className="text-[9px] tracking-[3px] uppercase block mb-1.5"
           style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
@@ -75,7 +75,7 @@ function SpaceForm({ initial, onSubmit, onClose, loading }) {
           ))}
         </select>
       </div>
- 
+
       <div className="flex items-center gap-3">
         <div onClick={() => setForm({ ...form, is_active: form.is_active ? 0 : 1 })}
           className="w-10 h-6 rounded-full cursor-pointer transition-all flex items-center px-1"
@@ -87,7 +87,7 @@ function SpaceForm({ initial, onSubmit, onClose, loading }) {
           Espace actif
         </span>
       </div>
- 
+
       <div className="flex gap-3 mt-2">
         <button onClick={onClose} className="flex-1 py-3 rounded-xl text-xs tracking-[2px] uppercase font-semibold cursor-pointer"
           style={{ border: "1px solid var(--border-color)", color: "var(--text-secondary)", background: "transparent", fontFamily: "'Rajdhani', sans-serif" }}>
@@ -102,12 +102,12 @@ function SpaceForm({ initial, onSubmit, onClose, loading }) {
     </div>
   );
 }
- 
+
 export default function AdminSpaces() {
   const { isDark, toggle } = useTheme();
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
- 
+
   const [spaces, setSpaces] = useState([]);
   const [meta, setMeta] = useState({ total: 0, last_page: 1, current_page: 1 });
   const [loading, setLoading] = useState(true);
@@ -115,19 +115,19 @@ export default function AdminSpaces() {
   const [filterType, setFilterType] = useState("");
   const [filterActive, setFilterActive] = useState("");
   const [page, setPage] = useState(1);
- 
+
   const [showDelete, setShowDelete] = useState(null);
   const [saving, setSaving] = useState(false);
- 
+
   const headers = { Authorization: `Bearer ${token}`, Accept: "application/json", "Content-Type": "application/json" };
- 
+
   const fetchSpaces = () => {
     setLoading(true);
     const params = new URLSearchParams({ page });
     if (search) params.append("search", search);
     if (filterType) params.append("type", filterType);
     if (filterActive !== "") params.append("is_active", filterActive);
- 
+
     fetch(`${API_URL}/api/spaces?${params}`, { headers })
       .then((r) => r.json())
       .then((data) => {
@@ -137,13 +137,13 @@ export default function AdminSpaces() {
       })
       .catch(() => setLoading(false));
   };
- 
+
   useEffect(() => { fetchSpaces(); }, [page, filterType, filterActive]);
   useEffect(() => {
     const t = setTimeout(() => { setPage(1); fetchSpaces(); }, 400);
     return () => clearTimeout(t);
   }, [search]);
- 
+
   const handleDelete = async () => {
     setSaving(true);
     await fetch(`${API_URL}/api/spaces/${showDelete.id}`, { method: "DELETE", headers });
@@ -151,7 +151,7 @@ export default function AdminSpaces() {
     setShowDelete(null);
     fetchSpaces();
   };
- 
+
   const toggleActive = async (space) => {
     await fetch(`${API_URL}/api/spaces/${space.id}`, {
       method: "PUT", headers,
@@ -159,7 +159,7 @@ export default function AdminSpaces() {
     });
     fetchSpaces();
   };
- 
+
   return (
     <>
       <style>{`
@@ -193,14 +193,14 @@ export default function AdminSpaces() {
                 style={{ borderColor: "var(--border-color)", background: "var(--bg-card)", color: "var(--text-secondary)" }}>
                 {isDark ? (
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                    <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    <circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" />
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                    <line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" />
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
                   </svg>
                 ) : (
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
                   </svg>
                 )}
                 <span className="hidden sm:inline text-[9px] tracking-[2px] uppercase" style={{ fontFamily: "'Rajdhani', sans-serif" }}>
@@ -212,7 +212,7 @@ export default function AdminSpaces() {
                 className="flex items-center gap-2 px-3 md:px-4 py-2 rounded-xl cursor-pointer text-xs tracking-[2px] uppercase font-bold"
                 style={{ background: "var(--accent)", color: "#000", fontFamily: "'Rajdhani', sans-serif" }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                  <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
                 </svg>
                 <span className="hidden sm:inline">Ajouter</span>
               </button>
@@ -224,7 +224,7 @@ export default function AdminSpaces() {
             <div className="flex items-center gap-2 flex-1 min-w-[180px] px-3 md:px-4 py-2 md:py-2.5 rounded-xl"
               style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)" }}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: "var(--text-muted)", flexShrink: 0 }}>
-                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
               </svg>
               <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
                 placeholder="Rechercher..."
@@ -293,7 +293,7 @@ export default function AdminSpaces() {
                       ) : (
                         <div className="w-full h-full flex items-center justify-center" style={{ color: "var(--text-muted)" }}>
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+                            <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
                           </svg>
                         </div>
                       )}
@@ -312,7 +312,7 @@ export default function AdminSpaces() {
                     <p className="text-sm" style={{ color: "var(--text-secondary)", fontFamily: "'Barlow Condensed', sans-serif" }}>{space.capacity} pers.</p>
 
                     <p className="font-bold text-sm" style={{ color: "var(--accent)", fontFamily: "'Barlow Condensed', sans-serif" }}>
-                      {Number(space.price_per_day).toLocaleString()} FCFA
+                      {Number(space.price_per_day).toLocaleString()} €
                     </p>
 
                     <div className="flex items-center gap-2">
@@ -333,17 +333,17 @@ export default function AdminSpaces() {
                         className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:opacity-80"
                         style={{ background: "rgba(41,212,224,0.1)", color: "var(--accent)" }}>
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                         </svg>
                       </button>
                       <button onClick={() => setShowDelete(space)}
                         className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:opacity-80"
                         style={{ background: "rgba(248,113,113,0.1)", color: "#f87171" }}>
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                          <path d="M10 11v6"/><path d="M14 11v6"/>
-                          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                          <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                          <path d="M10 11v6" /><path d="M14 11v6" />
+                          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
                         </svg>
                       </button>
                     </div>
@@ -358,7 +358,7 @@ export default function AdminSpaces() {
                       ) : (
                         <div className="w-full h-full flex items-center justify-center" style={{ color: "var(--text-muted)" }}>
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+                            <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
                           </svg>
                         </div>
                       )}
@@ -374,7 +374,7 @@ export default function AdminSpaces() {
                           </p>
                         </div>
                         <p className="font-bold text-sm shrink-0" style={{ color: "var(--accent)", fontFamily: "'Barlow Condensed', sans-serif" }}>
-                          {Number(space.price_per_day).toLocaleString()} FCFA
+                          {Number(space.price_per_day).toLocaleString()} €
                         </p>
                       </div>
 
@@ -396,17 +396,17 @@ export default function AdminSpaces() {
                             className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer"
                             style={{ background: "rgba(41,212,224,0.1)", color: "var(--accent)" }}>
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                             </svg>
                           </button>
                           <button onClick={() => setShowDelete(space)}
                             className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer"
                             style={{ background: "rgba(248,113,113,0.1)", color: "#f87171" }}>
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                              <path d="M10 11v6"/><path d="M14 11v6"/>
-                              <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                              <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                              <path d="M10 11v6" /><path d="M14 11v6" />
+                              <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
                             </svg>
                           </button>
                         </div>
@@ -424,7 +424,7 @@ export default function AdminSpaces() {
               <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
                 className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer"
                 style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", color: "var(--text-muted)", opacity: page === 1 ? 0.4 : 1 }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6" /></svg>
               </button>
               {Array.from({ length: meta.last_page }).map((_, i) => (
                 <button key={i} onClick={() => setPage(i + 1)}
@@ -441,7 +441,7 @@ export default function AdminSpaces() {
               <button onClick={() => setPage(p => Math.min(meta.last_page, p + 1))} disabled={page === meta.last_page}
                 className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer"
                 style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", color: "var(--text-muted)", opacity: page === meta.last_page ? 0.4 : 1 }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6" /></svg>
               </button>
             </div>
           )}

@@ -25,7 +25,7 @@ class UpdateSpaceRequest extends FormRequest
             'name' => 'sometimes|string|max:255',
             'surface' => 'sometimes|numeric',
             'capacity' => 'sometimes|integer',
-            'type' => 'sometimes|in:bureau,salle_reunion,conference',
+            'type' => 'sometimes|in:bureau_prive,espace_partage,salle_reunion,salle_conference',
             'price_per_day' => 'sometimes|numeric',
             'is_active' => 'boolean'
         ];

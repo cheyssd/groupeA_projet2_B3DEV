@@ -3,23 +3,19 @@ import { lazy, Suspense } from 'react';
 import { AuthProvider } from './contexts/AuthProvider.jsx';
 import './App.css';
 
-// ✅ Pages chargées immédiatement (critiques)
 import Login from './pages/Login';
 import Register from './pages/register';
 import Accueil from './pages/Accueil.jsx';
 
-// ✅ Lazy loading - Pages publiques
 const Spaces = lazy(() => import('./pages/Spaces'));
 const SpaceShow = lazy(() => import('./pages/SpaceShow'));
 
-// ✅ Lazy loading - Pages user
 const Dashboard = lazy(() => import('./pages/user/Dashboard.jsx'));
 const Reservation = lazy(() => import('./pages/user/Reservation.jsx'));
 const Profile = lazy(() => import('./pages/user/Profile.jsx'));
 const CheckoutPage = lazy(() => import('./pages/checkout/CheckoutPage.jsx'));
 const ConfirmationReservation = lazy(() => import('./pages/checkout/ConfirmationReservation.jsx'));
 
-// ✅ Lazy loading - Pages admin
 const AdminOverview = lazy(() => import('./pages/admin/AdminOverview'));
 const AdminSpaces = lazy(() => import('./pages/admin/AdminSpaces'));
 const AdminSpaceForm = lazy(() => import('./pages/admin/AdminSpaceForm'));

@@ -12,21 +12,84 @@
   --bg-primary: #000000;
   --bg-card: rgba(18, 20, 26, 0.80);
   --text-primary: #ffffff;
-  --text-secondary: rgba(255,255,255,0.45);
-  --text-muted: rgba(255,255,255,0.25);
-  --border-color: rgba(255,255,255,0.08);
+  --text-secondary: rgba(255, 255, 255, 0.45);
+  --text-muted: rgba(255, 255, 255, 0.25);
+  --border-color: rgba(255, 255, 255, 0.08);
   --accent: #29d4e0;
-  --shadow: none; 
+  --shadow: none;
 }
 
 /* ── LIGHT MODE ── */
 .light {
-  --bg-primary: #f8fafc; 
+  --bg-primary: #f8fafc;
   --bg-card: #ffffff;
-  --text-primary: #0f172a; 
+  --text-primary: #0f172a;
   --text-secondary: #334155;
-  --text-muted: #64748b; 
-  --border-color: #e2e8f0; 
-  --accent: #0ea5e9; 
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --accent: #0ea5e9;
   --shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.05), 0 4px 6px -4px rgba(15, 23, 42, 0.05);
+}
+
+/* ========================================
+   LOW CARBON MODE - Économie d'énergie
+   ======================================== */
+
+/* Désactiver TOUTES les animations */
+.low-carbon-mode *,
+.low-carbon-mode *::before,
+.low-carbon-mode *::after {
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
+}
+
+/* Forcer le mode sombre (économie batterie OLED) */
+.low-carbon-mode {
+  --bg-primary: #000000;
+  --bg-card: #0a0a0a;
+  --bg-secondary: #1a1a1a;
+  --text-primary: #e5e5e5;
+  --text-secondary: #a3a3a3;
+  --text-muted: #737373;
+  --border-color: #262626;
+  --accent: #29d4e0;
+}
+
+/* Réduire la qualité des images (filtre de dégradation) */
+.low-carbon-mode img {
+  filter: contrast(0.9) brightness(0.95);
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* Désactiver les box-shadow (économie GPU) */
+.low-carbon-mode * {
+  box-shadow: none !important;
+}
+
+/* Désactiver backdrop-filter (très gourmand) */
+.low-carbon-mode * {
+  backdrop-filter: none !important;
+}
+
+/* Simplifier les bordures arrondies */
+.low-carbon-mode * {
+  border-radius: 4px !important;
+}
+
+/* Message d'information */
+.low-carbon-badge {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 8px 16px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #22c55e;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 8px;
+  z-index: 9999;
+  pointer-events: none;
 }

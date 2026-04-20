@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useLocation, useNavigate, Link } from 'react-router-dom'; 
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 
 export default function ConfirmationReservation() {
     const location = useLocation();
@@ -67,7 +67,7 @@ export default function ConfirmationReservation() {
                                 <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Total payé</span>
                                 <span className="text-4xl font-black tracking-tighter">
                                     {total?.toLocaleString()}
-                                    <span className="text-sm text-gray-400 ml-1">FCFA</span>
+                                    <span className="text-sm text-gray-400 ml-1">€</span>
                                 </span>
                             </div>
                         </div>

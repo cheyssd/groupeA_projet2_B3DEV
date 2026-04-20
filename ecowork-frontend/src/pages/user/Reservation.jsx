@@ -170,7 +170,7 @@ const Reservation = () => {
                                                 {[
                                                     { label: 'Début', value: new Date(reservation.start_date).toLocaleDateString('fr-FR') },
                                                     { label: 'Fin', value: new Date(reservation.end_date).toLocaleDateString('fr-FR') },
-                                                    { label: 'Prix', value: `${Number(reservation.total_price).toLocaleString()} FCFA` },
+                                                    { label: 'Prix', value: `${Number(reservation.total_price).toLocaleString()} €` },
                                                 ].map(({ label, value }) => (
                                                     <div key={label}>
                                                         <p className="text-[9px] font-black uppercase tracking-widest"

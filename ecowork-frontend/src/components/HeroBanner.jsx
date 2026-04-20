@@ -1,13 +1,19 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useTheme } from '../contexts/ThemeContext'
 import { useContext, useState, useEffect } from 'react'
+import { useLowCarbon } from '../contexts/lowcarboncontext.jsx'
 import { AuthContext } from '../contexts/AuthContext'
 import heroLight from '../assets/hero-light.jpeg'
+
+const API_URL = window.location.hostname === 'localhost'
+  ? 'http://127.0.0.1:8000'
+  : 'https://api-raffaa.ifran-b3dev.com';
 
 export default function HeroBanner() {
   const { isDark, toggle } = useTheme()
   const { logout } = useContext(AuthContext)
   const navigate = useNavigate()
+  const { isLowCarbon, toggleLowCarbon } = useLowCarbon();
 
   const token = localStorage.getItem('token')
   const user = JSON.parse(localStorage.getItem('user') || '{}')
@@ -22,7 +28,7 @@ export default function HeroBanner() {
   const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/spaces?per_page=100")
+    fetch(`${API_URL}/api/spaces?per_page=100`)
       .then(r => r.json())
       .then(data => setSpaces(data.data || []))
       .catch(() => { })
@@ -35,7 +41,7 @@ export default function HeroBanner() {
       return
     }
     setLoadingSpaces(true)
-    fetch(`http://127.0.0.1:8000/api/spaces/available?start_date=${selectedDate}&end_date=${selectedDate}`)
+    fetch(`${API_URL}/api/spaces/available?start_date=${selectedDate}&end_date=${selectedDate}`)
       .then(r => r.json())
       .then(data => {
         setAvailableSpaces(Array.isArray(data) ? data : [])
@@ -109,7 +115,7 @@ export default function HeroBanner() {
 
         <span className="hidden md:block text-[11px] tracking-[3px] uppercase pt-1"
           style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-secondary)" }}>
-          Abidjan, CI&nbsp;&nbsp;/&nbsp;&nbsp;5.3599°N
+          Paris, FR&nbsp;&nbsp;/&nbsp;&nbsp;5.3599°N
         </span>
 
         <div className="hidden md:flex items-center gap-3">
@@ -316,7 +322,7 @@ export default function HeroBanner() {
                 </option>
                 {displayedSpaces.map(s => (
                   <option key={s.id} value={s.id} style={{ background: isDark ? "#1a1a1a" : "#fff" }}>
-                    {s.name} — {Number(s.price_per_day).toLocaleString()} FCFA/h
+                    {s.name} — {Number(s.price_per_day).toLocaleString()} €/h
                   </option>
                 ))}
               </select>

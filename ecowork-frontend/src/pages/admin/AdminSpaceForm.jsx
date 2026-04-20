@@ -2,25 +2,25 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTheme } from "../../contexts/ThemeContext";
 import { Sidebar } from "./AdminOverview";
- 
+
 const API_URL = window.location.hostname === 'localhost'
   ? 'http://127.0.0.1:8000'
   : 'https://api-raffaa.ifran-b3dev.com';
- 
+
 const TYPE_LABELS = {
   bureau_prive: "Bureau Privé",
   espace_partage: "Espace Partagé",
   salle_reunion: "Salle de Réunion",
   salle_conference: "Salle de Conférence",
 };
- 
+
 export default function AdminSpaceForm() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isDark, toggle } = useTheme();
   const token = localStorage.getItem("token");
   const isEdit = !!id;
- 
+
   const [form, setForm] = useState({
     name: "", surface: "", capacity: "", type: "bureau_prive", price_per_day: "", is_active: 1,
   });
@@ -30,20 +30,20 @@ export default function AdminSpaceForm() {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(isEdit);
   const [errors, setErrors] = useState({});
- 
+
   const headers = {
     Authorization: `Bearer ${token}`,
     Accept: "application/json",
     "Content-Type": "application/json",
   };
- 
+
   useEffect(() => {
     fetch(`${API_URL}/api/equipements`, { headers })
       .then((r) => r.json())
       .then((data) => setEquipements(Array.isArray(data) ? data : []))
       .catch(() => setEquipements([]));
   }, []);
- 
+
   useEffect(() => {
     if (isEdit) {
       fetch(`${API_URL}/api/spaces/${id}`, { headers })
@@ -58,13 +58,13 @@ export default function AdminSpaceForm() {
         });
     }
   }, [id]);
- 
+
   const toggleEquipement = (eqId) => {
     setSelectedEquipements((prev) =>
       prev.includes(eqId) ? prev.filter((e) => e !== eqId) : [...prev, eqId]
     );
   };
- 
+
   const validate = () => {
     const e = {};
     if (!form.name) e.name = "Nom requis";
@@ -74,7 +74,7 @@ export default function AdminSpaceForm() {
     setErrors(e);
     return Object.keys(e).length === 0;
   };
- 
+
   const handleSubmit = async () => {
     if (!validate()) return;
     setLoading(true);
@@ -92,7 +92,7 @@ export default function AdminSpaceForm() {
     if (!isEdit && spaceId && images.length > 0) await uploadImages(spaceId);
     if (data.success || spaceId) navigate("/admin/spaces");
   };
- 
+
   const uploadImages = async (spaceId) => {
     for (const image of images) {
       const formData = new FormData();
@@ -105,22 +105,22 @@ export default function AdminSpaceForm() {
       });
     }
   };
- 
+
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     const newImages = files.map((file) => ({ file, preview: URL.createObjectURL(file), alt: "" }));
     setImages([...images, ...newImages]);
   };
- 
+
   const removeImage = (index) => setImages(images.filter((_, i) => i !== index));
- 
+
   const fields = [
     { key: "name", label: "Nom de l'espace", type: "text", placeholder: "Ex: Bonoua Space", full: true },
     { key: "surface", label: "Surface (m²)", type: "number", placeholder: "Ex: 600" },
     { key: "capacity", label: "Capacité (personnes)", type: "number", placeholder: "Ex: 80" },
-    { key: "price_per_day", label: "Prix par jour (FCFA)", type: "number", placeholder: "Ex: 20000" },
+    { key: "price_per_day", label: "Prix par jour (€)", type: "number", placeholder: "Ex: 20000" },
   ];
- 
+
   return (
     <>
       <style>{`
@@ -141,7 +141,7 @@ export default function AdminSpaceForm() {
                 className="w-9 h-9 rounded-xl flex items-center justify-center cursor-pointer hover:opacity-70 flex-shrink-0"
                 style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", color: "var(--text-muted)" }}>
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M19 12H5M12 5l-7 7 7 7"/>
+                  <path d="M19 12H5M12 5l-7 7 7 7" />
                 </svg>
               </button>
               <div className="min-w-0">
@@ -161,14 +161,14 @@ export default function AdminSpaceForm() {
               style={{ borderColor: "var(--border-color)", background: "var(--bg-card)", color: "var(--text-secondary)" }}>
               {isDark ? (
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
-                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                  <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
-                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                  <circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" />
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                  <line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" />
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
                 </svg>
               ) : (
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
                 </svg>
               )}
               <span className="hidden sm:inline text-[9px] tracking-[2px] uppercase" style={{ fontFamily: "'Rajdhani', sans-serif" }}>
@@ -312,9 +312,9 @@ export default function AdminSpaceForm() {
                   }}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"
                     className="mb-2" style={{ color: "var(--text-muted)" }}>
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="17 8 12 3 7 8"/>
-                    <line x1="12" y1="3" x2="12" y2="15"/>
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" y1="3" x2="12" y2="15" />
                   </svg>
                   <p className="text-[10px] uppercase tracking-widest mb-1"
                     style={{ color: "var(--text-muted)", fontFamily: "'Rajdhani', sans-serif" }}>
@@ -355,7 +355,7 @@ export default function AdminSpaceForm() {
                     {loading ? "Enregistrement..." : (
                       <>
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                          <polyline points="20 6 9 17 4 12"/>
+                          <polyline points="20 6 9 17 4 12" />
                         </svg>
                         {isEdit ? "Enregistrer" : "Créer l'espace"}
                       </>

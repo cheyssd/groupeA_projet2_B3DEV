@@ -8,7 +8,7 @@ const PLACEHOLDER_IMGS = [
   "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&q=80",
 ];
 
-const API_URL = window.location.hostname === 'localhost' 
+const API_URL = window.location.hostname === 'localhost'
   ? 'http://127.0.0.1:8000'
   : 'https://api-raffaa.ifran-b3dev.com';
 
@@ -120,7 +120,7 @@ export default function Spaces() {
       <div>
         <p className="text-[9px] tracking-[3px] uppercase mb-4 font-semibold"
           style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
-          Budget Max (FCFA/J)
+          Budget Max (€/J)
         </p>
         <input type="range" min={0} max={500000} step={5000} value={budgetMax}
           onChange={(e) => setBudgetMax(Number(e.target.value))} />
@@ -336,7 +336,7 @@ export default function Spaces() {
                         <p className="font-black text-base"
                           style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "var(--text-primary)" }}>
                           {Number(space.price_per_day).toLocaleString()}
-                          <span style={{ fontSize: "11px", color: "var(--accent)" }}> FCFA</span>
+                          <span style={{ fontSize: "11px", color: "var(--accent)" }}> €</span>
                         </p>
                         <p className="text-[9px] tracking-[1px] uppercase"
                           style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>

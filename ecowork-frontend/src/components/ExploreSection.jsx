@@ -3,36 +3,48 @@ import { useTheme } from "../contexts/ThemeContext";
 import { useNavigate } from 'react-router-dom'
 
 const API_URL = window.location.hostname === 'localhost'
-  ? 'http://127.0.0.1:8000'
-  : 'https://api-raffaa.ifran-b3dev.com';
+  ? 'http://127.0.0.1:8000/api'
+  : 'https://api-raffaa.ifran-b3dev.com/api';
+
+const STORAGE_URL = API_URL.replace('/api', '/storage');
 
 export default function ExploreSection() {
   const { isDark } = useTheme();
-
   const [spaces, setSpaces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState("ALL SPACES");
-
-  const filters = ["ALL SPACES", "PRIVATE", "SHARED"];
   const navigate = useNavigate()
 
+  const filters = ["ALL SPACES", "PRIVATE", "SHARED"];
+
+  const filterMap = {
+    "ALL SPACES": null,
+    "PRIVATE": "bureau_prive",
+    "SHARED": "espace_partage",
+  };
+
   useEffect(() => {
-    fetch(`${API_URL}/api/spaces`)
-      .then((response) => response.json())
+    fetch(`${API_URL}/spaces?per_page=100`)
+      .then((r) => r.json())
       .then((data) => {
-        setSpaces(data.data || data);
+        setSpaces(data.data || []);
         setLoading(false);
       })
-      .catch((error) => {
-        console.error("Erreur API :", error);
+      .catch((err) => {
+        console.error("Erreur API :", err);
         setLoading(false);
       });
   }, []);
 
+  const filteredSpaces = spaces.filter(space => {
+    if (!filterMap[activeFilter]) return true;
+    return space.type === filterMap[activeFilter];
+  }).slice(0, 3);
+
   if (loading) {
     return (
       <section className="w-full px-6 md:px-12 py-24">
-        <p style={{ color: "var(--text-muted)" }}>Loading spaces...</p>
+        <p style={{ color: "var(--text-muted)" }}>Chargement...</p>
       </section>
     );
   }
@@ -41,18 +53,12 @@ export default function ExploreSection() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;0,900;1,800;1,900&family=Barlow:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap');
-        .card-img {
-          display: block;
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
+        .card-img { display: block; width: 100%; height: 100%; object-fit: cover; }
       `}</style>
 
       <section className="w-full px-6 md:px-12 py-16 md:py-24"
         style={{ background: "var(--bg-primary)", fontFamily: "'Barlow', sans-serif" }}>
 
-        {/* DISCOVER */}
         <div className="flex items-center gap-4 mb-10">
           <div className="w-10 h-px" style={{ background: "var(--text-muted)" }} />
           <span className="text-[10px] tracking-[5px] uppercase"
@@ -61,7 +67,6 @@ export default function ExploreSection() {
           </span>
         </div>
 
-        {/* TITRE + FILTERS */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 md:mb-16 gap-6">
           <div>
             <h2 className="font-black uppercase leading-none"
@@ -101,49 +106,52 @@ export default function ExploreSection() {
         </div>
 
         {/* CARDS */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {spaces.slice(0, 3).map((space) => (
-            <div key={space.id} className="flex flex-col cursor-pointer"
-              onClick={() => navigate(`/spaces/${space.id}`)}>
-              <div className="relative rounded-2xl overflow-hidden h-56 sm:h-64 md:h-72">
-                <img
-                  src={space.images?.[0]?.filename
-                    ? `http://127.0.0.1:8000/storage/${space.images[0].filename}`
-                    : "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80"}
-                  alt={space.name}
-                  className="card-img"
-                  loading="lazy"
-                />
-              </div>
-
-              <div className="flex items-start justify-between mt-4 px-1">
-                <div>
-                  <p className="font-bold text-base"
-                    style={{ fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: "0.3px", color: "var(--text-primary)" }}>
-                    {space.name}
-                  </p>
-                  <p className="text-[10px] tracking-[2px] uppercase mt-0.5"
-                    style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
-                    {space.type}
-                  </p>
+        {filteredSpaces.length === 0 ? (
+          <p className="text-center py-12 text-sm italic" style={{ color: "var(--text-muted)" }}>
+            Aucun espace disponible pour ce filtre.
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredSpaces.map((space) => (
+              <div key={space.id} className="flex flex-col cursor-pointer"
+                onClick={() => navigate(`/spaces/${space.id}`)}>
+                <div className="relative rounded-2xl overflow-hidden h-56 sm:h-64 md:h-72">
+                  <img
+                    src={space.images?.[0]?.filename
+                      ? `${STORAGE_URL}/${space.images[0].filename}`
+                      : "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80"}
+                    alt={space.name}
+                    className="card-img"
+                    loading="lazy"
+                  />
                 </div>
-
-                <div className="text-right">
-                  <p className="font-bold text-base"
-                    style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "var(--accent)" }}>
-                    {Number(space.price_per_day).toLocaleString()} FCFA
-                  </p>
-                  <p className="text-[10px] tracking-[1px] uppercase mt-0.5"
-                    style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
-                    / heure
-                  </p>
+                <div className="flex items-start justify-between mt-4 px-1">
+                  <div>
+                    <p className="font-bold text-base"
+                      style={{ fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: "0.3px", color: "var(--text-primary)" }}>
+                      {space.name}
+                    </p>
+                    <p className="text-[10px] tracking-[2px] uppercase mt-0.5"
+                      style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
+                      {space.type}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold text-base"
+                      style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "var(--accent)" }}>
+                      {Number(space.price_per_day).toLocaleString()} €
+                    </p>
+                    <p className="text-[10px] tracking-[1px] uppercase mt-0.5"
+                      style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
+                      / heure
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
-        {/* Voir tous les espaces */}
         <div className="flex justify-center mt-10 md:mt-12">
           <button onClick={() => navigate('/spaces')}
             className="flex items-center gap-3 px-6 md:px-8 py-4 rounded-full cursor-pointer transition-all duration-300 hover:gap-5"

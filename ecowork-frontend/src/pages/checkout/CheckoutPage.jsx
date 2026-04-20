@@ -213,7 +213,7 @@ const Checkout = () => {
                                 <div className="flex justify-between text-sm">
                                     <span className="text-gray-400 font-medium">Prix/heure</span>
                                     <span className="font-bold">
-                                        {Number(space.price_per_day).toLocaleString()} FCFA
+                                        {Number(space.price_per_day).toLocaleString()} €
                                     </span>
                                 </div>
                             </div>
@@ -224,7 +224,7 @@ const Checkout = () => {
                                 </span>
                                 <span className="text-4xl font-black tracking-tighter">
                                     {total.toLocaleString()}
-                                    <span className="text-sm text-gray-400 ml-1">FCFA</span>
+                                    <span className="text-sm text-gray-400 ml-1">€</span>
                                 </span>
                             </div>
 
