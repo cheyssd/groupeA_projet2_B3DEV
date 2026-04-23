@@ -24,7 +24,8 @@ const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'));
 const AdminProfil = lazy(() => import('./pages/admin/AdminProfil'));
 const AdminEquipements = lazy(() => import('./pages/admin/AdminEquipements'));
 
-// ✅ Loading Spinner
+
+
 function LoadingSpinner() {
   return (
     <div className="flex items-center justify-center min-h-screen" 
@@ -47,6 +48,7 @@ function LoadingSpinner() {
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token');
+  console.log("ProtectedRoute — token:", token);
   if (!token) {
     return <Navigate to="/login" replace />;
   }
