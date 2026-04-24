@@ -343,7 +343,10 @@ export default function HeroBanner() {
             <p className="text-[9px] tracking-[3px] uppercase mb-1"
               style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>Impact</p>
             <p className="font-bold text-sm tracking-wide"
-              style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "var(--accent)" }}>-40% CO2</p>
+              style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "#F7D6E0" }}>
+              -40% CO2
+            </p>
+
           </div>
           <div>
             <p className="text-[9px] tracking-[3px] uppercase mb-1"
