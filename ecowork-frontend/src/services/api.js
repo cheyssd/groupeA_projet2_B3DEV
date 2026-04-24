@@ -1,4 +1,4 @@
-const API_URL = 'https://api-raffaa.ifran-b3dev.com/api';
+const API_URL = 'http://127.0.0.1:8000';
 
 
 function getHeaders() {

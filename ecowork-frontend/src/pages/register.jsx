@@ -46,7 +46,6 @@ const Register = () => {
                 return response.json();
             })
             .then(data => {
-                console.log("Inscription réussie :", data);
                 localStorage.setItem('token', data.access_token);
                 localStorage.setItem('user', JSON.stringify(data.user));
                 navigate('/user/dashboard');
