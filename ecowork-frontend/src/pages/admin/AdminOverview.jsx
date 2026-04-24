@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../contexts/ThemeContext";
 
-const API_URL = 'http://127.0.0.1:8000';
+const API_URL = window.location.hostname === 'localhost'
+    ? 'http://127.0.0.1:8000'
+    : 'https://api-raffaa.ifran-b3dev.com';
 
 // ─── Sidebar ───────────────────────────────────────────────────────────────
 export function Sidebar({ active }) {
@@ -379,7 +381,7 @@ export default function AdminOverview() {
                   </p>
                   <span className="text-[9px] tracking-[2px] uppercase px-2 py-1 rounded-full"
                     style={{ fontFamily: "'Rajdhani', sans-serif", background: "var(--border-color)", color: "var(--text-muted)" }}>
-                    {stats.recent_reservations.length} entrée{stats.recent_reservations.length > 1 ? "s" : ""}
+                    {stats?.recent_reservations?.length ?? 0} entrée{(stats?.recent_reservations?.length ?? 0) > 1 ? "s" : ""}
                   </span>
                 </div>
 

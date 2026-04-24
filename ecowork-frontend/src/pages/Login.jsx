@@ -1,14 +1,13 @@
-import React, { useState, } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import { Link } from 'react-router-dom';
 
-
 const Login = () => {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
-
     const navigate = useNavigate();
+    const { login } = useContext(AuthContext); // on récupère la fonction login de l'AuthProvider
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -17,53 +16,29 @@ const Login = () => {
         const email = e.target.email.value;
         const password = e.target.password.value;
 
-
-        if (email.trim() !== "" && password.trim() !== "") {
-            setLoading(true);
-
-            const API_URL = window.location.hostname === 'localhost'
-                ? 'http://127.0.0.1:8000/api'
-                : 'https://api-raffaa.ifran-b3dev.com/api';
-
-            fetch(`${API_URL}/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                },
-
-                body: JSON.stringify({ email, password })
-            })
-                .then(response => {
-                    if (!response.ok) throw new Error("Identifiants incorrects");
-                    return response.json();
-                })
-                .then(data => {
-                    const token = data.access_token || data.token;
-                    const userToStore = data.user ? data.user : data;
-
-                    localStorage.setItem('token', token);
-                    localStorage.setItem('user', JSON.stringify(userToStore));
-
-                    if (userToStore.role === 'admin') {
-                        navigate('/admin/adminOverview');
-                    } else {
-                        navigate('/user/dashboard');
-                    }
-                })
-
-
-
-                .catch(err => {
-                    setError(err.message);
-                })
-                .finally(() => setLoading(false));
-
-        } else {
+        if (!email.trim() || !password.trim()) {
             setError("Veuillez remplir tous les champs.");
+            return;
         }
-    };
 
+        setLoading(true);
+
+        // on appelle login de l'AuthProvider qui fait le fetch ET le setUser
+        login(email, password)
+            .then(data => {
+                // si on arrive ici c'est que la connexion a réussi
+                // on redirige selon le rôle de l'utilisateur
+                if (data.user.role === 'admin') {
+                    navigate('/admin/adminOverview');
+                } else {
+                    navigate('/user/dashboard');
+                }
+            })
+            .catch(() => {
+                setError("Identifiants incorrects. Veuillez réessayer.");
+            })
+            .finally(() => setLoading(false));
+    };
 
     return (
         <div className="antialiased min-h-screen flex">
@@ -83,7 +58,7 @@ const Login = () => {
             </div>
 
             <div className="w-full lg:w-1/2 flex items-center justify-center p-8 md:p-24 bg-white">
-                <div className="w-full max-w-md fade-up">
+                <div className="w-full max-w-md">
 
                     <div className="mb-12">
                         <span className="text-2xl font-black tracking-tighter uppercase italic">EcoWork.</span>
@@ -99,18 +74,19 @@ const Login = () => {
                                 {error}
                             </div>
                         )}
+
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 ml-2">Email Address</label>
-                            <input name='email' type="email" placeholder="nom@exemple.com"
+                            <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 ml-2">Email</label>
+                            <input name="email" type="email" placeholder="nom@exemple.com"
                                 className="input-user w-full px-6 py-4 rounded-2xl text-sm font-medium" />
                         </div>
 
                         <div className="space-y-2">
                             <div className="flex justify-between items-center px-2">
-                                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500">Password</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500">Mot de passe</label>
                                 <a href="#" className="text-[10px] font-bold text-[#7bdff2] uppercase">Perdu ?</a>
                             </div>
-                            <input name='password' type="password" placeholder="••••••••••••"
+                            <input name="password" type="password" placeholder="••••••••••••"
                                 className="input-user w-full px-6 py-4 rounded-2xl text-sm font-medium" />
                         </div>
 
@@ -119,26 +95,22 @@ const Login = () => {
                             <span className="text-xs font-bold text-gray-500 group-hover:text-black transition">Rester connecté</span>
                         </label>
 
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full bg-black text-white py-5 rounded-2xl font-black uppercase text-xs tracking-[0.3em] hover:bg-[#7bdff2] hover:text-black transition-all active:scale-[0.98] shadow-2xl shadow-black/5 disabled:opacity-50"
-                        >
-                            {loading ? 'Connexion...' : 'Entrer dans l\'espace'}
+                        <button type="submit" disabled={loading}
+                            className="w-full bg-black text-white py-5 rounded-2xl font-black uppercase text-xs tracking-[0.3em] hover:bg-[#7bdff2] hover:text-black transition-all active:scale-[0.98] shadow-2xl shadow-black/5 disabled:opacity-50">
+                            {loading ? 'Connexion...' : "Entrer dans l'espace"}
                         </button>
                     </form>
 
                     <p className="mt-12 text-center text-sm font-medium text-gray-400">
                         Pas encore membre ?
-                        <Link to='/register' className="text-black font-black border-b-2 border-[#7bdff2] ml-2" >
-                            Creer un compte
+                        <Link to="/register" className="text-black font-black border-b-2 border-[#7bdff2] ml-2">
+                            Créer un compte
                         </Link>
                     </p>
-
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default Login;
