@@ -352,7 +352,6 @@ export default function HeroBanner() {
               style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "#F7D6E0" }}>
               -40% CO2
             </p>
-
           </div>
           <div>
             <p className="text-[9px] tracking-[3px] uppercase mb-1"
