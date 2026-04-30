@@ -148,7 +148,8 @@ export default function TechAndFooter() {
           style={{
             fontFamily: "'Barlow Condensed', sans-serif",
             fontSize: "clamp(80px, 18vw, 220px)",
-            color: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.05)",
+           color: isDark ? "rgba(255,255,255,0.04)" : "transparent",
+            WebkitTextStroke: isDark ? "0px" : "1px rgba(0,0,0,0.09)",
             letterSpacing: "-4px",
             lineHeight: 1,
           }}
