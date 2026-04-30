@@ -101,20 +101,26 @@ export default function HeroBanner() {
 
       <nav className="relative z-10 flex items-center justify-between px-6 md:px-12 pt-7">
 
-        <div className="flex flex-col gap-0.5">
+       <div className="flex flex-col gap-0.5">
           <span className="font-black text-xl uppercase tracking-wide cursor-pointer hover:opacity-70 transition"
             onClick={() => navigate('/')}
             style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "var(--text-primary)" }}>
             ECOWORK<span style={{ color: "#F7D6E0" }}>.</span>
           </span>
-          <span className="text-[9px] tracking-[4px] uppercase"
+          {/* <span className="text-[9px] tracking-[4px] uppercase"
             style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>
             High Performance
-          </span>
+          </span> */}
         </div>
 
-        <span className="hidden md:block text-[11px] tracking-[3px] uppercase pt-1"
-          style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-secondary)" }}>
+       <span
+  className="hidden md:block text-[11px] tracking-[3px] uppercase pt-1 px-3 py-1 rounded-full backdrop-blur-md"
+  style={{
+    fontFamily: "'Rajdhani', sans-serif",
+    color: isDark ? "var(--text-secondary)" : "#333",
+    background: isDark ? "transparent" : "rgba(255,255,255,0.25)",
+  }}
+>
           Paris, FR&nbsp;&nbsp;/&nbsp;&nbsp;5.3599°N
         </span>
 
@@ -350,8 +356,15 @@ export default function HeroBanner() {
           <div>
             <p className="text-[9px] tracking-[3px] uppercase mb-1"
               style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text-muted)" }}>Status</p>
-            <p className="font-bold text-sm tracking-wide"
-              style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "var(--text-primary)" }}>En direct</p>
+            <p
+              className="font-bold text-sm tracking-wide"
+              style={{
+                fontFamily: "'Barlow Condensed', sans-serif",
+                color: isDark ? "var(--text-primary)" : "#fff",
+              }}
+            >
+              En direct
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-4">
