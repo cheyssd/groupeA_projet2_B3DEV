@@ -17,8 +17,8 @@ export default function ProductivitySection() {
             <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-20 items-center">
 
                 <div className="lg:col-span-5">
-                    <div className="inline-block px-3 py-1 border border-[#7bdff2]/30 rounded-full mb-8">
-                        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-[#7bdff2]">The Collective</span>
+                    <div className="inline-block px-3 py-1 border border-[#F7D6E0]/30 rounded-full mb-8">
+                        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-[#F7D6E0]">The Collective</span>
                     </div>
                     <h2 className="text-5xl font-light tracking-tighter leading-tight mb-8">
                         Rejoignez l'élite de la <br />
@@ -55,7 +55,7 @@ export default function ProductivitySection() {
                             </div>
                             <div>
                                 <h4 className="text-lg font-black uppercase tracking-tight">Julien Valenza</h4>
-                                <p className="text-[10px] font-bold text-[#7bdff2] uppercase tracking-widest">Architecte Software</p>
+                                <p className="text-[10px] font-bold text-[#F7D6E0] uppercase tracking-widest">Architecte Software</p>
                             </div>
                         </div>
                         <blockquote className="text-2xl font-medium leading-snug tracking-tight italic">
@@ -64,7 +64,7 @@ export default function ProductivitySection() {
                         </blockquote>
                     </div>
 
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-[#7bdff2]/5 blur-[120px] rounded-full pointer-events-none"></div>
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-[#F7D6E0]/5 blur-[120px] rounded-full pointer-events-none"></div>
                 </div>
             </div>
 

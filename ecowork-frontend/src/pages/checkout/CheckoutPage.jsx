@@ -61,7 +61,7 @@ const Checkout = () => {
                 alert('Erreur: ' + (data.message || 'Impossible de créer la réservation'));
             }
         } catch (error) {
-            console.error('❌ Erreur:', error);
+            console.error('Erreur:', error);
             alert('Erreur lors de la création de la réservation');
         } finally {
             setLoading(false);

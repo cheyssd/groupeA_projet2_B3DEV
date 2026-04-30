@@ -6,7 +6,7 @@ const API_URL = window.location.hostname === 'localhost'
     ? 'http://127.0.0.1:8000'
     : 'https://api-raffaa.ifran-b3dev.com';
 
-// ─── Sidebar ───────────────────────────────────────────────────────────────
+//Sidebar
 export function Sidebar({ active }) {
   const navigate = useNavigate();
   const { isDark } = useTheme();
